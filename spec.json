@@ -1,0 +1,36 @@
+{
+  "title": "Projectile Motion Simulator",
+  "concept": "Basic projectile motion with angle and speed.",
+  "learning_objectives": [
+    "Understand how angle affects range.",
+    "Observe effect of initial speed on maximum height."
+  ],
+  "simulation": {
+    "canvas_type": "2d",
+    "controls": [
+      {
+        "id": "angle",
+        "label": "Launch Angle (degrees)",
+        "type": "slider",
+        "min": 15,
+        "max": 75,
+        "step": 5,
+        "default": 45
+      },
+      {
+        "id": "speed",
+        "label": "Speed (m/s)",
+        "type": "slider",
+        "min": 5,
+        "max": 30,
+        "step": 1,
+        "default": 15
+      }
+    ],
+    "variables": [
+      { "name": "gravity", "value": 9.81, "unit": "m/s^2" }
+    ],
+    "mobile_first": true,
+    "theme": "light"
+  }
+}
