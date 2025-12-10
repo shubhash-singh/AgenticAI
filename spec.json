@@ -1,36 +1,86 @@
 {
-  "title": "Projectile Motion Simulator",
-  "concept": "Basic projectile motion with angle and speed.",
-  "learning_objectives": [
-    "Understand how angle affects range.",
-    "Observe effect of initial speed on maximum height."
-  ],
-  "simulation": {
-    "canvas_type": "2d",
-    "controls": [
-      {
-        "id": "angle",
-        "label": "Launch Angle (degrees)",
-        "type": "slider",
-        "min": 15,
-        "max": 75,
-        "step": 5,
-        "default": 45
+      "Concept": "Flow of heat",
+      "Description": "Heat is a form of energy that always moves from a hotter object to a colder object. Think of it like water flowing downhill; heat naturally flows from places where it's more concentrated (hotter) to places where it's less concentrated (colder). This movement of heat is what we call the \"flow of heat.\"",
+      "Key_Topics_from_the_Textbook": [
+        "Hot and cold objects",
+        "Measurement of temperature",
+        "Thermometer",
+        "Modes of heat transfer: Conduction, Convection, Radiation"
+      ],
+      "Detail": "* **Hot and Cold Objects:** We often describe objects as being \"hot\" or \"cold\" based on how they feel to our touch. This feeling is related to how much heat energy is being transferred to or from our hand.\n* **Temperature:** Temperature is a measure of how hot or cold something is. It tells us the average kinetic energy of the particles within an object. We measure temperature using a thermometer.\n* **Heat Transfer:** Heat doesn't stay in one place; it moves. This movement of heat from one place to another is the essence of the flow of heat. This flow happens because of differences in temperature.",
+      "Working": "Heat flows from a region of **higher temperature** to a region of **lower temperature**. This continues until both regions reach the same temperature, a state called thermal equilibrium.\n\n* **Example:** If you touch a hot cup of tea, heat flows from the hot tea to your colder hand. Your hand gets warm, and the tea cools down a bit. This transfer continues until your hand and the tea are at a similar temperature (though the tea will likely cool down significantly before that happens completely).",
+      "Intuition_Logical_Flow": "Imagine a crowded room and an empty room. People naturally move from the crowded room to the empty room until both rooms have a similar number of people. Similarly, heat energy moves from where it's \"crowded\" (hotter) to where it's \"less crowded\" (colder) until it's more evenly distributed.",
+      "Critical_Thinking": "If you place a metal spoon in a cup of hot soup, one end of the spoon gets hot, and eventually, the other end you are holding also feels warm. Which part of the spoon is hotter initially, and how does the heat reach the end you are holding?",
+      "Open-Ended_MCQs": [
+        {
+          "Question": "Which of the following statements best describes the flow of heat?",
+          "Options": [
+            "a) Heat flows from colder objects to hotter objects.",
+            "b) Heat flows from hotter objects to colder objects.",
+            "c) Heat does not flow; it stays in the object.",
+            "d) Heat flows only when an object is touched."
+          ],
+          "Correct_Answer": "b) Heat flows from hotter objects to colder objects."
+        },
+        {
+          "Question": "When you hold an ice cube, your hand feels cold. What is happening to the heat energy?",
+          "Options": [
+            "a) Heat is flowing from your hand to the ice cube.",
+            "b) Heat is flowing from the ice cube to your hand.",
+            "c) No heat is flowing.",
+            "d) Heat is being created."
+          ],
+          "Correct_Answer": "a) Heat is flowing from your hand to the ice cube."
+        },
+        {
+          "Question": "Temperature is a measure of:",
+          "Options": [
+            "a) How much water is in an object.",
+            "b) How much heat is stored in an object.",
+            "c) The average kinetic energy of the particles in an object.",
+            "d) How heavy an object is."
+          ],
+          "Correct_Answer": "c) The average kinetic energy of the particles in an object."
+        }
+      ],
+      "Real-Life_Applications": [
+        "**Cooking:** When you heat food in a pan, heat flows from the stove burner to the pan and then to the food.",
+        "**Wearing Clothes in Winter:** Woolen clothes keep us warm because they are poor conductors of heat and prevent our body heat from flowing out into the cold surroundings.",
+        "**Cooling a Hot Drink:** Placing a cold spoon in a hot drink will cause heat to flow from the drink to the spoon, making the drink cooler and the spoon warmer."
+      ],
+      "Relation_Between_Sub-Concepts": "The \"flow of heat\" is the overarching concept that explains *why* and *how* heat moves. The sub-concepts like \"hot and cold objects\" describe the conditions that lead to heat flow, and \"temperature\" is the measurement that quantifies this difference. The \"modes of heat transfer\" (conduction, convection, radiation) explain the different ways this flow can occur.",
+      "Cross-Concept_Critical_Thinking": "Imagine a planet with no atmosphere orbiting close to a star. If this planet has a surface temperature of 500°C on the side facing the star and -100°C on the side facing away, how would heat transfer between these two sides? (Relates to concepts of heat transfer and possibly planetary science if it were a different subject).",
+      "Exam-Oriented_Questions": [
+        "1. Define heat. Explain the direction of heat flow between two objects at different temperatures.",
+        "2. What is temperature? How is it measured?",
+        "3. Describe the three main ways in which heat can flow from one place to another. (This would lead into the next section of the textbook on modes of heat transfer)."
+      ],
+      "Metrics_Estimation": {
+        "Estimated_Avg_time_taken_for_the_1st_time_learners": "10 min",
+        "Estimated_Avg_time_taken_for_the_2nd_time_learners": "3 min",
+        "Number_of_revisions_needed_to_master": "3 (interval of revisit in days: 5)"
       },
-      {
-        "id": "speed",
-        "label": "Speed (m/s)",
-        "type": "slider",
-        "min": 5,
-        "max": 30,
-        "step": 1,
-        "default": 15
-      }
-    ],
-    "variables": [
-      { "name": "gravity", "value": 9.81, "unit": "m/s^2" }
-    ],
-    "mobile_first": true,
-    "theme": "light"
-  }
-}
+      "Importance": {
+        "Importance_for_the_rest_of_the_chapter": "80% (This concept is fundamental to understanding the modes of heat transfer, which form the bulk of the chapter)",
+        "Importance_for_the_Olympiad": "High",
+        "Importance_for_the_IIT/NEET": "High (Basic understanding is crucial for many physics problems)",
+        "Definition_getting_asked_in the_unit_test": "Medium"
+      },
+      "Which_aspect_is_important?": "Def/Concept (Understanding the fundamental idea of heat flow and its direction is key)",
+      "Should_you_remember_this?": "Yes, because it's the foundational principle that explains all heat-related phenomena. Without understanding this, the subsequent topics on conduction, convection, and radiation will be difficult to grasp.",
+      "Exam_Preparation_Common_Mistakes_Exam_Tips": {
+        "Exam_Preparation": "Focus on understanding the direction of heat flow. Always remember: heat flows from hot to cold. Practice identifying hot and cold objects in everyday scenarios.",
+        "Common_Mistakes": "Students often confuse heat with temperature. Remember, temperature measures *how hot or cold* something is, while heat is the *energy that flows* because of that temperature difference. Another mistake is assuming heat flows from cold to hot.",
+        "Exam_Tips": "When answering questions about heat flow, always explicitly state that heat moves from the hotter object/region to the colder object/region."
+      },
+      "images": [
+        {
+          "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/System_boundary.svg/250px-System_boundary.svg.png",
+          "description": "A diagram of a generic thermodynamic system",
+          "youtube": {
+            "link": "https://www.youtube.com/watch?v=bJsWGPXjYuc",
+            "description": "What is Thermodynamics?** 🌡️ This video provides a clear and concise explanation of the fundamental concept of ..."
+          }
+        }
+      ]
+    }

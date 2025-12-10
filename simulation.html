@@ -1,107 +1,455 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Projectile Motion Simulator</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f0f0f0;
-    }
-    header {
-      background-color: #333;
-      color: #fff;
-      padding: 1em;
-      text-align: center;
-    }
-    .visual-simulation {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2em;
-    }
-    .visual-simulation canvas {
-      border: 1px solid #ddd;
-      width: 100%;
-      max-width: 300px;
-    }
-    .controls {
-      margin-top: 1em;
-    }
-    .controls label {
-      display: block;
-      margin-bottom: 0.5em;
-    }
-    .controls input[type="range"] {
-      width: 100%;
-    }
-    .key-points {
-      padding: 2em;
-    }
-    .key-point {
-      margin-bottom: 1em;
-    }
-    .key-point strong {
-      font-weight: bold;
-    }
-    .summary {
-      padding: 2em;
-      background-color: #333;
-      color: #fff;
-      text-align: center;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation: Flow of Heat</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f8ff; /* Light blue background */
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2, h3 {
+            color: #0056b3; /* Darker blue for headings */
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            font-style: italic;
+            color: #555;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #e6f7ff; /* Lighter blue for sections */
+            border-radius: 8px;
+        }
+        .section h2 {
+            margin-top: 0;
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .svg-container {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+            overflow: hidden; /* Ensures SVG content stays within bounds */
+        }
+        #simCanvas {
+            display: block;
+            margin: 0 auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .control-group label {
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #0056b3;
+        }
+        .control-group input[type="range"] {
+            width: 90%;
+            cursor: pointer;
+        }
+        .value-display {
+            font-weight: bold;
+            color: #d9534f; /* Red for values */
+            margin-top: 5px;
+        }
+        .key-point-card {
+            background-color: #ffffff;
+            border: 1px solid #b3e5fc; /* Light cyan border */
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .key-point-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-color: #007bff;
+        }
+        .key-point-card h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #007bff;
+            font-size: 1.1em;
+            text-align: left;
+        }
+        .explanation-text {
+            font-size: 0.95em;
+            color: #555;
+        }
+        .summary-text {
+            font-style: italic;
+            color: #444;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed #ccc;
+        }
+
+        /* SVG Styling */
+        .hot-region { fill: #e74c3c; } /* Red */
+        .cold-region { fill: #3498db; } /* Blue */
+        .heat-transfer-line { stroke: #f39c12; stroke-width: 3px; stroke-dasharray: 5, 5; } /* Orange dashed */
+        .handle { fill: #f1c40f; stroke: #d35400; stroke-width: 2; cursor: grab; } /* Yellow with brown outline */
+        .handle-label { font-size: 12px; fill: #333; pointer-events: none; }
+        .temp-label { font-size: 11px; fill: #555; }
+        .arrow { fill: #f39c12; stroke: #f39c12; }
+
+        /* Tooltip styling for hover-to-explain */
+        .tooltip {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            pointer-events: none; /* Important for not interfering with mouse events */
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+            z-index: 1000;
+            white-space: nowrap;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>Projectile Motion Simulator</h1>
-  </header>
-  <p>Basic projectile motion with angle and speed. Understand how angle affects range and observe the effect of initial speed on maximum height.</p>
-  <div class="visual-simulation">
-    <canvas id="simulation" width="300" height="200"></canvas>
-    <div class="controls">
-      <label for="angle">Launch Angle (degrees)</label>
-      <input type="range" id="angle" min="15" max="75" step="5" value="45">
-      <label for="speed">Speed (m/s)</label>
-      <input type="range" id="speed" min="5" max="30" step="1" value="15">
-    </div>
-  </div>
-  <div class="key-points">
-    <div class="key-point">
-      <strong>Angle and Range:</strong> The range of a projectile is affected by the launch angle. A higher angle results in a longer range.
-    </div>
-    <div class="key-point">
-      <strong>Initial Speed and Maximum Height:</strong> The initial speed of a projectile affects its maximum height. A higher initial speed results in a higher maximum height.
-    </div>
-  </div>
-  <div class="summary">
-    In conclusion, the projectile motion simulator demonstrates how angle and initial speed affect the range and maximum height of a projectile.
-  </div>
-  <script>
-    const canvas = document.getElementById('simulation');
-    const ctx = canvas.getContext('2d');
-    const angleInput = document.getElementById('angle');
-    const speedInput = document.getElementById('speed');
+    <div class="container">
+        <header>
+            <h1>Flow of Heat</h1>
+            <div class="subtitle">Understanding how heat moves from hot to cold.</div>
+        </header>
 
-    function drawSimulation() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const angle = parseInt(angleInput.value);
-      const speed = parseInt(speedInput.value);
-      const gravity = 9.81;
-      const range = (speed ** 2) * Math.sin(2 * angle * Math.PI / 180) / gravity;
-      const maxHeight = (speed ** 2) * (Math.sin(angle * Math.PI / 180) ** 2) / (2 * gravity);
-      ctx.beginPath();
-      ctx.moveTo(0, canvas.height);
-      ctx.lineTo(range * 10, canvas.height - maxHeight * 10);
-      ctx.stroke();
-    }
+        <section class="section">
+            <h2>What is Heat Flow?</h2>
+            <p>Heat is a form of energy that always moves from a hotter object to a colder object. Think of it like water flowing downhill; heat naturally flows from places where it's more concentrated (hotter) to places where it's less concentrated (colder). This movement of heat is what we call the "flow of heat."</p>
+            <p>Temperature is a measure of how hot or cold something is, indicating the average kinetic energy of particles. Heat is the energy that actually moves due to differences in temperature.</p>
+        </section>
 
-    angleInput.addEventListener('input', drawSimulation);
-    speedInput.addEventListener('input', drawSimulation);
-    drawSimulation();
-  </script>
+        <section class="section">
+            <h2>Interactive Simulation</h2>
+            <div class="svg-container">
+                <svg id="simCanvas" viewBox="0 0 500 350" preserveAspectRatio="xMidYMid meet">
+                    <!-- Background rectangle for general area -->
+                    <rect x="0" y="0" width="500" height="350" fill="#e0f7fa" rx="10" ry="10"/>
+
+                    <!-- Two regions representing objects at different temperatures -->
+                    <rect id="hotObject" x="50" y="100" width="150" height="150" class="hot-region" rx="15" ry="15"/>
+                    <text x="125" y="185" text-anchor="middle" class="temp-label">Hot</text>
+                    <text id="hotTempText" x="125" y="210" text-anchor="middle" class="temp-label">300 K</text>
+
+                    <rect id="coldObject" x="300" y="100" width="150" height="150" class="cold-region" rx="15" ry="15"/>
+                    <text x="375" y="185" text-anchor="middle" class="temp-label">Cold</text>
+                    <text id="coldTempText" x="375" y="210" text-anchor="middle" class="temp-label">273 K</text>
+
+                    <!-- Heat transfer indicator -->
+                    <g id="heatTransferGroup">
+                        <path id="heatTransferArrow" d="" class="heat-transfer-line" marker-end="url(#arrowhead)" />
+                        <circle id="heatHandle" cx="200" cy="175" r="12" class="handle" />
+                        <text x="200" y="175" text-anchor="middle" dy="4" class="handle-label">Drag</text>
+                    </g>
+
+                    <!-- Arrowhead definition for the path -->
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto" class="arrow">
+                            <polygon points="0 0, 10 3.5, 0 7" />
+                        </marker>
+                    </defs>
+
+                    <!-- Labels for explanation -->
+                    <text x="125" y="80" text-anchor="middle" class="temp-label">Object 1</text>
+                    <text x="375" y="80" text-anchor="middle" class="temp-label">Object 2</text>
+                </svg>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Controls</h2>
+            <div class="controls-grid">
+                <div class="control-group">
+                    <label for="temperatureDifference">Temperature Difference:</label>
+                    <input type="range" id="temperatureDifference" min="0" max="100" value="27">
+                    <span class="value-display" id="tempDiffValue">27 K</span>
+                </div>
+                <div class="control-group">
+                    <label for="heatTransferRate">Heat Transfer Rate:</label>
+                    <input type="range" id="heatTransferRate" min="1" max="10" value="5">
+                    <span class="value-display" id="heatRateValue">5 units/sec</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Key Concepts</h2>
+            <div class="key-point-card" data-tooltip="Heat flows from higher temperature to lower temperature. This is the fundamental law of thermodynamics for heat transfer.">
+                <h3>Direction of Flow</h3>
+                <p class="explanation-text">Heat always moves from hotter regions/objects to colder ones, never the other way around naturally.</p>
+            </div>
+            <div class="key-point-card" data-tooltip="Thermal equilibrium is reached when there is no net flow of heat because both objects are at the same temperature.">
+                <h3>Thermal Equilibrium</h3>
+                <p class="explanation-text">When objects in contact reach the same temperature, they are in thermal equilibrium, and heat flow stops.</p>
+            </div>
+            <div class="key-point-card" data-tooltip="Temperature is a measure of hotness or coldness, related to the average kinetic energy of particles. Heat is the energy transferred due to a temperature difference.">
+                <h3>Heat vs. Temperature</h3>
+                <p class="explanation-text">Temperature tells us about the state of an object; heat is the energy that flows because of temperature differences.</p>
+            </div>
+        </section>
+
+        <div id="tooltip" class="tooltip"></div>
+
+        <footer class="summary-text">
+            Observe how the orange dashed line (representing heat flow) changes its position and the temperature labels update as you adjust the sliders or drag the handle. Notice that heat always flows from the "Hot" object to the "Cold" object.
+        </footer>
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const simCanvas = document.getElementById('simCanvas');
+        const hotObject = document.getElementById('hotObject');
+        const coldObject = document.getElementById('coldObject');
+        const heatTransferGroup = document.getElementById('heatTransferGroup');
+        const heatTransferArrow = document.getElementById('heatTransferArrow');
+        const heatHandle = document.getElementById('heatHandle');
+        const hotTempText = document.getElementById('hotTempText');
+        const coldTempText = document.getElementById('coldTempText');
+        const tempDiffSlider = document.getElementById('temperatureDifference');
+        const tempDiffValueDisplay = document.getElementById('tempDiffValue');
+        const heatRateSlider = document.getElementById('heatTransferRate');
+        const heatRateValueDisplay = document.getElementById('heatRateValue');
+        const tooltipDiv = document.getElementById('tooltip');
+
+        // --- Simulation State Variables ---
+        let initialHotTemp = 300; // Kelvin
+        let initialColdTemp = 273; // Kelvin
+        let currentHotTemp = initialHotTemp;
+        let currentColdTemp = initialColdTemp;
+        let temperatureDifference = initialHotTemp - initialColdTemp;
+        let heatTransferRateFactor = 5; // Units per second
+
+        let isDragging = false;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+
+        // --- Tooltip Handling ---
+        const keyPointCards = document.querySelectorAll('.key-point-card');
+
+        keyPointCards.forEach(card => {
+            card.addEventListener('pointerenter', (e) => {
+                const tooltipText = card.getAttribute('data-tooltip');
+                if (tooltipText) {
+                    tooltipDiv.innerHTML = tooltipText;
+                    tooltipDiv.style.opacity = '1';
+                    // Position tooltip relative to the card
+                    const rect = card.getBoundingClientRect();
+                    tooltipDiv.style.left = `${rect.left + rect.width / 2 - tooltipDiv.offsetWidth / 2}px`;
+                    tooltipDiv.style.top = `${rect.top - tooltipDiv.offsetHeight - 5}px`; // 5px above the card
+                }
+            });
+            card.addEventListener('pointerleave', () => {
+                tooltipDiv.style.opacity = '0';
+            });
+            card.addEventListener('pointermove', (e) => {
+                // Update position if mouse moves while over the card
+                if (tooltipDiv.style.opacity === '1') {
+                    const rect = card.getBoundingClientRect();
+                    tooltipDiv.style.left = `${rect.left + rect.width / 2 - tooltipDiv.offsetWidth / 2}px`;
+                    tooltipDiv.style.top = `${rect.top - tooltipDiv.offsetHeight - 5}px`;
+                }
+            });
+        });
+
+        // --- SVG Update Functions ---
+        function updateSVGVisuals() {
+            // Update temperatures
+            hotTempText.textContent = `${currentHotTemp.toFixed(0)} K`;
+            coldTempText.textContent = `${currentColdTemp.toFixed(0)} K`;
+
+            // Determine heat flow direction and position
+            let flowDirection = currentHotTemp > currentColdTemp ? 1 : -1; // 1 for hot->cold, -1 for cold->hot (though not expected)
+            let handleX = heatHandle.getAttribute('cx');
+            let handleY = heatHandle.getAttribute('cy');
+
+            let newArrowPath = "";
+            if (flowDirection === 1) { // Hot to Cold
+                // Arrow from middle of hot object to middle of cold object
+                let startX = parseFloat(hotObject.getAttribute('x')) + parseFloat(hotObject.getAttribute('width')) / 2;
+                let endX = parseFloat(coldObject.getAttribute('x')) + parseFloat(coldObject.getAttribute('width')) / 2;
+                let centerY = parseFloat(hotObject.getAttribute('y')) + parseFloat(hotObject.getAttribute('height')) / 2;
+
+                // Position handle in the middle of the two objects
+                handleX = startX + (endX - startX) / 2;
+                handleY = centerY;
+
+                // Adjust arrow path to go through the handle
+                newArrowPath = `M ${startX} ${centerY} L ${handleX - 15} ${centerY} L ${handleX} ${centerY} L ${handleX + 15} ${centerY} L ${endX} ${centerY}`;
+
+                heatTransferArrow.setAttribute('marker-end', 'url(#arrowhead)');
+                heatTransferArrow.style.stroke = '#f39c12'; // Orange
+            } else { // Cold to Hot (should not happen with current logic, but for completeness)
+                let startX = parseFloat(coldObject.getAttribute('x')) + parseFloat(coldObject.getAttribute('width')) / 2;
+                let endX = parseFloat(hotObject.getAttribute('x')) + parseFloat(hotObject.getAttribute('width')) / 2;
+                let centerY = parseFloat(coldObject.getAttribute('y')) + parseFloat(coldObject.getAttribute('height')) / 2;
+
+                handleX = startX + (endX - startX) / 2;
+                handleY = centerY;
+
+                newArrowPath = `M ${startX} ${centerY} L ${handleX - 15} ${centerY} L ${handleX} ${centerY} L ${handleX + 15} ${centerY} L ${endX} ${centerY}`;
+
+                heatTransferArrow.setAttribute('marker-end', 'url(#arrowhead-reverse)'); // Need a reverse arrowhead if applicable
+                heatTransferArrow.style.stroke = '#3498db'; // Blue
+            }
+
+            heatTransferArrow.setAttribute('d', newArrowPath);
+            heatHandle.setAttribute('cx', handleX);
+            heatHandle.setAttribute('cy', handleY);
+            heatTransferGroup.style.display = 'block'; // Ensure group is visible
+        }
+
+        // --- Interaction Handlers ---
+
+        // Slider Event Listeners
+        tempDiffSlider.addEventListener('input', (e) => {
+            const diff = parseInt(e.target.value);
+            tempDiffValueDisplay.textContent = `${diff} K`;
+
+            // Distribute difference evenly from initial average temperature
+            const avgTemp = (initialHotTemp + initialColdTemp) / 2;
+            currentHotTemp = avgTemp + diff / 2;
+            currentColdTemp = avgTemp - diff / 2;
+
+            updateSVGVisuals();
+        });
+
+        heatRateSlider.addEventListener('input', (e) => {
+            heatTransferRateFactor = parseInt(e.target.value);
+            heatRateValueDisplay.textContent = `${heatTransferRateFactor} units/sec`;
+            // This slider primarily affects the conceptual "rate" of transfer, not direct visual updates unless we add animation duration
+            // For this simulation, we'll keep it as a display value.
+        });
+
+        // Dragging Logic
+        heatHandle.addEventListener('pointerdown', (e) => {
+            e.preventDefault(); // Prevent default drag behavior
+
+            isDragging = true;
+            const svgRect = simCanvas.getBoundingClientRect();
+            const svgScaleX = simCanvas.viewBox.baseVal.width / svgRect.width;
+            const svgScaleY = simCanvas.viewBox.baseVal.height / svgRect.height;
+
+            const pointerX = e.clientX;
+            const pointerY = e.clientY;
+
+            const svgX = (pointerX - svgRect.left) * svgScaleX;
+            const svgY = (pointerY - svgRect.top) * svgScaleY;
+
+            dragOffsetX = parseFloat(heatHandle.getAttribute('cx')) - svgX;
+            dragOffsetY = parseFloat(heatHandle.getAttribute('cy')) - svgY;
+
+            heatHandle.style.cursor = 'grabbing';
+            document.addEventListener('pointermove', onPointerMove);
+            document.addEventListener('pointerup', onPointerUp);
+        });
+
+        function onPointerMove(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+
+            const svgRect = simCanvas.getBoundingClientRect();
+            const svgScaleX = simCanvas.viewBox.baseVal.width / svgRect.width;
+            const svgScaleY = simCanvas.viewBox.baseVal.height / svgRect.height;
+
+            const pointerX = e.clientX;
+            const pointerY = e.clientY;
+
+            const svgX = (pointerX - svgRect.left) * svgScaleX;
+            const svgY = (pointerY - svgRect.top) * svgScaleY;
+
+            let newHandleX = svgX + dragOffsetX;
+            let newHandleY = svgY + dragOffsetY;
+
+            // Constrain handle within the boundaries of the objects
+            const minX = parseFloat(hotObject.getAttribute('x')) + parseFloat(hotObject.getAttribute('width')) / 2;
+            const maxX = parseFloat(coldObject.getAttribute('x')) + parseFloat(coldObject.getAttribute('width')) / 2;
+            const centerY = parseFloat(hotObject.getAttribute('y')) + parseFloat(hotObject.getAttribute('height')) / 2;
+
+            newHandleX = Math.max(minX, Math.min(maxX, newHandleX));
+            newHandleY = centerY; // Keep it vertically centered between objects
+
+            heatHandle.setAttribute('cx', newHandleX);
+            heatHandle.setAttribute('cy', newHandleY);
+
+            // Update temperatures based on handle position (simplified model)
+            const totalDistance = maxX - minX;
+            const positionRatio = (newHandleX - minX) / totalDistance;
+
+            // Heat flows from hot to cold. As handle moves towards cold, temp difference decreases.
+            // If handle is at minX (near hot object), temp diff is max.
+            // If handle is at maxX (near cold object), temp diff is min.
+            const currentTempDiff = temperatureDifference * (1 - positionRatio); // Position ratio 0 (hot) -> 1 (cold)
+            currentHotTemp = (initialHotTemp + initialColdTemp) / 2 + currentTempDiff / 2;
+            currentColdTemp = (initialHotTemp + initialColdTemp) / 2 - currentTempDiff / 2;
+
+            // Ensure temperatures don't go below absolute zero or above a reasonable max if desired
+            currentHotTemp = Math.max(273.15, currentHotTemp);
+            currentColdTemp = Math.max(273.15, currentColdTemp);
+
+            updateSVGVisuals();
+        }
+
+        function onPointerUp() {
+            isDragging = false;
+            heatHandle.style.cursor = 'grab';
+            document.removeEventListener('pointermove', onPointerMove);
+            document.removeEventListener('pointerup', onPointerUp);
+        }
+
+        // Initial Setup
+        function initializeSimulation() {
+            // Set initial slider values and update displays
+            temperatureDifference = initialHotTemp - initialColdTemp;
+            tempDiffSlider.value = temperatureDifference;
+            tempDiffValueDisplay.textContent = `${temperatureDifference} K`;
+            heatRateSlider.value = heatTransferRateFactor;
+            heatRateValueDisplay.textContent = `${heatTransferRateFactor} units/sec`;
+
+            // Set initial SVG state
+            currentHotTemp = initialHotTemp;
+            currentColdTemp = initialColdTemp;
+            updateSVGVisuals();
+        }
+
+        initializeSimulation();
+    </script>
 </body>
 </html>

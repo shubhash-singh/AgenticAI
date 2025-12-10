@@ -8,6 +8,9 @@ from dotenv import load_dotenv
 
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_groq import ChatGroq
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.messages import BaseMessage
+
 
 
 load_dotenv()
@@ -21,105 +24,230 @@ def load_spec(path: str) -> Dict[str, Any]:
 
 
 
-def safe_json_parse(text: str) -> Dict[str, Any]:
-    stripped = text.strip()
+def safe_json_parse(raw: Any) -> Dict[str, Any]:
+    """
+    Try to parse a JSON object from an LLM response.
 
-    # strip ```json fences if present
-    if stripped.startswith("```"):
-        stripped = stripped.strip("`")
-        if stripped.startswith("json"):
-            stripped = stripped[4:].lstrip()
+    - Accepts BaseMessage, str, or list[...].
+    - Strips ``` / ```json fences.
+    - Tries to extract the first {...} block via regex.
+    - Raises a helpful error if parsing fails.
+    """
+    # 1) Normalize into a string
+    if isinstance(raw, BaseMessage):
+        content = raw.content
+    else:
+        content = raw
 
-    # try to extract the first {...} block
-    match = re.search(r"\{.*\}", stripped, re.DOTALL)
-    if match:
-        return json.loads(match.group(0))
+    # Some providers return list of parts
+    if isinstance(content, list):
+        parts = []
+        for p in content:
+            if isinstance(p, dict) and "text" in p:
+                parts.append(p["text"])
+            else:
+                parts.append(str(p))
+        content = "".join(parts)
 
-    return json.loads(stripped)
+    # Force string
+    text = str(content).strip()
+
+    if not text:
+        raise ValueError("safe_json_parse: LLM returned empty content; cannot parse JSON.")
+
+    # 2) Strip ``` fences if present
+    if text.startswith("```"):
+        # Remove leading/trailing backticks
+        text = text.strip("`").strip()
+        # Remove leading "json" if present, like: ```json\n{...}
+        if text.lower().startswith("json"):
+            text = text[4:].lstrip()
+
+    # 3) Try to extract first {...} block with regex
+    match = re.search(r"\{[\s\S]*\}", text)
+    if not match:
+        snippet = text[:300].replace("\n", "\\n")
+        raise ValueError(
+            "safe_json_parse: Could not find a JSON object in LLM output. "
+            f"First 300 chars: {snippet}"
+        )
+
+    json_str = match.group(0)
+
+    # 4) Actual JSON parse
+    try:
+        return json.loads(json_str)
+    except json.JSONDecodeError as e:
+        snippet = json_str[:300].replace("\n", "\\n")
+        raise ValueError(
+            f"safe_json_parse: JSON decode failed. Error: {e}; "
+            f"JSON snippet: {snippet}"
+        ) from e
+
 
 
 
 # ------------ Step 1: Creation chain ------------
 
 def build_creation_chain():
-    llm = ChatGroq(
-        model="llama-3.3-70b-versatile",          # strong for code + long-form gen
-        temperature=0.7,
-        api_key=os.getenv("GROQ_API_KEY_GENERATE_SIMULATION"),
-    )
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash-lite",          # strong for long, structured code & HTML
+        temperature=0.2,                 # lower for more consistent structure
+        api_key=os.getenv("GOOGLE_API_KEY")
+)
+
 
     prompt = ChatPromptTemplate.from_template(
         """
-You are an expert educational content designer and front-end developer
-who specializes in **highly visual, interactive simulations for MOBILE devices**.
+You are an expert educational simulation designer and front-end developer.
+You build rich, highly visual, interactive **mobile-first** simulations to help students
+learn concepts by **seeing** and **manipulating** them.
 
 You will receive a JSON object that describes a science/engineering concept.
-Your task is to create a SINGLE, SELF-CONTAINED HTML FILE that works well on MOBILE screens.
+Your task is to create a SINGLE, SELF-CONTAINED HTML FILE that works beautifully on phones.
 
-CORE GOAL:
-- Make the simulation **visually rich**, **colorful**, and **fun**, while still being clear.
-- Give the learner **control** over the simulation: they should be able to change states,
-  parameters, or modes and instantly see the effect.
+====================================================
+HIGH-LEVEL GOAL
+====================================================
+Create a **visually-focused interactive simulation**:
+- A central SVG-based visual that clearly represents the concept.
+- Students can:
+  - Drag objects directly on the visual, and
+  - Adjust parameters via sliders / controls.
+- Visuals must **change continuously** as the user interacts
+  (shape positions, angles, colors, lengths, labels, etc).
 
-MOBILE-FIRST / LAYOUT:
-- Design **mobile-first**:
-  - Single-column layout on small screens.
-  - Use fluid widths (percentages, max-width) and avoid large fixed widths.
+This should feel like a tiny interactive lab, not just a static explanation.
+
+====================================================
+LAYOUT & MOBILE REQUIREMENTS
+====================================================
+- MOBILE-FIRST:
+  - Single-column layout.
   - No horizontal scrolling on typical phones.
-- Use simple, semantic HTML5.
-- Use **inline <style>** for CSS (no external files).
-- Use **minimal, vanilla JavaScript** inside a <script> tag (no external libraries).
-- Do NOT include any external CDN links (no Tailwind, Bootstrap, etc).
+  - Use fluid widths: percentages and max-width; avoid large fixed widths.
+- Main structure (suggested):
+  - A centered container with `max-width` around 480–600px and `margin: 0 auto;`.
+  - Sections stacked vertically: header → visual → controls → explanation.
 
-VISUAL STYLE:
-- Make it **colorful and engaging**:
-  - Use a consistent color palette with good contrast for readability.
-  - Use CSS shapes, gradients, simple animations, or inline SVG to emphasize the concept.
-  - Use visual cues (icons, color changes, highlights) to show changes in the simulation.
-- Ensure colors are not overwhelming: background should not make text hard to read.
+- HTML:
+  - Use clean, semantic HTML5.
+- CSS:
+  - Use **inline <style>** only.
+- JS:
+  - Use **vanilla JavaScript** inside a <script> tag.
+  - No external libraries, no CDNs.
 
-INTERACTIVITY & USER CONTROL:
-- The JSON field "interaction_type" describes how the user interacts:
-  - "hover-to-explain": on tap/hover, reveal explanations about parts of the visual or key points.
-  - "step-by-step": show steps with "Next" / "Previous" buttons.
-  - "quiz-like": include a tiny quiz (2–3 questions) with immediate feedback.
-- In addition to the above, focus on **user-controlled simulation behavior**:
-  - Create a small **control panel** with 2–4 controls such as:
-    - sliders (e.g., speed, size, intensity, time),
-    - toggle switches / checkboxes (e.g., enable/disable an effect),
-    - buttons to switch between different **modes** or **scenarios**.
-  - When the user interacts with these controls, update the central visual and/or explanatory text.
-- JavaScript should be simple:
-  - listening for change/click events,
-  - toggling CSS classes,
-  - updating text or styles,
-  - simulating different “states” of the concept.
+====================================================
+VISUAL SIMULATION (CORE CANVAS)
+====================================================
+- Use an **inline <svg>** as the main "canvas" for the simulation.
+  - Example: `<svg id="simCanvas" viewBox="0 0 500 350" style="width: 100%; height: auto;"></svg>`
+- The SVG must contain multiple elements related to the concept from "visual_focus",
+  such as:
+  - Points, lines, vectors, shapes, paths, arrows, fields, etc.
+- The SVG elements must:
+  - Update position/shape/colour when sliders change.
+  - Update position/shape when the user drags certain handles.
 
-PAGE STRUCTURE (SUGGESTED):
-- <header>:
-  - Title from JSON.
-  - Short subtitle/tagline based on the concept.
-- Intro section:
-  - 1–2 short paragraphs explaining the concept in **simple language**.
-- Visual Simulation section:
-  - A central visual ("simulation area") strongly tied to "visual_focus" from JSON.
-  - Use CSS/HTML/SVG to represent the concept (e.g., moving shapes, changing colors, simple diagrams).
-- Control Panel:
-  - Group of user controls (sliders, buttons, toggles, dropdowns).
-  - Labels that clearly explain what each control changes in the simulation.
-- Key Points section:
-  - For each entry in "key_points", show it as:
-    - a collapsible item, or
-    - a clickable point that highlights part of the visual, or
-    - a card that reacts (e.g., glow, expand) when tapped.
-- Summary / Conclusion:
-  - Short recap of the concept.
-  - Encourage the learner to play with the controls again to reinforce understanding.
+- Make the visual:
+  - Colorful but readable (good contrast).
+  - Clearly annotated (labels near important objects).
+  - Smoothly updating when interactions happen.
 
-TECHNICAL REQUIREMENTS:
+====================================================
+MANDATORY INTERACTIONS
+====================================================
+
+1) DRAGGING (DIRECT MANIPULATION)
+---------------------------------
+- At least **one draggable handle** (e.g., a circle/point) that the user can drag
+  on the SVG to change the simulation state.
+- Requirements:
+  - Handle both mouse and touch events (for real mobile use):
+    - Pointer events recommended (pointerdown / pointermove / pointerup),
+      or fallback to handling both mouse and touch.
+  - As the handle is dragged:
+    - Update the relevant geometry in the SVG (lines, angles, shapes, etc),
+    - Update any numeric output or labels.
+
+2) SLIDERS / CONTROL PANEL
+--------------------------
+- At least **two sliders** (`<input type="range">`) for key parameters
+  (e.g., angle, speed, length, intensity, mass).
+- Place them in a “Controls” section under the visual.
+- Each slider must:
+  - Have a label with the parameter name and current value.
+  - Directly change the SVG visual (not just a text description).
+  - Update any numeric summaries / formulas displayed.
+
+3) INTERACTION TYPE FROM JSON
+-----------------------------
+- Use the JSON field "interaction_type" to add an extra layer:
+  - "hover-to-explain":
+    - On tap/hover on certain SVG elements or key point cards, show short explanations.
+  - "step-by-step":
+    - Provide "Next"/"Previous" buttons that guide through states or hints.
+  - "quiz-like":
+    - Provide 2–3 quick questions with instant feedback (correct/incorrect)
+      related to the visual state.
+
+====================================================
+CONTENT & SECTIONS (SUGGESTED)
+====================================================
+
+1. <header>
+   - Use "title" from JSON in an <h1>.
+   - A one-line subtitle summarizing the concept in friendly language.
+
+2. Intro section
+   - 1–2 short paragraphs based on "concept" explaining the idea simply.
+
+3. VISUAL SIMULATION SECTION
+   - A card with:
+     - The responsive <svg> canvas.
+     - Optional small legend or labels.
+
+4. CONTROLS SECTION
+   - A card titled "Controls".
+   - At least two sliders with labels and live value display.
+   - Whenever a control changes:
+     - Update SVG geometry (positions, rotations, lengths, etc).
+     - Update any computed text (e.g., area, angle, derived quantity).
+
+5. KEY POINTS / EXPLANATION SECTION
+   - For each "key_points" entry in the JSON:
+     - Create a small card or collapsible item.
+     - Optional: tapping a key point highlights a related part of the SVG
+       (e.g., change color or add a glow around a shape).
+
+6. OPTIONAL QUIZ / STEP-BY-STEP (BASED ON interaction_type)
+   - Implement a tiny quiz or guided steps that refer directly to the current visual.
+
+7. SUMMARY SECTION
+   - 2–4 lines summarizing what the learner should notice
+     when they move sliders and drag the handle(s).
+
+====================================================
+STYLE & AESTHETICS
+====================================================
+- Background: light, soft color.
+- Cards: white background, rounded corners, light shadow.
+- Text: clear, high contrast, readable on mobile.
+- Use a small, consistent color palette for SVG elements and highlights.
+- Use CSS transitions for subtle smoothness where appropriate.
+
+====================================================
+TECHNICAL RULES
+====================================================
 - The output MUST be valid HTML, starting with <!DOCTYPE html> and a <html> tag.
-- Use only HTML, CSS (inside <style>), and vanilla JS (inside <script>).
-- Do NOT include any explanation outside of the HTML (no Markdown, no commentary).
+- Use only:
+  - HTML,
+  - CSS in a single <style> tag,
+  - vanilla JS in a single <script> tag.
+- Do NOT include:
+  - External CSS/JS,
+  - Any Markdown or explanations outside the HTML.
 - Do NOT echo the JSON back to the user.
 
 Here is the JSON spec (do not repeat it, only use it):
@@ -256,6 +384,9 @@ def generate_simulation_with_checks(
 
         # Step 2: bugfix phase
         bugfix_response = bugfix_chain.invoke({"html": html})
+        # Debug: inspect raw content from LLM (remove later if noisy)
+        # print("RAW BUGFIX RESPONSE:", repr(bugfix_response.content))
+
         bugfix_data = safe_json_parse(bugfix_response.content)
 
         has_bug = bugfix_data.get("has_bug", False)
@@ -268,6 +399,9 @@ def generate_simulation_with_checks(
         # Step 3: review phase
         print("▶ Reviewing simulation...")
         review_response = review_chain.invoke({"html": html})
+        # Debug: inspect raw review content (optional)
+        print("RAW REVIEW RESPONSE:", repr(review_response.content))
+
         review_data = safe_json_parse(review_response.content)
 
         approved = review_data.get("approved", False)
