@@ -50,44 +50,79 @@ def build_creation_chain():
 
     prompt = ChatPromptTemplate.from_template(
         """
-You are an expert educational content designer and front-end developer.
+You are an expert educational content designer and front-end developer
+who specializes in **highly visual, interactive simulations for MOBILE devices**.
 
 You will receive a JSON object that describes a science/engineering concept.
 Your task is to create a SINGLE, SELF-CONTAINED HTML FILE that works well on MOBILE screens.
 
-REQUIREMENTS:
-- MOBILE-FIRST, RESPONSIVE DESIGN:
-  - Use a single-column layout on small screens.
-  - Use fluid widths (e.g., max-width, percentages) and avoid fixed large widths.
-  - Ensure no horizontal scrolling on typical phones.
+CORE GOAL:
+- Make the simulation **visually rich**, **colorful**, and **fun**, while still being clear.
+- Give the learner **control** over the simulation: they should be able to change states,
+  parameters, or modes and instantly see the effect.
+
+MOBILE-FIRST / LAYOUT:
+- Design **mobile-first**:
+  - Single-column layout on small screens.
+  - Use fluid widths (percentages, max-width) and avoid large fixed widths.
+  - No horizontal scrolling on typical phones.
 - Use simple, semantic HTML5.
-- Use inline <style> for CSS (no external files).
-- Use minimal, vanilla JavaScript inside a <script> tag (only if really needed).
-- Do NOT include external CDN links (no Tailwind, Bootstrap, etc).
-- The tone should be friendly and clear for students.
+- Use **inline <style>** for CSS (no external files).
+- Use **minimal, vanilla JavaScript** inside a <script> tag (no external libraries).
+- Do NOT include any external CDN links (no Tailwind, Bootstrap, etc).
 
-INTERACTIVITY:
-- The "interaction_type" key in the JSON describes how the user interacts:
+VISUAL STYLE:
+- Make it **colorful and engaging**:
+  - Use a consistent color palette with good contrast for readability.
+  - Use CSS shapes, gradients, simple animations, or inline SVG to emphasize the concept.
+  - Use visual cues (icons, color changes, highlights) to show changes in the simulation.
+- Ensure colors are not overwhelming: background should not make text hard to read.
+
+INTERACTIVITY & USER CONTROL:
+- The JSON field "interaction_type" describes how the user interacts:
   - "hover-to-explain": on tap/hover, reveal explanations about parts of the visual or key points.
-  - "step-by-step": show steps with a "Next" / "Previous" button.
+  - "step-by-step": show steps with "Next" / "Previous" buttons.
   - "quiz-like": include a tiny quiz (2–3 questions) with immediate feedback.
-- Keep JavaScript simple: toggling visibility, adding/removing CSS classes, updating text.
+- In addition to the above, focus on **user-controlled simulation behavior**:
+  - Create a small **control panel** with 2–4 controls such as:
+    - sliders (e.g., speed, size, intensity, time),
+    - toggle switches / checkboxes (e.g., enable/disable an effect),
+    - buttons to switch between different **modes** or **scenarios**.
+  - When the user interacts with these controls, update the central visual and/or explanatory text.
+- JavaScript should be simple:
+  - listening for change/click events,
+  - toggling CSS classes,
+  - updating text or styles,
+  - simulating different “states” of the concept.
 
-PAGE STRUCTURE:
-- <header> with the title from JSON.
-- A short introductory paragraph based on "concept" (simplified if needed).
-- A central "visual simulation" section:
-  - Use CSS shapes/animations or simple inline SVG to suggest the idea from "visual_focus".
-  - Make some part interactive (click, tap, or hover).
-- A section that highlights each "key_points" entry with some interactive behavior.
-- A short summary/conclusion at the bottom.
+PAGE STRUCTURE (SUGGESTED):
+- <header>:
+  - Title from JSON.
+  - Short subtitle/tagline based on the concept.
+- Intro section:
+  - 1–2 short paragraphs explaining the concept in **simple language**.
+- Visual Simulation section:
+  - A central visual ("simulation area") strongly tied to "visual_focus" from JSON.
+  - Use CSS/HTML/SVG to represent the concept (e.g., moving shapes, changing colors, simple diagrams).
+- Control Panel:
+  - Group of user controls (sliders, buttons, toggles, dropdowns).
+  - Labels that clearly explain what each control changes in the simulation.
+- Key Points section:
+  - For each entry in "key_points", show it as:
+    - a collapsible item, or
+    - a clickable point that highlights part of the visual, or
+    - a card that reacts (e.g., glow, expand) when tapped.
+- Summary / Conclusion:
+  - Short recap of the concept.
+  - Encourage the learner to play with the controls again to reinforce understanding.
 
-IMPORTANT:
+TECHNICAL REQUIREMENTS:
 - The output MUST be valid HTML, starting with <!DOCTYPE html> and a <html> tag.
+- Use only HTML, CSS (inside <style>), and vanilla JS (inside <script>).
 - Do NOT include any explanation outside of the HTML (no Markdown, no commentary).
 - Do NOT echo the JSON back to the user.
 
-Here is the JSON spec:
+Here is the JSON spec (do not repeat it, only use it):
 
 {spec_json}
 
@@ -96,7 +131,6 @@ Generate the full HTML page now.
     )
 
     return prompt | llm
-
 
 # ------------ Step 2: Bug-fix chain ------------
 
