@@ -2,665 +2,770 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heat Flow Simulation</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f7f6;
-            color: #333;
-            line-height: 1.6;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flow of Heat Simulator</title>
+  <style>
+    :root {
+      --bg: #f7fafc;
+      --card: #ffffff;
+      --accent: #3b82f6;
+      --accent-light: #93c5fd;
+      --text-primary: #1f2937;
+      --text-secondary: #6b7280;
+      --success: #10b981;
+      --error: #ef4444;
+      --running: #f59e0b;
+      --hot: #ef4444;
+      --cold: #3b82f6;
+      --neutral: #6b7280;
+      --flow-indicator: #f59e0b;
+      --particle-color: #f59e0b;
+      --text-light: #ffffff;
+    }
 
-        .container {
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            box-sizing: border-box;
-        }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        header {
-            background-color: #007bff;
-            color: white;
-            padding: 15px 20px;
-            text-align: center;
-            width: 100%;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      padding: 1rem;
+      line-height: 1.6;
+    }
 
-        header h1 {
-            margin: 0;
-            font-size: 2em;
-            letter-spacing: 1px;
-        }
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+    }
 
-        .visual-section {
-            background-color: #ffffff;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 350px; /* Ensure enough space for SVG */
-            position: relative;
-        }
+    header {
+      text-align: center;
+      padding: 1.5rem;
+      background: var(--card);
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
 
-        svg {
-            width: 100%;
-            height: auto;
-            display: block;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
+    h1 {
+      font-size: 1.8rem;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
 
-        .controls-section,
-        .explanation-section,
-        .quiz-section {
-            background-color: #ffffff;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
+    .card {
+      background: var(--card);
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      margin-bottom: 1rem;
+    }
 
-        h2 {
-            color: #007bff;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 8px;
-            margin-top: 0;
-        }
+    /* SVG Canvas */
+    #simCanvas {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      background: #fdfdfd;
+      border: 1px solid #e5e7eb;
+    }
 
-        .slider-container,
-        .object-controls {
-            margin-bottom: 15px;
-        }
+    /* Button Styles */
+    .button-group {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #555;
-        }
+    .btn {
+      flex: 1;
+      min-height: 44px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
 
-        input[type="range"] {
-            width: 100%;
-            cursor: pointer;
-        }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
 
-        .value-display {
-            font-weight: bold;
-            color: #28a745;
-            margin-left: 10px;
-        }
+    .btn-primary:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+    }
 
-        .object {
-            cursor: grab;
-            transition: opacity 0.3s ease-in-out;
-        }
+    .btn-primary:disabled {
+      background: var(--running);
+      cursor: not-allowed;
+    }
 
-        .object:active {
-            cursor: grabbing;
-        }
+    .btn-secondary {
+      background: #e5e7eb;
+      color: var(--text-primary);
+    }
 
-        .hotter-object {
-            fill: #ff6347; /* Tomato Red */
-        }
+    .btn-secondary:hover {
+      background: #d1d5db;
+    }
 
-        .colder-object {
-            fill: #4682b4; /* Steel Blue */
-        }
+    /* Slider Controls */
+    .control-group {
+      margin-bottom: 1rem;
+    }
 
-        .temperature-label {
-            font-size: 0.8em;
-            fill: white;
-            text-anchor: middle;
-            dominant-baseline: middle;
-            pointer-events: none;
-        }
+    .control-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
 
-        .heat-flow-arrow {
-            stroke: #fd7e14; /* Coral */
-            stroke-width: 2;
-            fill: none;
-            animation: flow 1s linear infinite;
-        }
+    .control-label {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
 
-        .heat-flow-arrow line {
-            stroke: #fd7e14;
-            stroke-width: 3;
-            marker-end: url(#arrowhead);
-        }
+    .control-value {
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-light);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
 
-        .equilibrium-text {
-            font-size: 1.5em;
-            font-weight: bold;
-            fill: #28a745;
-            text-anchor: middle;
-            dominant-baseline: middle;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-        }
+    input[type="range"] {
+      width: 100%;
+      height: 8px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: #d1d5db;
+      border-radius: 4px;
+      cursor: pointer;
+    }
 
-        .info-icon {
-            cursor: pointer;
-            font-weight: bold;
-            border-radius: 50%;
-            background-color: #17a2b8;
-            color: white;
-            width: 20px;
-            height: 20px;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            margin-left: 5px;
-            font-size: 0.8em;
-            vertical-align: middle;
-            transition: background-color 0.3s ease;
-        }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      background: var(--accent);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
 
-        .info-icon:hover {
-            background-color: #138496;
-        }
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      background: var(--accent);
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+    }
 
-        .explanation-box {
-            background-color: #e9ecef;
-            border-left: 4px solid #17a2b8;
-            padding: 10px;
-            margin-top: 10px;
-            font-size: 0.9em;
-            display: none;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-        }
+    /* Status Display */
+    .status {
+      text-align: center;
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
 
-        .step-controls {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 15px;
-        }
+    .status.ready { background: #e0f2fe; color: #0369a1; }
+    .status.running { background: #fef3c7; color: #92400e; }
+    .status.complete { background: #d1fae5; color: #065f46; }
 
-        .step-controls button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
 
-        .step-controls button:hover {
-            background-color: #0056b3;
-        }
+    .stat-card {
+      padding: 0.75rem;
+      background: #f9fafb;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+    }
 
-        .quiz-question {
-            margin-bottom: 15px;
-            border-bottom: 1px dashed #ccc;
-            padding-bottom: 15px;
-        }
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.25rem;
+    }
 
-        .quiz-question:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
+    .stat-value {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
 
-        .quiz-question p {
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-
-        .options label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: normal;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
-        }
-
-        .options label:hover {
-            background-color: #e9ecef;
-        }
-
-        .options input[type="radio"] {
-            margin-right: 10px;
-        }
-
-        .feedback {
-            margin-top: 5px;
-            font-weight: bold;
-            font-size: 0.9em;
-        }
-
-        .feedback.correct {
-            color: #28a745;
-        }
-
-        .feedback.incorrect {
-            color: #dc3545;
-        }
-
-        /* Animations */
-        @keyframes flow {
-            0% { opacity: 0; }
-            50% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-
-        /* Media Queries for Responsiveness */
-        @media (max-width: 600px) {
-            .container {
-                padding: 15px;
-            }
-            header h1 {
-                font-size: 1.7em;
-            }
-            .visual-section {
-                min-height: 250px;
-            }
-            .temperature-label {
-                font-size: 0.7em;
-            }
-            .equilibrium-text {
-                font-size: 1.2em;
-            }
-        }
-    </style>
+    /* SVG specific styles */
+    .object {
+      transition: fill 0.2s ease-out;
+    }
+    .particle {
+      transition: fill 0.1s ease-out;
+    }
+    .flow-arrow {
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+    .pulsing-arrow {
+      animation: pulse 1.5s infinite ease-in-out alternate;
+    }
+    @keyframes pulse {
+      from { opacity: 0.7; transform: scale(1); }
+      to { opacity: 1; transform: scale(1.1); }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>The Flow of Heat</h1>
-        </header>
 
-        <section class="visual-section">
-            <svg id="simCanvas" viewBox="0 0 500 350">
-                <defs>
-                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
-                        <polygon points="0 0, 10 3.5, 0 7" fill="#fd7e14"/>
-                    </marker>
-                </defs>
+<div class="container">
+  <header>
+    <h1>Flow of Heat</h1>
+    <p>Heat energy always moves from hotter objects/regions to colder objects/regions, driven by temperature differences, until thermal equilibrium is reached.</p>
+  </header>
 
-                <!-- Background -->
-                <rect width="100%" height="100%" fill="#e0f7fa"/>
+  <!-- Visualization Card -->
+  <div class="card">
+    <h2>Visual Simulation</h2>
+    <svg id="simCanvas" viewBox="0 0 500 350">
+      <!-- Background -->
+      <rect width="100%" height="100%" fill="#e5e7eb" rx="8"/>
 
-                <!-- Heat Flow Arrows (initially hidden) -->
-                <g id="heatFlowGroup">
-                    <line class="heat-flow-arrow" x1="250" y1="175" x2="300" y2="175"></line>
-                    <line class="heat-flow-arrow" x1="250" y1="185" x2="300" y2="185"></line>
-                    <line class="heat-flow-arrow" x1="250" y1="195" x2="300" y2="195"></line>
-                </g>
+      <!-- Left Object (Hotter) -->
+      <rect id="objectLeft" x="100" y="150" width="100" height="50" rx="5" class="object" fill="var(--hot)"></rect>
+      <text x="100" y="140" font-size="10" fill="var(--text-light)" text-anchor="start">Hot Object</text>
+      <text id="tempLeftDisplay" x="100" y="195" font-size="12" fill="var(--text-light)" text-anchor="start">Temp: 80°C</text>
 
-                <!-- Objects -->
-                <circle id="colderObject" class="object colder-object" cx="150" cy="175" r="50" />
-                <circle id="hotterObject" class="object hotter-object" cx="350" cy="175" r="50" />
+      <!-- Right Object (Colder) -->
+      <rect id="objectRight" x="300" y="150" width="100" height="50" rx="5" class="object" fill="var(--cold)"></rect>
+      <text x="300" y="140" font-size="10" fill="var(--text-light)" text-anchor="start">Cold Object</text>
+      <text id="tempRightDisplay" x="300" y="195" font-size="12" fill="var(--text-light)" text-anchor="start">Temp: 20°C</text>
 
-                <!-- Temperature Labels -->
-                <text id="colderTempText" class="temperature-label" x="150" y="175">--°C</text>
-                <text id="hotterTempText" class="temperature-label" x="350" y="175">--°C</text>
+      <!-- Flow Arrow -->
+      <path id="flowArrow" class="flow-arrow" 
+            d="M 250 175 L 260 165 L 250 155 L 255 175 L 250 195 Z" 
+            fill="var(--flow-indicator)">
+      </path>
 
-                <!-- Equilibrium Indicator -->
-                <text id="equilibriumIndicator" class="equilibrium-text" x="250" y="50">Equilibrium Reached!</text>
-            </svg>
-        </section>
+      <!-- Particles will be dynamically added here -->
+    </svg>
+  </div>
 
-        <section class="controls-section">
-            <h2>Controls</h2>
+  <!-- Controls Card -->
+  <div class="card">
+    <h2>Controls</h2>
+    
+    <div class="status ready" id="statusDisplay">Ready to Start</div>
 
-            <div class="object-controls">
-                <label>Drag Objects to Adjust Proximity:</label>
-                <p>Objects are interactive! Click and drag them.</p>
-            </div>
-
-            <div class="slider-container">
-                <label for="tempDiffSlider">Initial Temperature Difference:</label>
-                <input type="range" id="tempDiffSlider" min="10" max="100" value="40">
-                <span id="tempDiffValue" class="value-display">40°C</span>
-            </div>
-
-            <div class="slider-container">
-                <label for="heatRateSlider">Heat Transfer Rate:</label>
-                <input type="range" id="heatRateSlider" min="0.1" max="2.0" step="0.1" value="1.0">
-                <span id="heatRateValue" class="value-display">1.0</span>
-            </div>
-        </section>
-
-        <section class="explanation-section">
-            <h2>Understanding Heat Flow</h2>
-            <div class="step-controls">
-                <button id="prevStepBtn">Previous</button>
-                <button id="nextStepBtn">Next</button>
-            </div>
-            <div id="explanationContent">
-                <p>Welcome to the Heat Flow Simulation! This simulation helps you visualize how heat energy moves between objects.</p>
-                <p>Click the info icons (<span class="info-icon">?</span>) for more details on specific concepts.</p>
-            </div>
-            <div id="explanationDetail1" class="explanation-box">
-                <p><strong>Hot and Cold Objects:</strong> We perceive objects as "hot" or "cold" based on how heat energy transfers to or from our skin. This feeling is directly related to their temperatures.</p>
-            </div>
-            <div id="explanationDetail2" class="explanation-box">
-                <p><strong>Temperature:</strong> Temperature is a quantitative measure of "hotness" or "coldness." It represents the average kinetic energy of the particles within an object. We use thermometers to measure it.</p>
-            </div>
-            <div id="explanationDetail3" class="explanation-box">
-                <p><strong>Heat Transfer:</strong> Heat is energy in transit. It naturally moves from regions of higher temperature to regions of lower temperature. This movement is called the "flow of heat."</p>
-            </div>
-            <div id="explanationDetail4" class="explanation-box">
-                <p><strong>Working Principle:</strong> Heat flows from a region of **higher temperature** to a region of **lower temperature**. This process continues until both objects reach the same temperature, a state known as <strong>thermal equilibrium</strong>.</p>
-            </div>
-        </section>
-
-        <section class="quiz-section">
-            <h2>Quiz Time!</h2>
-            <div class="quiz-question">
-                <p>Q: Heat always flows from:</p>
-                <div class="options">
-                    <label><input type="radio" name="q1" value="a"> A hotter object to a colder object.</label>
-                    <label><input type="radio" name="q1" value="b"> A colder object to a hotter object.</label>
-                    <label><input type="radio" name="q1" value="c"> It does not flow; it stays in place.</label>
-                </div>
-                <div class="feedback q1-feedback"></div>
-            </div>
-
-            <div class="quiz-question">
-                <p>Q: What does the "Thermal Equilibrium" state represent in this simulation?</p>
-                <div class="options">
-                    <label><input type="radio" name="q2" value="a"> The point where the objects start to cool down.</label>
-                    <label><input type="radio" name="q2" value="b"> The point where both objects have reached the same temperature.</label>
-                    <label><input type="radio" name="q2" value="c"> The point where heat transfer stops completely, regardless of temperature.</label>
-                </div>
-                <div class="feedback q2-feedback"></div>
-            </div>
-        </section>
+    <div class="button-group">
+      <button id="startBtn" class="btn btn-primary">▶ Start Animation</button>
+      <button id="resetBtn" class="btn btn-secondary">↺ Reset</button>
     </div>
 
-    <script>
-        let hotterObject, colderObject, tempDiffSlider, heatRateSlider,
-            hotterTempText, colderTempText, equilibriumIndicator,
-            heatFlowGroup, tempDiffValue, heatRateValue;
+    <div class="control-group">
+      <div class="control-header">
+        <span class="control-label">Temperature Difference (°C)</span>
+        <span class="control-value" id="slider1Val">60°C</span>
+      </div>
+      <input type="range" id="slider1" min="0" max="100" value="60" step="1">
+    </div>
 
-        // Simulation State Variables
-        let hotterTemp = 0;
-        let colderTemp = 0;
-        let initialTempDiff = 40;
-        let heatTransferRate = 1.0;
-        let thermalEquilibrium = false;
+    <div class="control-group">
+      <div class="control-header">
+        <span class="control-label">Object Mass/Capacity</span>
+        <span class="control-value" id="slider2Val">1.0x</span>
+      </div>
+      <input type="range" id="slider2" min="0.5" max="2.0" value="1.0" step="0.1">
+    </div>
 
-        // Dragging variables
-        let activeObject = null;
-        let offsetX, offsetY;
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Heat Flow Rate</div>
+        <div class="stat-value" id="stat1">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Equilibrium Time</div>
+        <div class="stat-value" id="stat2">N/A</div>
+      </div>
+    </div>
+  </div>
 
-        // Step-by-step explanation variables
-        let currentStep = 0;
-        const totalSteps = 4;
-        let explanationDetails;
+  <!-- Educational Content -->
+  <div class="card">
+    <h2>Key Concepts</h2>
+    <p>This simulation demonstrates the fundamental principle of the **flow of heat**. Heat energy naturally moves from regions of higher temperature to regions of lower temperature. This movement continues until both regions reach the same temperature, a state known as **thermal equilibrium**. The simulation visually shows particles representing thermal energy streaming from the hotter object (left) to the colder object (right), causing both objects to gradually change color towards a neutral shade, indicating an equalized temperature. The rate of flow and time to reach equilibrium are influenced by the temperature difference and the heat capacity (mass/size) of the objects.</p>
+  </div>
+</div>
 
-        function initSimulation() {
-            // Get DOM Elements
-            hotterObject = document.getElementById('hotterObject');
-            colderObject = document.getElementById('colderObject');
-            tempDiffSlider = document.getElementById('tempDiffSlider');
-            heatRateSlider = document.getElementById('heatRateSlider');
-            hotterTempText = document.getElementById('hotterTempText');
-            colderTempText = document.getElementById('colderTempText');
-            equilibriumIndicator = document.getElementById('equilibriumIndicator');
-            heatFlowGroup = document.getElementById('heatFlowGroup');
-            tempDiffValue = document.getElementById('tempDiffValue');
-            heatRateValue = document.getElementById('heatRateValue');
+<script>
+  // === CONSTANTS ===
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  const CANVAS_WIDTH = 500;
+  const CANVAS_HEIGHT = 350;
 
-            explanationDetails = [
-                document.getElementById('explanationDetail1'),
-                document.getElementById('explanationDetail2'),
-                document.getElementById('explanationDetail3'),
-                document.getElementById('explanationDetail4')
-            ];
+  // Initial Object Properties
+  const INITIAL_HOT_TEMP = 80;
+  const INITIAL_COLD_TEMP = 20;
+  const MAX_TEMP = 100;
+  const MIN_TEMP = 0;
 
-            // Set up event listeners
-            tempDiffSlider.addEventListener('input', handleSliderChange);
-            heatRateSlider.addEventListener('input', handleSliderChange);
+  // Particle properties
+  const PARTICLE_RADIUS = 2;
+  const BASE_PARTICLE_COUNT_LEFT = 100;
+  const BASE_PARTICLE_COUNT_RIGHT = 50;
+  const HOT_JIGGLE_SPEED = 5;
+  const COLD_JIGGLE_SPEED = 1;
+  const HOT_JIGGLE_RANGE = 3;
+  const COLD_JIGGLE_RANGE = 1;
 
-            hotterObject.addEventListener('mousedown', startDrag);
-            colderObject.addEventListener('mousedown', startDrag);
-            document.addEventListener('mousemove', dragObject);
-            document.addEventListener('mouseup', endDrag);
+  // Animation speeds (frames per second equivalent for these values)
+  const BASE_FLOW_SPEED_PX_PER_FRAME = 0.8;
+  const BASE_TEMP_CHANGE_PER_FRAME = 0.01;
+  const BASE_PARTICLE_ADD_INTERVAL = 100; // ms
+  const BASE_PARTICLE_REMOVE_INTERVAL = 200; // ms
 
-            // Quiz event listeners
-            document.querySelectorAll('input[name="q1"], input[name="q2"]').forEach(radio => {
-                radio.addEventListener('change', handleQuizAnswer);
+  // === STATE MANAGEMENT ===
+  let animationState = {
+    isRunning: false,
+    animationId: null,
+    startTime: 0,
+    currentTempLeft: INITIAL_HOT_TEMP,
+    currentTempRight: INITIAL_COLD_TEMP,
+    particles: [],
+    objects: {},
+    slider1Val: 60, // Temp Difference
+    slider2Val: 1.0, // Mass/Capacity
+    equilibriumReached: false,
+    equilibriumTime: 0,
+    lastParticleAdd: 0,
+    lastParticleRemove: 0
+  };
+
+  // === DOM ELEMENTS ===
+  const startBtn = document.getElementById('startBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const slider1 = document.getElementById('slider1');
+  const slider2 = document.getElementById('slider2');
+  const statusDisplay = document.getElementById('statusDisplay');
+  const simCanvas = document.getElementById('simCanvas');
+  const tempLeftDisplay = document.getElementById('tempLeftDisplay');
+  const tempRightDisplay = document.getElementById('tempRightDisplay');
+  const stat1Display = document.getElementById('stat1'); // Heat Flow Rate
+  const stat2Display = document.getElementById('stat2'); // Equilibrium Time
+  const flowArrow = document.getElementById('flowArrow');
+
+  // === HELPER FUNCTIONS ===
+  function getRandom(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  function interpolateColor(temp) {
+    // Interpolate between HOT (#ef4444), NEUTRAL (#6b7280), COLD (#3b82f6)
+    const hotColor = [239, 68, 68]; // red
+    const neutralColor = [107, 114, 128]; // gray
+    const coldColor = [59, 130, 212]; // blue
+
+    let r, g, b;
+    if (temp >= 50) {
+      // Interpolate from hot to neutral
+      const ratio = (temp - 50) / 50;
+      r = Math.round(hotColor[0] * (1 - ratio) + neutralColor[0] * ratio);
+      g = Math.round(hotColor[1] * (1 - ratio) + neutralColor[1] * ratio);
+      b = Math.round(hotColor[2] * (1 - ratio) + neutralColor[2] * ratio);
+    } else {
+      // Interpolate from neutral to cold
+      const ratio = (50 - temp) / 50;
+      r = Math.round(neutralColor[0] * (1 - ratio) + coldColor[0] * ratio);
+      g = Math.round(neutralColor[1] * (1 - ratio) + coldColor[1] * ratio);
+      b = Math.round(neutralColor[2] * (1 - ratio) + coldColor[2] * ratio);
+    }
+    return `rgb(${r}, ${g}, ${b})`;
+  }
+
+  function updateObjectProperties() {
+    const tempDiff = animationState.slider1Val;
+    const massCapacity = animationState.slider2Val;
+
+    // Adjust initial temperatures based on difference
+    animationState.currentTempLeft = Math.min(MAX_TEMP, 50 + tempDiff / 2);
+    animationState.currentTempRight = Math.max(MIN_TEMP, 50 - tempDiff / 2);
+    
+    const objectWidth = 100 * massCapacity;
+    const objectHeight = 50 * massCapacity;
+    const objectLeftX = 100;
+    const objectRightX = CANVAS_WIDTH - objectWidth - 100;
+    const objectY = (CANVAS_HEIGHT - objectHeight) / 2;
+
+    animationState.objects.left = {
+      x: objectLeftX, y: objectY, width: objectWidth, height: objectHeight,
+      initialTemp: animationState.currentTempLeft,
+      initialParticleCount: Math.round(BASE_PARTICLE_COUNT_LEFT * massCapacity),
+      color: interpolateColor(animationState.currentTempLeft)
+    };
+    animationState.objects.right = {
+      x: objectRightX, y: objectY, width: objectWidth, height: objectHeight,
+      initialTemp: animationState.currentTempRight,
+      initialParticleCount: Math.round(BASE_PARTICLE_COUNT_RIGHT * massCapacity),
+      color: interpolateColor(animationState.currentTempRight)
+    };
+
+    // Update SVG elements
+    const objLeftSvg = document.getElementById('objectLeft');
+    objLeftSvg.setAttribute('x', animationState.objects.left.x);
+    objLeftSvg.setAttribute('y', animationState.objects.left.y);
+    objLeftSvg.setAttribute('width', animationState.objects.left.width);
+    objLeftSvg.setAttribute('height', animationState.objects.left.height);
+    objLeftSvg.setAttribute('fill', animationState.objects.left.color);
+
+    const objRightSvg = document.getElementById('objectRight');
+    objRightSvg.setAttribute('x', animationState.objects.right.x);
+    objRightSvg.setAttribute('y', animationState.objects.right.y);
+    objRightSvg.setAttribute('width', animationState.objects.right.width);
+    objRightSvg.setAttribute('height', animationState.objects.right.height);
+    objRightSvg.setAttribute('fill', animationState.objects.right.color);
+
+    // Update text positions based on object size
+    document.querySelector('#objectLeft text').setAttribute('x', animationState.objects.left.x);
+    document.querySelector('#objectLeft text').setAttribute('y', animationState.objects.left.y - 5);
+    document.getElementById('tempLeftDisplay').setAttribute('x', animationState.objects.left.x);
+    document.getElementById('tempLeftDisplay').setAttribute('y', animationState.objects.left.y + animationState.objects.left.height + 15);
+
+    document.querySelector('#objectRight text').setAttribute('x', animationState.objects.right.x + animationState.objects.right.width);
+    document.querySelector('#objectRight text').setAttribute('y', animationState.objects.right.y - 5);
+    document.getElementById('tempRightDisplay').setAttribute('x', animationState.objects.right.x + animationState.objects.right.width - document.getElementById('tempRightDisplay').getBBox().width); // Adjust for text width
+    document.getElementById('tempRightDisplay').setAttribute('y', animationState.objects.right.y + animationState.objects.right.height + 15);
+  }
+
+  function resetParticles() {
+    animationState.particles = [];
+    // Create initial particles
+    for (let i = 0; i < animationState.objects.left.initialParticleCount; i++) {
+      animationState.particles.push({
+        id: `p_${i}_l`,
+        x: getRandom(animationState.objects.left.x, animationState.objects.left.x + animationState.objects.left.width),
+        y: getRandom(animationState.objects.left.y, animationState.objects.left.y + animationState.objects.left.height),
+        vx: 0, vy: 0,
+        color: 'var(--particle-color)',
+        originalObject: 'left',
+        speed: HOT_JIGGLE_SPEED,
+        range: HOT_JIGGLE_RANGE
+      });
+    }
+    for (let i = 0; i < animationState.objects.right.initialParticleCount; i++) {
+      animationState.particles.push({
+        id: `p_${i}_r`,
+        x: getRandom(animationState.objects.right.x, animationState.objects.right.x + animationState.objects.right.width),
+        y: getRandom(animationState.objects.right.y, animationState.objects.right.y + animationState.objects.right.height),
+        vx: 0, vy: 0,
+        color: 'var(--particle-color)',
+        originalObject: 'right',
+        speed: COLD_JIGGLE_SPEED,
+        range: COLD_JIGGLE_RANGE
+      });
+    }
+    updateParticleElements();
+  }
+
+  function updateParticleElements() {
+    const particleContainer = document.getElementById('particleContainer');
+    if (!particleContainer) {
+      const container = document.createElementNS(SVG_NS, 'g');
+      container.id = 'particleContainer';
+      simCanvas.appendChild(container);
+    }
+    
+    const currentParticleElements = simCanvas.querySelectorAll('.particle-svg');
+    currentParticleElements.forEach(el => el.remove());
+
+    const container = document.getElementById('particleContainer');
+    animationState.particles.forEach(p => {
+      const circle = document.createElementNS(SVG_NS, 'circle');
+      circle.setAttribute('cx', p.x);
+      circle.setAttribute('cy', p.y);
+      circle.setAttribute('r', PARTICLE_RADIUS);
+      circle.setAttribute('fill', p.color);
+      circle.setAttribute('class', 'particle-svg particle');
+      container.appendChild(circle);
+    });
+  }
+
+  function updateSimulation() {
+    updateObjectProperties();
+    if (!animationState.isRunning) { // Only reset particles if not running
+      resetParticles();
+    }
+    updateUI();
+  }
+
+  function updateUI() {
+    const tempLeft = animationState.currentTempLeft;
+    const tempRight = animationState.currentTempRight;
+    const tempDiff = animationState.slider1Val;
+    const massCapacity = animationState.slider2Val;
+
+    tempLeftDisplay.textContent = `Temp: ${tempLeft.toFixed(1)}°C`;
+    tempRightDisplay.textContent = `Temp: ${tempRight.toFixed(1)}°C`;
+    
+    const objLeftSvg = document.getElementById('objectLeft');
+    objLeftSvg.setAttribute('fill', interpolateColor(tempLeft));
+    const objRightSvg = document.getElementById('objectRight');
+    objRightSvg.setAttribute('fill', interpolateColor(tempRight));
+
+    slider1Val.textContent = `${tempDiff}°C`;
+    slider2Val.textContent = `${massCapacity}x`;
+
+    if (animationState.equilibriumReached) {
+      stat2Display.textContent = `${animationState.equilibriumTime.toFixed(1)}s`;
+    } else {
+      stat2Display.textContent = 'N/A';
+    }
+
+    // Calculate and display Heat Flow Rate (simplified metric)
+    const effectiveTempDiff = Math.abs(tempLeft - tempRight);
+    const flowMagnitude = (effectiveTempDiff / 100) * (animationState.objects.left.width / 100); // Simple proxy
+    stat1Display.textContent = `${flowMagnitude.toFixed(2)}`;
+  }
+
+  // === ANIMATION LOGIC ===
+  function startAnimation() {
+    if (animationState.isRunning) return;
+
+    animationState.isRunning = true;
+    animationState.startTime = Date.now();
+    animationState.equilibriumReached = false;
+    animationState.equilibriumTime = 0;
+    animationState.lastParticleAdd = Date.now();
+    animationState.lastParticleRemove = Date.now();
+
+    startBtn.disabled = true;
+    startBtn.textContent = '⏸ Running...';
+    statusDisplay.textContent = 'Animation Running';
+    statusDisplay.className = 'status running';
+    flowArrow.style.opacity = '1';
+    flowArrow.classList.add('pulsing-arrow');
+
+    animate();
+  }
+
+  function animate() {
+    if (!animationState.isRunning) return;
+
+    const currentTime = Date.now();
+    const elapsedTime = currentTime - animationState.startTime;
+
+    // --- Calculate dynamics based on sliders ---
+    const tempDiffSlider = animationState.slider1Val;
+    const massCapacity = animationState.slider2Val;
+
+    // Adjust speeds and rates based on sliders
+    const flowSpeedMultiplier = 1 + (tempDiffSlider / 100) * 1.5; // Faster flow with higher temp diff
+    const tempChangeRateMultiplier = 1 / massCapacity; // Slower temp change with higher capacity
+    const particleAddInterval = BASE_PARTICLE_ADD_INTERVAL * massCapacity;
+    const particleRemoveInterval = BASE_PARTICLE_REMOVE_INTERVAL * massCapacity;
+
+    // --- Update Temperatures ---
+    const currentTempLeft = animationState.currentTempLeft;
+    const currentTempRight = animationState.currentTempRight;
+    const avgTemp = (currentTempLeft + currentTempRight) / 2;
+    const tempDifference = currentTempLeft - currentTempRight;
+
+    const baseTempChange = BASE_TEMP_CHANGE_PER_FRAME * tempChangeRateMultiplier;
+    
+    if (Math.abs(tempDifference) > 1) { // Only change if significant difference
+      animationState.currentTempLeft -= baseTempChange * (tempDifference / 50); // More change for larger diff
+      animationState.currentTempRight += baseTempChange * (tempDifference / 50);
+      
+      // Clamp temperatures
+      animationState.currentTempLeft = Math.max(MIN_TEMP, Math.min(MAX_TEMP, animationState.currentTempLeft));
+      animationState.currentTempRight = Math.max(MIN_TEMP, Math.min(MAX_TEMP, animationState.currentTempRight));
+    }
+
+    // --- Update Particle Positions and Add/Remove ---
+    const objLeft = animationState.objects.left;
+    const objRight = animationState.objects.right;
+
+    // Add new particles
+    if (currentTime - animationState.lastParticleAdd > particleAddInterval) {
+        if (animationState.particles.length < objLeft.initialParticleCount + objRight.initialParticleCount * 0.5) { // Limit total particles slightly for performance
+            animationState.particles.push({
+                id: `p_${Date.now()}_add`,
+                x: getRandom(objLeft.x, objLeft.x + objLeft.width),
+                y: getRandom(objLeft.y, objLeft.y + objLeft.height),
+                vx: 0, vy: 0,
+                color: 'var(--particle-color)',
+                originalObject: 'left',
+                speed: HOT_JIGGLE_SPEED,
+                range: HOT_JIGGLE_RANGE
             });
+            animationState.lastParticleAdd = currentTime;
+        }
+    }
 
-            // Step-by-step controls
-            document.getElementById('nextStepBtn').addEventListener('click', nextStep);
-            document.getElementById('prevStepBtn').addEventListener('click', prevStep);
+    const particlesToRemove = [];
+    animationState.particles.forEach((p, index) => {
+        // --- Jiggle Motion ---
+        const jiggleX = getRandom(-p.range, p.range);
+        const jiggleY = getRandom(-p.range, p.range);
+        p.vx = jiggleX * (p.speed / 10); // Scale jiggle based on speed
+        p.vy = jiggleY * (p.speed / 10);
 
-            // Initial setup
-            updateSimulation();
+        // --- Flow Motion ---
+        const particleTemp = (p.originalObject === 'left') ? animationState.currentTempLeft : animationState.currentTempRight;
+        const targetTemp = (p.originalObject === 'left') ? animationState.currentTempRight : animationState.currentTempLeft;
+        const tempDifferenceForParticle = particleTemp - targetTemp;
+
+        let flowVx = 0;
+        let flowVy = 0;
+
+        if (p.originalObject === 'left' && tempDifferenceForParticle > 1) { // Flow from left to right
+            const flowFactor = Math.max(0, tempDifferenceForParticle / 100); // 0 to 1 based on temp diff
+            flowVx = BASE_FLOW_SPEED_PX_PER_FRAME * flowSpeedMultiplier * flowFactor;
+        } else if (p.originalObject === 'right' && tempDifferenceForParticle < -1) { // Flow from right to left (less common but possible if cold becomes hotter)
+             const flowFactor = Math.max(0, Math.abs(tempDifferenceForParticle) / 100); // 0 to 1 based on temp diff
+            flowVx = -BASE_FLOW_SPEED_PX_PER_FRAME * flowSpeedMultiplier * flowFactor;
         }
 
-        function updateSimulation() {
-            // Read current state from sliders and state variables
-            initialTempDiff = parseInt(tempDiffSlider.value);
-            heatTransferRate = parseFloat(heatRateSlider.value);
+        p.x += p.vx + flowVx;
+        p.y += p.vy + flowVy;
 
-            if (!thermalEquilibrium) {
-                hotterTemp = Math.max(0, initialTempDiff); // Ensure positive temps
-                colderTemp = 0; // Cold object starts at 0 (relative)
-            } else {
-                // Temperatures are equal when in equilibrium
-                hotterTemp = hotterTemp; // Maintain current temp if already equal
-                colderTemp = colderTemp;
-            }
+        // --- Boundary Checks and Object Transfer ---
+        const objLeftBounds = { left: objLeft.x, right: objLeft.x + objLeft.width, top: objLeft.y, bottom: objLeft.y + objLeft.height };
+        const objRightBounds = { left: objRight.x, right: objRight.x + objRight.width, top: objRight.y, bottom: objRight.y + objRight.height };
 
-            // Dynamically adjust object temperatures based on heat transfer (if not in equilibrium)
-            if (!thermalEquilibrium) {
-                const distance = Math.abs(hotterObject.cx.baseVal.value - colderObject.cx.baseVal.value);
-                // Closer objects transfer heat faster, but let's simplify for now and focus on rate slider
-                const tempChange = (hotterTemp - colderTemp) * 0.01 * heatTransferRate;
-
-                if (hotterTemp > colderTemp) {
-                    hotterTemp -= tempChange;
-                    colderTemp += tempChange;
-                } else {
-                    // If somehow colderTemp became higher, reverse flow
-                    colderTemp -= tempChange;
-                    hotterTemp += tempChange;
-                }
-
-                // Clamp temperatures to prevent going below 0 or excessively high
-                hotterTemp = Math.max(0, hotterTemp);
-                colderTemp = Math.max(0, colderTemp);
-
-                // Check for thermal equilibrium
-                if (Math.abs(hotterTemp - colderTemp) < 0.1) { // Small tolerance for floating point
-                    thermalEquilibrium = true;
-                    hotterTemp = hotterTemp; // Final stable temperature
-                    colderTemp = colderTemp;
+        if (p.originalObject === 'left') {
+            if (p.x > objLeftBounds.right || p.y < objLeftBounds.top || p.y > objLeftBounds.bottom) { // Particle leaves left object
+                if (p.x > objRightBounds.left && p.x < objRightBounds.right && p.y > objRightBounds.top && p.y < objRightBounds.bottom) {
+                    // Successfully entered right object
+                    p.originalObject = 'right';
+                    p.speed = COLD_JIGGLE_SPEED;
+                    p.range = COLD_JIGGLE_RANGE;
+                    // Remove particles that leave left boundary but don't enter right (e.g., fall off bottom)
+                } else if (p.x > objLeftBounds.right + 10) { // If it's far outside, remove it
+                   particlesToRemove.push(index);
                 }
             }
-
-            // Update SVG geometry and text displays
-            hotterTempText.textContent = `${hotterTemp.toFixed(1)}°C`;
-            colderTempText.textContent = `${colderTemp.toFixed(1)}°C`;
-
-            // Update object colors based on temperature (simplified: shades of red/blue)
-            const maxTemp = Math.max(hotterTemp, colderTemp, initialTempDiff); // Normalize color scaling
-            const hotterColorValue = Math.min(255, Math.max(100, 255 - (hotterTemp / maxTemp) * 155)); // Red intensity
-            const colderColorValue = Math.min(255, Math.max(100, 100 + (colderTemp / maxTemp) * 155)); // Blue intensity
-
-            hotterObject.style.fill = `rgb(${hotterColorValue}, ${100 - (hotterColorValue - 100) * 0.3}, 100)`;
-            colderObject.style.fill = `rgb(100, 100, ${colderColorValue})`;
-
-            // Animate heat flow arrows
-            if (!thermalEquilibrium && hotterTemp > colderTemp) {
-                heatFlowGroup.style.opacity = 1;
-                const arrowLength = Math.min(50, (hotterTemp - colderTemp) * 1); // Arrow length depends on diff
-                const arrowX2 = 250 + arrowLength;
-                const arrowY2 = 175;
-
-                const arrow1 = heatFlowGroup.children[0];
-                const arrow2 = heatFlowGroup.children[1];
-                const arrow3 = heatFlowGroup.children[2];
-
-                arrow1.setAttribute('x1', '250'); arrow1.setAttribute('y1', '175'); arrow1.setAttribute('x2', arrowX2); arrow1.setAttribute('y2', arrowY2);
-                arrow2.setAttribute('x1', '250'); arrow2.setAttribute('y1', '185'); arrow2.setAttribute('x2', arrowX2 + 5); arrow2.setAttribute('y2', arrowY2 + 5);
-                arrow3.setAttribute('x1', '250'); arrow3.setAttribute('y1', '195'); arrow3.setAttribute('x2', arrowX2 + 10); arrow3.setAttribute('y2', arrowY2 + 10);
-
-                // Adjust animation speed based on heatTransferRate
-                const animationDuration = 2.0 / heatTransferRate;
-                arrow1.style.animationDuration = `${animationDuration}s`;
-                arrow2.style.animationDuration = `${animationDuration}s`;
-                arrow3.style.animationDuration = `${animationDuration}s`;
-
-            } else {
-                heatFlowGroup.style.opacity = 0;
-            }
-
-            // Show equilibrium indicator
-            if (thermalEquilibrium) {
-                equilibriumIndicator.style.opacity = 1;
-            } else {
-                equilibriumIndicator.style.opacity = 0;
-            }
-        }
-
-        function handleSliderChange() {
-            tempDiffValue.textContent = `${tempDiffSlider.value}°C`;
-            heatRateValue.textContent = parseFloat(heatRateSlider.value).toFixed(1);
-            thermalEquilibrium = false; // Reset equilibrium when sliders change
-            updateSimulation();
-        }
-
-        // Dragging functions
-        function startDrag(e) {
-            if (e.target.classList.contains('object')) {
-                activeObject = e.target;
-                const svgRect = e.target.closest('svg').getBoundingClientRect();
-                const clickX = e.clientX - svgRect.left;
-                const clickY = e.clientY - svgRect.top;
-                offsetX = clickX - parseFloat(activeObject.getAttribute('cx'));
-                offsetY = clickY - parseFloat(activeObject.getAttribute('cy'));
-                activeObject.style.cursor = 'grabbing';
-                document.addEventListener('mousemove', dragObject);
-                document.addEventListener('mouseup', endDrag);
-                e.preventDefault(); // Prevent default drag behavior
-            }
-        }
-
-        function dragObject(e) {
-            if (!activeObject) return;
-            const svgRect = activeObject.closest('svg').getBoundingClientRect();
-            let newX = e.clientX - svgRect.left - offsetX;
-            let newY = e.clientY - svgRect.top - offsetY;
-
-            // Keep objects within SVG bounds
-            const radius = parseFloat(activeObject.getAttribute('r'));
-            const svgWidth = parseFloat(activeObject.closest('svg').getAttribute('viewBox').split(' ')[2]);
-            const svgHeight = parseFloat(activeObject.closest('svg').getAttribute('viewBox').split(' ')[3]);
-
-            newX = Math.max(radius, Math.min(svgWidth - radius, newX));
-            newY = Math.max(radius, Math.min(svgHeight - radius, newY));
-
-            activeObject.setAttribute('cx', newX);
-            activeObject.setAttribute('cy', newY);
-
-            // Update text label positions to follow the object
-            if (activeObject.id === 'hotterObject') {
-                hotterTempText.setAttribute('x', newX);
-                hotterTempText.setAttribute('y', newY);
-            } else {
-                colderTempText.setAttribute('x', newX);
-                colderTempText.setAttribute('y', newY);
-            }
-
-            // Re-evaluate heat flow based on new positions
-            thermalEquilibrium = false;
-            updateSimulation();
-        }
-
-        function endDrag() {
-            if (activeObject) {
-                activeObject.style.cursor = 'grab';
-                activeObject = null;
-                document.removeEventListener('mousemove', dragObject);
-                document.removeEventListener('mouseup', endDrag);
-            }
-        }
-
-        // Step-by-step explanation
-        function updateExplanationDisplay() {
-            explanationDetails.forEach((detail, index) => {
-                if (index === currentStep - 1) { // -1 because currentStep is 1-based for display
-                    detail.style.display = 'block';
-                    setTimeout(() => { detail.style.opacity = 1; }, 50);
-                } else {
-                    detail.style.opacity = 0;
-                    detail.style.display = 'none';
+        } else if (p.originalObject === 'right') {
+            if (p.x < objRightBounds.left || p.y < objRightBounds.top || p.y > objRightBounds.bottom) { // Particle leaves right object
+                if (p.x > objLeftBounds.left && p.x < objLeftBounds.right && p.y > objLeftBounds.top && p.y < objLeftBounds.bottom) {
+                    // Successfully entered left object (less common flow)
+                    p.originalObject = 'left';
+                    p.speed = HOT_JIGGLE_SPEED;
+                    p.range = HOT_JIGGLE_RANGE;
+                } else if (p.x < objRightBounds.left - 10) { // If it's far outside, remove it
+                   particlesToRemove.push(index);
                 }
-            });
-        }
-
-        function nextStep() {
-            if (currentStep < totalSteps) {
-                currentStep++;
-                updateExplanationDisplay();
             }
         }
-
-        function prevStep() {
-            if (currentStep > 0) {
-                currentStep--;
-                updateExplanationDisplay();
-            }
-        }
-
-        // Hover-to-explain icons
-        document.querySelectorAll('.info-icon').forEach(icon => {
-            icon.addEventListener('click', (e) => {
-                const detailId = e.target.closest('div').querySelector('.explanation-box').id;
-                const detailElement = document.getElementById(detailId);
-                if (detailElement.style.display === 'block') {
-                    detailElement.style.opacity = 0;
-                    detailElement.style.display = 'none';
-                } else {
-                    detailElement.style.display = 'block';
-                    setTimeout(() => { detailElement.style.opacity = 1; }, 50);
-                }
-            });
-        });
+    });
+    
+    // Remove marked particles
+    particlesToRemove.sort((a, b) => b - a).forEach(index => animationState.particles.splice(index, 1));
 
 
-        // Quiz feedback
-        function handleQuizAnswer(e) {
-            const questionName = e.target.name;
-            const feedbackElement = document.querySelector(`.feedback.${questionName}-feedback`);
-            let correctAnswer = '';
+    // --- Check for Equilibrium ---
+    const tempDifference = Math.abs(animationState.currentTempLeft - animationState.currentTempRight);
+    if (tempDifference < 1.5 && !animationState.equilibriumReached) { // Tolerance for equilibrium
+      animationState.equilibriumReached = true;
+      animationState.equilibriumTime = elapsedTime / 1000; // Convert ms to seconds
+      statusDisplay.textContent = 'Equilibrium Reached!';
+      statusDisplay.className = 'status complete';
+      startBtn.disabled = false;
+      startBtn.textContent = '▶ Start Animation';
+      flowArrow.style.opacity = '0';
+      flowArrow.classList.remove('pulsing-arrow');
+      animationState.isRunning = false; // Stop animation automatically
+    }
 
-            if (questionName === 'q1') correctAnswer = 'a';
-            else if (questionName === 'q2') correctAnswer = 'b';
+    // --- Update UI ---
+    updateUI();
+    updateParticleElements();
 
-            if (e.target.value === correctAnswer) {
-                feedbackElement.textContent = 'Correct!';
-                feedbackElement.className = `feedback correct`;
-            } else {
-                feedbackElement.textContent = 'Incorrect. Try again!';
-                feedbackElement.className = `feedback incorrect`;
-            }
-            // Disable further changes for this question after first answer
-            document.querySelectorAll(`input[name="${questionName}"]`).forEach(radio => radio.disabled = true);
-        }
+    // Continue animation
+    if (animationState.isRunning) {
+      animationState.animationId = requestAnimationFrame(animate);
+    }
+  }
 
-        document.addEventListener("DOMContentLoaded", initSimulation);
-    </script>
+  function resetSimulation() {
+    // Stop animation
+    animationState.isRunning = false;
+    if (animationState.animationId) {
+      cancelAnimationFrame(animationState.animationId);
+      animationState.animationId = null;
+    }
+    
+    animationState.startTime = 0;
+    animationState.equilibriumReached = false;
+    animationState.equilibriumTime = 0;
+    animationState.currentTempLeft = INITIAL_HOT_TEMP;
+    animationState.currentTempRight = INITIAL_COLD_TEMP;
+    animationState.lastParticleAdd = 0;
+    animationState.lastParticleRemove = 0;
+
+    // Reset UI
+    startBtn.disabled = false;
+    startBtn.textContent = '▶ Start Animation';
+    statusDisplay.textContent = 'Ready to Start';
+    statusDisplay.className = 'status ready';
+    flowArrow.style.opacity = '0';
+    flowArrow.classList.remove('pulsing-arrow');
+
+    // Reset sliders to their current values
+    slider1.value = animationState.slider1Val;
+    slider2.value = animationState.slider2Val;
+
+    // Reset visuals to initial state
+    updateSimulation();
+  }
+
+  // === SLIDER HANDLERS ===
+  function handleSlider1Change(e) {
+    animationState.slider1Val = parseFloat(e.target.value);
+    updateUI();
+    if (!animationState.isRunning) {
+      updateSimulation(); // Update visuals if not running
+    }
+  }
+
+  function handleSlider2Change(e) {
+    animationState.slider2Val = parseFloat(e.target.value);
+    updateUI();
+    if (!animationState.isRunning) {
+      updateSimulation(); // Update visuals if not running
+    }
+  }
+
+  // === INITIALIZATION ===
+  function initSimulation() {
+    // Button event listeners
+    startBtn.addEventListener('click', startAnimation);
+    resetBtn.addEventListener('click', resetSimulation);
+    
+    // Slider event listeners
+    slider1.addEventListener('input', handleSlider1Change);
+    slider2.addEventListener('input', handleSlider2Change);
+    
+    // Initial state setup
+    animationState.slider1Val = parseFloat(slider1.value);
+    animationState.slider2Val = parseFloat(slider2.value);
+    
+    updateSimulation(); // Initial render and particle setup
+  }
+
+  // === START ON LOAD ===
+  document.addEventListener('DOMContentLoaded', initSimulation);
+</script>
+
 </body>
 </html>
 ```
