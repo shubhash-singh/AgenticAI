@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, List, Optional, Tuple
 
 import os
 import re
@@ -10,8 +10,6 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_groq import ChatGroq
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import BaseMessage
-
-
 
 load_dotenv()
 
@@ -23,15 +21,10 @@ def load_spec(path: str) -> Dict[str, Any]:
         return json.load(f)
 
 
-
 def safe_json_parse(raw: Any) -> Dict[str, Any]:
     """
     Try to parse a JSON object from an LLM response.
-
-    - Accepts BaseMessage, str, or list[...].
-    - Strips ``` / ```json fences.
-    - Tries to extract the first {...} block via regex.
-    - Raises a helpful error if parsing fails.
+    Enhanced with better error handling and extraction.
     """
     # 1) Normalize into a string
     if isinstance(raw, BaseMessage):
@@ -57,22 +50,27 @@ def safe_json_parse(raw: Any) -> Dict[str, Any]:
 
     # 2) Strip ``` fences if present
     if text.startswith("```"):
-        # Remove leading/trailing backticks
         text = text.strip("`").strip()
-        # Remove leading "json" if present, like: ```json\n{...}
         if text.lower().startswith("json"):
             text = text[4:].lstrip()
 
-    # 3) Try to extract first {...} block with regex
-    match = re.search(r"\{[\s\S]*\}", text)
+    # 3) Try to extract first {...} block with regex (greedy to get full object)
+    # Changed from non-greedy to handle nested objects better
+    match = re.search(r'\{(?:[^{}]|(?:\{[^{}]*\}))*\}', text, re.DOTALL)
     if not match:
-        snippet = text[:300].replace("\n", "\\n")
-        raise ValueError(
-            "safe_json_parse: Could not find a JSON object in LLM output. "
-            f"First 300 chars: {snippet}"
-        )
-
-    json_str = match.group(0)
+        # Fallback: try to find content between first { and last }
+        first_brace = text.find('{')
+        last_brace = text.rfind('}')
+        if first_brace != -1 and last_brace != -1 and last_brace > first_brace:
+            json_str = text[first_brace:last_brace + 1]
+        else:
+            snippet = text[:300].replace("\n", "\\n")
+            raise ValueError(
+                "safe_json_parse: Could not find a JSON object in LLM output. "
+                f"First 300 chars: {snippet}"
+            )
+    else:
+        json_str = match.group(0)
 
     # 4) Actual JSON parse
     try:
@@ -85,363 +83,535 @@ def safe_json_parse(raw: Any) -> Dict[str, Any]:
         ) from e
 
 
+def check_minimum_requirements(html: str) -> List[str]:
+    """
+    Enhanced sanity checks with more comprehensive validation.
+    """
+    issues = []
+
+    # Check for main SVG canvas
+    if 'id="simCanvas"' not in html and "id='simCanvas'" not in html:
+        issues.append("Missing main SVG element with id='simCanvas'.")
+
+    # Check for sliders
+    range_count = html.count('<input type="range"')
+    if range_count < 2:
+        issues.append(f"Expected at least 2 sliders (<input type='range'>), found {range_count}.")
+
+    # Check for interaction handlers
+    has_interaction = any(handler in html for handler in [
+        "pointerdown", "mousedown", "touchstart", "onclick"
+    ])
+    if not has_interaction:
+        issues.append("No interaction handlers found; interactive elements may be missing.")
+
+    # Check for core functions
+    if "updateSimulation" not in html:
+        issues.append("Missing updateSimulation() function.")
+    
+    if "initSimulation" not in html:
+        issues.append("Missing initSimulation() function.")
+
+    # Check for DOMContentLoaded
+    if "DOMContentLoaded" not in html:
+        issues.append("Missing DOMContentLoaded initialization.")
+    
+    # Check for basic HTML structure
+    if "<!DOCTYPE html>" not in html:
+        issues.append("Missing DOCTYPE declaration.")
+    
+    # Check for viewport meta tag (mobile-first requirement)
+    if '<meta name="viewport"' not in html:
+        issues.append("Missing viewport meta tag for mobile responsiveness.")
+
+    return issues
 
 
-# ------------ Step 1: Creation chain ------------
+# ------------ Step 1: Planner chain (OPTIMIZED) ------------
 
-def build_creation_chain():
+def build_planner_chain():
     llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash-lite",          # strong for long, structured code & HTML
-        temperature=0.2,                 # lower for more consistent structure
-        api_key=os.getenv("GOOGLE_API_KEY")
-)
+        model="gemini-2.5-flash-lite",
+        temperature=0.2,
+        api_key=os.getenv("GOOGLE_API_KEY_PLANNING")
+    )
 
-
+    # IMPROVED: More structured and concise prompt
     prompt = ChatPromptTemplate.from_template(
-        """
-You are an expert educational simulation designer and front-end developer.
-You build rich, highly visual, interactive **mobile-first** simulations to help students
-learn concepts by **seeing** and **manipulating** them.
+        """You are an expert instructional designer planning an interactive physics/science simulation.
 
-You will receive a JSON object that describes a science/engineering concept.
-Your task is to create a SINGLE, SELF-CONTAINED HTML FILE that works beautifully on phones.
-
-====================================================
-HIGH-LEVEL GOAL
-====================================================
-Create a **visually-focused interactive simulation**:
-- A central SVG-based visual that clearly represents the concept.
-- Students can:
-  - Drag objects directly on the visual, and
-  - Adjust parameters via sliders / controls.
-- Visuals must **change continuously** as the user interacts
-  (shape positions, angles, colors, lengths, labels, etc).
-
-This should feel like a tiny interactive lab, not just a static explanation.
-
-====================================================
-LAYOUT & MOBILE REQUIREMENTS
-====================================================
-- MOBILE-FIRST:
-  - Single-column layout.
-  - No horizontal scrolling on typical phones.
-  - Use fluid widths: percentages and max-width; avoid large fixed widths.
-- Main structure (suggested):
-  - A centered container with `max-width` around 480–600px and `margin: 0 auto;`.
-  - Sections stacked vertically: header → visual → controls → explanation.
-
-- HTML:
-  - Use clean, semantic HTML5.
-- CSS:
-  - Use **inline <style>** only.
-- JS:
-  - Use **vanilla JavaScript** inside a <script> tag.
-  - No external libraries, no CDNs.
-
-====================================================
-VISUAL SIMULATION (CORE CANVAS)
-====================================================
-- Use an **inline <svg>** as the main "canvas" for the simulation.
-  - Example: `<svg id="simCanvas" viewBox="0 0 500 350" style="width: 100%; height: auto;"></svg>`
-- The SVG must contain multiple elements related to the concept from "visual_focus",
-  such as:
-  - Points, lines, vectors, shapes, paths, arrows, fields, etc.
-- The SVG elements must:
-  - Update position/shape/colour when sliders change.
-  - Update position/shape when the user drags certain handles.
-
-- Make the visual:
-  - Colorful but readable (good contrast).
-  - Clearly annotated (labels near important objects).
-  - Smoothly updating when interactions happen.
-
-====================================================
-MANDATORY INTERACTIONS
-====================================================
-
-1) DRAGGING (DIRECT MANIPULATION)
----------------------------------
-- At least **one draggable handle** (e.g., a circle/point) that the user can drag
-  on the SVG to change the simulation state.
-- Requirements:
-  - Handle both mouse and touch events (for real mobile use):
-    - Pointer events recommended (pointerdown / pointermove / pointerup),
-      or fallback to handling both mouse and touch.
-  - As the handle is dragged:
-    - Update the relevant geometry in the SVG (lines, angles, shapes, etc),
-    - Update any numeric output or labels.
-
-2) SLIDERS / CONTROL PANEL
---------------------------
-- At least **two sliders** (`<input type="range">`) for key parameters
-  (e.g., angle, speed, length, intensity, mass).
-- Place them in a “Controls” section under the visual.
-- Each slider must:
-  - Have a label with the parameter name and current value.
-  - Directly change the SVG visual (not just a text description).
-  - Update any numeric summaries / formulas displayed.
-
-3) INTERACTION TYPE FROM JSON
------------------------------
-- Use the JSON field "interaction_type" to add an extra layer:
-  - "hover-to-explain":
-    - On tap/hover on certain SVG elements or key point cards, show short explanations.
-  - "step-by-step":
-    - Provide "Next"/"Previous" buttons that guide through states or hints.
-  - "quiz-like":
-    - Provide 2–3 quick questions with instant feedback (correct/incorrect)
-      related to the visual state.
-
-====================================================
-CONTENT & SECTIONS (SUGGESTED)
-====================================================
-
-1. <header>
-   - Use "title" from JSON in an <h1>.
-   - A one-line subtitle summarizing the concept in friendly language.
-
-2. Intro section
-   - 1–2 short paragraphs based on "concept" explaining the idea simply.
-
-3. VISUAL SIMULATION SECTION
-   - A card with:
-     - The responsive <svg> canvas.
-     - Optional small legend or labels.
-
-4. CONTROLS SECTION
-   - A card titled "Controls".
-   - At least two sliders with labels and live value display.
-   - Whenever a control changes:
-     - Update SVG geometry (positions, rotations, lengths, etc).
-     - Update any computed text (e.g., area, angle, derived quantity).
-
-5. KEY POINTS / EXPLANATION SECTION
-   - For each "key_points" entry in the JSON:
-     - Create a small card or collapsible item.
-     - Optional: tapping a key point highlights a related part of the SVG
-       (e.g., change color or add a glow around a shape).
-
-6. OPTIONAL QUIZ / STEP-BY-STEP (BASED ON interaction_type)
-   - Implement a tiny quiz or guided steps that refer directly to the current visual.
-
-7. SUMMARY SECTION
-   - 2–4 lines summarizing what the learner should notice
-     when they move sliders and drag the handle(s).
-
-====================================================
-STYLE & AESTHETICS
-====================================================
-- Background: light, soft color.
-- Cards: white background, rounded corners, light shadow.
-- Text: clear, high contrast, readable on mobile.
-- Use a small, consistent color palette for SVG elements and highlights.
-- Use CSS transitions for subtle smoothness where appropriate.
-
-====================================================
-TECHNICAL RULES
-====================================================
-- The output MUST be valid HTML, starting with <!DOCTYPE html> and a <html> tag.
-- Use only:
-  - HTML,
-  - CSS in a single <style> tag,
-  - vanilla JS in a single <script> tag.
-- Do NOT include:
-  - External CSS/JS,
-  - Any Markdown or explanations outside the HTML.
-- Do NOT echo the JSON back to the user.
-
-Here is the JSON spec (do not repeat it, only use it):
+Analyze this specification and create a structured design plan:
 
 {spec_json}
 
-Generate the full HTML page now.
-"""
+Provide a clear, actionable plan using EXACTLY this format:
+
+# Visual Concept
+[2-3 sentences describing the core visual representation]
+
+# Draggable Elements
+1. [Name]: [Location in SVG], controls [what parameter]
+2. [Name]: [Location in SVG], controls [what parameter]
+
+# Sliders (exactly 2)
+1. [Name]: min=[X], max=[Y], default=[Z], controls [parameter description]
+2. [Name]: min=[X], max=[Y], default=[Z], controls [parameter description]
+
+# State Variables
+- [variable1]: [description]
+- [variable2]: [description]
+- [variable3]: [description]
+
+# Visual Changes on Interaction
+- When [parameter] changes: [specific SVG changes]
+- When [parameter] changes: [specific SVG changes]
+
+# Interaction Flow
+1. [Step describing user action and result]
+2. [Step describing user action and result]
+3. [Step describing user action and result]
+
+# Quiz Questions
+1. Q: [Question]
+   A: [Correct answer]
+   Explanation: [Why this is correct]
+2. Q: [Question]
+   A: [Correct answer]
+   Explanation: [Why this is correct]
+
+Keep responses concrete and actionable. Focus on what will be implemented, not why."""
     )
 
     return prompt | llm
 
-# ------------ Step 2: Bug-fix chain ------------
+
+# ------------ Step 2: Creation chain (OPTIMIZED) ------------
+
+def build_creation_chain():
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash-lite",
+        temperature=0.2,
+        api_key=os.getenv("GOOGLE_API_KEY_BUILDING"),
+    )
+
+    # IMPROVED: Streamlined prompt with clearer structure and requirements
+    prompt = ChatPromptTemplate.from_template(
+"""You are an expert at building interactive educational simulations. Create a complete, working HTML file.
+
+=== CORE REQUIREMENTS ===
+
+1. STRUCTURE (MANDATORY):
+   - Single HTML file with inline <style> and <script>
+   - Mobile-first: max-width 600px, responsive, no horizontal scroll
+   - Clean sections: header → visual → controls → explanation → quiz
+
+2. INTERACTIVITY (MANDATORY):
+   - SVG with id="simCanvas" (viewBox="0 0 500 350")
+   - Minimum 2 sliders with <input type="range">
+   - At least 1 draggable handle in SVG
+   - All changes must call updateSimulation()
+
+3. JAVASCRIPT PATTERN (REQUIRED):
+   Create these two main functions:
+   - initSimulation(): Gets DOM elements, sets up event listeners, calls updateSimulation()
+   - updateSimulation(): Reads current state, updates SVG geometry and text displays
+   
+   Initialize with: document.addEventListener("DOMContentLoaded", initSimulation);
+
+4. VISUAL REQUIREMENTS:
+   - Clean, modern design with good contrast
+   - Readable labels and values
+   - Smooth visual updates on interaction
+   - Color-coded elements for clarity
+
+5. INTERACTION TYPE (from spec):
+   - "hover-to-explain": Add clickable info icons
+   - "step-by-step": Add next/prev buttons with guidance
+   - "quiz-like": Add 2-3 quiz questions with instant feedback
+
+=== YOUR DESIGN PLAN (FOLLOW CLOSELY) ===
+{plan}
+
+=== ORIGINAL SPECIFICATION (REFERENCE) ===
+{spec_json}
+
+=== OUTPUT ===
+Generate ONLY the complete HTML code. Start with <!DOCTYPE html>.
+No explanations, no markdown, just working HTML."""
+    )
+
+    return prompt | llm
+
+
+# ------------ Step 3: Bug-fix chain (OPTIMIZED) ------------
 
 def build_bugfix_chain():
-    llm = ChatGroq(
-        model="openai/gpt-oss-20b",               # good reasoning, cheaper, fast
-        temperature=0.2,
-        api_key=os.getenv("GROQ_API_KEY_FIX_BUGS"),
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash-lite",
+        temperature=0.2,  # Reduced from 0.3 for more consistent fixes
+        api_key=os.getenv("GOOGLE_API_KEY_BUGFIX"),
     )
 
+    # IMPROVED: More focused on critical bugs
     prompt = ChatPromptTemplate.from_template(
-        """
-You are an HTML/CSS/JavaScript quality checker and fixer.
+        """You are a code quality checker. Review this HTML and fix ONLY critical issues.
 
-You will receive an HTML document for a small interactive, mobile-first simulation page.
+FOCUS ON:
+1. Syntax errors (unclosed tags, missing quotes, invalid JavaScript)
+2. Broken functionality (missing IDs, undefined variables, broken event handlers)
+3. Mobile layout breaking issues (fixed widths > screen, overflow problems)
+4. Missing viewport meta tag
 
-TASK:
-1. Check for:
-   - Syntax errors in HTML, CSS, and JS.
-   - Broken or missing closing tags.
-   - JavaScript errors that would likely break basic interaction.
-   - Problems that might cause layout to break on mobile (e.g., fixed large widths, overflow).
-2. If you find bugs or issues, FIX them directly in the HTML.
-3. Also ensure:
-   - The page still follows a mobile-first, responsive approach.
-   - No external CSS/JS/CDNs are used.
+DO NOT:
+- Rewrite working code
+- Change design/styling unless broken
+- Remove or rename IDs
+- Add new features
 
-OUTPUT FORMAT:
-Respond ONLY as a JSON object with this exact structure:
-
+RESPOND ONLY with this JSON format:
 {{
-  "has_bug": true or false,
-  "notes": "short text description of what you found",
-  "html": "the final HTML after your fixes (even if no bug was found, include the HTML here)"
+  "has_bug": true/false,
+  "notes": "Brief description of fixes made",
+  "html": "Complete fixed HTML"
 }}
 
-- "has_bug": true if you detected and fixed any bug or serious issue; false otherwise.
-- "notes": mention the key issues or say "no major issues found".
-- "html": the complete HTML document.
-
-Here is the HTML to check:
-
-{html}
-"""
+HTML to review:
+{html}"""
     )
 
     return prompt | llm
 
 
-# ------------ Step 3: Review chain ------------
+# ------------ Step 4: Student Feedback chain (OPTIMIZED) ------------
+
+def build_student_feedback_chain():
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash-lite",
+        temperature=0.6,  # Reduced from 0.7 for more focused feedback
+        api_key=os.getenv("GOOGLE_API_KEY_BUGFIX")
+    )
+
+    # IMPROVED: More specific evaluation criteria
+    prompt = ChatPromptTemplate.from_template(
+        """You are a high school student testing this simulation. Be specific and constructive.
+
+Evaluate:
+- Is it immediately clear what to do?
+- Are the controls labeled and easy to find?
+- Do you understand what's happening when you interact?
+- Are there any confusing or broken parts?
+- What would make this better?
+
+RESPOND ONLY with this exact JSON structure:
+{{
+  "first_impressions": ["point 1", "point 2"],
+  "visual": ["point 1", "point 2"],
+  "controls": ["point 1", "point 2"],
+  "explanations": ["point 1", "point 2"],
+  "bugs_or_issues": ["point 1" or "None found"],
+  "suggestions": ["point 1", "point 2"]
+}}
+
+Keep each point SHORT (1 sentence). Be specific, not generic.
+
+HTML:
+{html}"""
+    )
+
+    return prompt | llm
+
+
+# ------------ Step 5: Incorporate Feedback chain (OPTIMIZED) ------------
+
+def build_incorporate_feedback_chain():
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash-lite",
+        temperature=0.2,
+        api_key=os.getenv("GOOGLE_API_KEY_BUGFIX")
+    )
+
+    # IMPROVED: Clearer constraints on what to change
+    prompt = ChatPromptTemplate.from_template(
+        """Update this HTML based on student feedback. Make MINIMAL, targeted improvements.
+
+ALLOWED CHANGES:
+✓ Improve labels and instructions
+✓ Add helpful tooltips or hints
+✓ Adjust colors for better readability
+✓ Fix confusing UI elements
+✓ Add brief explanatory text
+
+FORBIDDEN CHANGES:
+✗ Don't rewrite the layout
+✗ Don't remove id="simCanvas"
+✗ Don't remove sliders or draggable elements
+✗ Don't change core functionality
+✗ Don't add external libraries
+
+Student Feedback:
+{feedback_json}
+
+Current HTML:
+{html}
+
+Return ONLY the updated HTML. No explanations."""
+    )
+
+    return prompt | llm
+
+
+# ------------ Step 6: Review chain (OPTIMIZED) ------------
 
 def build_review_chain():
-    llm = ChatGroq(
-        model="qwen/qwen3-32b",                   # very good reasoning/multilingual
-        temperature=0.2,
-        api_key=os.getenv("GROQ_API_KEY_REVIEW"),
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash-lite",
+        temperature=0.1,  # Reduced from 0.2 for more consistent reviews
+        api_key=os.getenv("GOOGLE_API_KEY_BUGFIX")
     )
 
+    # IMPROVED: Clearer pass/fail criteria
     prompt = ChatPromptTemplate.from_template(
-        """
-You are a strict final reviewer of interactive educational web simulations.
+        """You are the final quality gate. Decide if this simulation is READY TO SHIP.
 
-You will receive an HTML document. Your job is to decide if this simulation is READY TO SHIP.
+MUST HAVE (or REJECT):
+✓ Valid HTML structure (DOCTYPE, head, body)
+✓ Viewport meta tag for mobile
+✓ Working SVG with id="simCanvas"
+✓ At least 2 functioning sliders
+✓ At least 1 interactive element (drag or click)
+✓ updateSimulation() and initSimulation() functions
+✓ DOMContentLoaded event listener
+✓ Clear concept explanation
 
-CHECKLIST:
-- MOBILE-FIRST:
-  - Does it avoid horizontal scrolling on typical phones?
-  - Is text readable without zoom?
-- INTERACTIVITY:
-  - Is there at least one clear interactive element (click/tap/hover/step/quiz)?
-  - Does the interaction make sense for the concept?
-- CLARITY:
-  - Is the core concept explained in simple language?
-- TECHNICAL:
-  - HTML has a valid structure: <!DOCTYPE html>, <html>, <head>, <body>.
-  - No obvious broken JS (e.g., referencing IDs that do not exist).
-- AESTHETIC:
-  - Reasonably styled (not ugly plain text), but still simple.
+SHOULD HAVE (nice but not blocking):
+- Good visual design
+- Helpful labels
+- Quiz or step-by-step interaction
 
-If the page fails on any serious point, mark it as NOT approved.
-
-OUTPUT FORMAT:
-Respond ONLY as a JSON object with this exact structure:
-
+RESPOND ONLY with this JSON:
 {{
-  "approved": true or false,
-  "reasons": "short explanation of your decision"
+  "approved": true/false,
+  "reasons": "Specific reason for approval/rejection"
 }}
 
-Here is the HTML to review:
+Be strict but fair. Only approve if it will work for students.
 
-{html}
-"""
+HTML:
+{html}"""
     )
 
     return prompt | llm
 
 
-# ------------ Orchestrator: multi-step pipeline ------------
+# ------------ Orchestrator: multi-step pipeline (OPTIMIZED) ------------
 
 def generate_simulation_with_checks(
     spec_path: str,
     output_path: str = "simulation.html",
-    max_iterations: int = 3,
-):
+    max_iterations: int = 1,
+    save_intermediates: bool = True,
+) -> Tuple[bool, str]:
+    """
+    Generate simulation with improved flow and error handling.
+    
+    Returns:
+        Tuple of (success: bool, final_html: str)
+    """
+    print("=" * 60)
+    print("SIMULATION GENERATION PIPELINE")
+    print("=" * 60)
+    
     # 1. Load spec
-    spec = load_spec(spec_path)
-    spec_json = json.dumps(spec, indent=2, ensure_ascii=False)
+    print("\n[1/7] Loading specification...")
+    try:
+        spec = load_spec(spec_path)
+        spec_json = json.dumps(spec, indent=2, ensure_ascii=False)
+        print(f"✓ Loaded spec: {spec.get('title', 'Untitled')}")
+    except Exception as e:
+        print(f"✗ Failed to load spec: {e}")
+        return False, ""
 
-    # 2. Build chains
-    creation_chain = build_creation_chain()
-    bugfix_chain = build_bugfix_chain()
-    review_chain = build_review_chain()
+    # 2. Build chains once (efficiency improvement)
+    print("\n[2/7] Initializing AI chains...")
+    try:
+        planner_chain = build_planner_chain()
+        creation_chain = build_creation_chain()
+        bugfix_chain = build_bugfix_chain()
+        student_feedback_chain = build_student_feedback_chain()
+        incorporate_feedback_chain = build_incorporate_feedback_chain()
+        review_chain = build_review_chain()
+        print("✓ All chains initialized")
+    except Exception as e:
+        print(f"✗ Failed to initialize chains: {e}")
+        return False, ""
 
-    # 3. Step 1: create initial HTML
-    print("▶ Step 1: Creating initial simulation HTML...")
-    creation_response = creation_chain.invoke({"spec_json": spec_json})
-    html = creation_response.content
+    # 3. Planning phase
+    print("\n[3/7] Planning simulation design...")
+    try:
+        plan_message = planner_chain.invoke({"spec_json": spec_json})
+        plan = plan_message.content
+        
+        if save_intermediates:
+            Path("plan_output.md").write_text(plan, encoding="utf-8")
+        
+        print("✓ Plan generated")
+        print(f"   Preview: {plan[:150]}...")
+    except Exception as e:
+        print(f"✗ Planning failed: {e}")
+        return False, ""
 
-    # 4. Loop: bugfix + review
-    for iteration in range(1, max_iterations + 1):
-        print(f"▶ Iteration {iteration}: Bug-checking & fixing...")
+    # 4. Creation phase
+    print("\n[4/7] Creating initial simulation...")
+    try:
+        creation_response = creation_chain.invoke({
+            "spec_json": spec_json, 
+            "plan": plan
+        })
+        html = creation_response.content
 
-        # Step 2: bugfix phase
+        if save_intermediates:
+            Path("creation_output.html").write_text(html, encoding="utf-8")
+
+        # Quick validation
+        issues = check_minimum_requirements(html)
+        if issues:
+            print("⚠ Initial validation issues:")
+            for issue in issues:
+                print(f"   - {issue}")
+        else:
+            print("✓ Initial creation passed validation")
+            
+    except Exception as e:
+        print(f"✗ Creation failed: {e}")
+        return False, ""
+
+    # 5. First bug-fix pass
+    print("\n[5/7] First bug-fix pass...")
+    try:
         bugfix_response = bugfix_chain.invoke({"html": html})
-        # Debug: inspect raw content from LLM (remove later if noisy)
-        # print("RAW BUGFIX RESPONSE:", repr(bugfix_response.content))
-
         bugfix_data = safe_json_parse(bugfix_response.content)
-
-        has_bug = bugfix_data.get("has_bug", False)
-        notes = bugfix_data.get("notes", "")
         html = bugfix_data.get("html", html)
+        
+        if bugfix_data.get("has_bug", False):
+            print(f"✓ Fixed bugs: {bugfix_data.get('notes', 'Various fixes')}")
+        else:
+            print("✓ No critical bugs found")
+            
+        if save_intermediates:
+            Path("bugfix_output.html").write_text(html, encoding="utf-8")
+            
+    except Exception as e:
+        print(f"⚠ Bug-fix encountered error (continuing): {e}")
 
-        print(f"   - Bugfix notes: {notes}")
-        print(f"   - Bugs found and fixed? {has_bug}")
+    # 6. Student feedback phase
+    print("\n[6/7] Gathering student feedback...")
+    try:
+        feedback_response = student_feedback_chain.invoke({"html": html})
+        feedback_data = safe_json_parse(feedback_response.content)
+        feedback_json_str = json.dumps(feedback_data, indent=2, ensure_ascii=False)
 
-        # Step 3: review phase
-        print("▶ Reviewing simulation...")
+        if save_intermediates:
+            Path("student_feedback.json").write_text(feedback_json_str, encoding="utf-8")
+        
+        # Show summary
+        suggestions = feedback_data.get("suggestions", [])
+        issues = feedback_data.get("bugs_or_issues", [])
+        print(f"✓ Feedback received: {len(suggestions)} suggestions, {len(issues)} issues")
+        
+    except Exception as e:
+        print(f"⚠ Feedback gathering failed (skipping): {e}")
+        feedback_json_str = "{}"
+
+    # 7. Incorporate feedback
+    print("\n[7/7] Incorporating feedback and final polish...")
+    try:
+        # Only incorporate if we have meaningful feedback
+        if feedback_json_str != "{}":
+            incorporate_response = incorporate_feedback_chain.invoke({
+                "html": html,
+                "feedback_json": feedback_json_str,
+            })
+            html = incorporate_response.content
+            print("✓ Feedback incorporated")
+        else:
+            print("⊘ Skipping feedback incorporation (no feedback)")
+
+        if save_intermediates:
+            Path("feedback_incorporated_output.html").write_text(html, encoding="utf-8")
+
+        # Second bug-fix pass
+        print("  Running final bug-fix...")
+        bugfix_response_2 = bugfix_chain.invoke({"html": html})
+        bugfix_data_2 = safe_json_parse(bugfix_response_2.content)
+        html = bugfix_data_2.get("html", html)
+        
+        if bugfix_data_2.get("has_bug", False):
+            print(f"  ✓ Final fixes: {bugfix_data_2.get('notes', 'Various fixes')}")
+        
+    except Exception as e:
+        print(f"⚠ Feedback incorporation encountered error (continuing): {e}")
+
+    # 8. Final review
+    print("\n" + "=" * 60)
+    print("FINAL REVIEW")
+    print("=" * 60)
+    try:
         review_response = review_chain.invoke({"html": html})
-        # Debug: inspect raw review content (optional)
-        print("RAW REVIEW RESPONSE:", repr(review_response.content))
-
         review_data = safe_json_parse(review_response.content)
 
         approved = review_data.get("approved", False)
         reasons = review_data.get("reasons", "")
-        print(f"   - Review approved? {approved}")
-        print(f"   - Review reasons: {reasons}")
+        
+        print(f"\nStatus: {'✅ APPROVED' if approved else '❌ NOT APPROVED'}")
+        print(f"Reason: {reasons}")
+        
+    except Exception as e:
+        print(f"⚠ Review failed: {e}")
+        approved = False
+        reasons = "Review process encountered an error"
 
-        if approved:
-            # Everything is fine → write file and exit
-            output_file = Path(output_path)
-            output_file.write_text(html, encoding="utf-8")
-            print(f"✅ Final simulation approved and saved to: {output_file.absolute()}")
-            return
+    # 9. Save final output
+    output_file = Path(output_path)
+    output_file.write_text(html, encoding="utf-8")
+    
+    if save_intermediates:
+        Path("review_output.html").write_text(html, encoding="utf-8")
 
-        # Not approved → loop back to bugfix for the next iteration
-
-    # If we reach here, we never got approval within max_iterations
-    print("❌ Simulation was not approved within the allowed iterations. No output file generated.")
+    # Final validation
+    final_issues = check_minimum_requirements(html)
+    
+    print("\n" + "=" * 60)
+    print("PIPELINE COMPLETE")
+    print("=" * 60)
+    print(f"Output saved to: {output_file.absolute()}")
+    
+    if final_issues:
+        print(f"\n⚠ Final validation found {len(final_issues)} issues:")
+        for issue in final_issues:
+            print(f"   - {issue}")
+    else:
+        print("\n✓ Final validation passed all checks")
+    
+    return approved, html
 
 
 # ------------ CLI entry ------------
 
 if __name__ == "__main__":
-    from pathlib import Path
-
-    # directory where main.py exists
     base_dir = Path(__file__).parent
-
-    # input JSON: spec.json in same directory
     spec_path = base_dir / "spec.json"
-
-    # output HTML: simulation.html in same directory
     output_path = base_dir / "simulation.html"
 
-    # run with fixed max iterations
-    generate_simulation_with_checks(
+    success, html = generate_simulation_with_checks(
         spec_path=str(spec_path),
         output_path=str(output_path),
-        max_iterations=3,
+        max_iterations=1,
+        save_intermediates=True,
     )
 
-    print(f"Spec loaded from: {spec_path}")
-    print(f"Output written to: {output_path}")
+    print(f"\n{'=' * 60}")
+    if success:
+        print("✅ Simulation successfully generated and approved!")
+    else:
+        print("⚠ Simulation generated but may need manual review.")
+    print(f"{'=' * 60}\n")

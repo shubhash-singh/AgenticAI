@@ -1,0 +1,103 @@
+{
+  "_id": {
+    "$oid": "68c4184a6bfe65fa38a7b89f"
+  },
+  "concept": "Day and Night Cycle",
+  "description": "Day and night happen because the Earth spins around. As it spins, different parts of the Earth face the Sun, which makes it daytime, and then face away from the Sun, which makes it nighttime. This spinning is a continuous process, creating a cycle of day and night.",
+  "key_topics_from_the_textbook": [
+    "Rotation of the Earth",
+    "Earth's movement around the Sun"
+  ],
+  "detail": "The **Day and Night Cycle** is a fundamental phenomenon on Earth. It is caused by the Earth's continuous spinning on its axis, an imaginary line passing through the North and South Poles. This spinning is called **rotation**. As the Earth rotates, one side faces the Sun, receiving sunlight and experiencing **daytime**. Simultaneously, the opposite side faces away from the Sun, and it is dark, experiencing **nighttime**. The Earth completes one full rotation in approximately 24 hours, which is why we have a day and a night cycle every 24 hours.",
+  "working": "1. **Earth's Rotation:** The Earth is constantly spinning around its axis. Imagine a toy top spinning.\n2. **Sunlight:** The Sun is a star that emits light.\n3. **Facing the Sun:** As the Earth rotates, a particular spot on its surface will eventually face the Sun. When it faces the Sun, it gets illuminated by sunlight, and we call this **daytime**.\n4. **Facing Away from the Sun:** As the Earth continues to spin, that same spot will move away from the Sun. When it is no longer facing the Sun, it will be in darkness, and we call this **nighttime**.\n5. **Continuous Cycle:** This process repeats continuously as the Earth keeps rotating, leading to the regular occurrence of day and night.",
+  "intuition_logical_flow": "Think of a ball and a torchlight. If you shine the torchlight on the ball and then slowly spin the ball, you'll see that one side of the ball is always lit (day), and the other side is always dark (night). As you spin it, different parts of the ball move into the light and then into the darkness. The Earth is like the ball, and the Sun is like the torchlight. The Earth spinning is what causes day and night.",
+  "critical_thinking": "If the Earth suddenly stopped rotating, what would happen to the day and night cycle? How would life on Earth be affected?",
+  "open_ended_mcqs": [
+    {
+      "question": "What is the primary reason for the occurrence of day and night on Earth?",
+      "options": [
+        "a) The Earth moving around the Sun",
+        "b) The Earth spinning on its axis",
+        "c) The Moon blocking the Sun's light",
+        "d) Changes in the Earth's atmosphere"
+      ]
+    },
+    {
+      "question": "During which part of the Earth's rotation cycle is a particular location experiencing daytime?",
+      "options": [
+        "a) When it is facing away from the Sun",
+        "b) When it is facing towards the Sun",
+        "c) When it is between the Sun and the Moon",
+        "d) When it is experiencing an eclipse"
+      ]
+    },
+    {
+      "question": "Approximately how long does it take for the Earth to complete one full rotation, resulting in one full day and night cycle?",
+      "options": [
+        "a) 12 hours",
+        "b) 24 hours",
+        "c) 7 days",
+        "d) 365 days"
+      ]
+    }
+  ],
+  "real_life_applications": [
+    "Daily Schedules: Our daily lives are structured around the day and night cycle. We work and play during the day and sleep at night.",
+    "Timekeeping: The concept of a \"day\" is based on the Earth's rotation, which forms the basis of our 24-hour clock and calendar.",
+    "Agriculture: Many agricultural practices, like planting and harvesting, are influenced by the duration of daylight and darkness."
+  ],
+  "relation_between_sub_concepts": "The **Rotation of the Earth** is the direct cause of the **Day and Night Cycle**. The Earth's movement **around the Sun** (revolution) is responsible for seasons and the year, but it is the **rotation** that creates the daily alternation of light and darkness.",
+  "cross_concept_critical_thinking": "Considering that the Earth rotates on its axis, how would the experience of sunrise and sunset change if the Earth's rotational speed were to significantly increase or decrease? (Links to concepts of motion and speed).",
+  "exam_oriented_questions": [
+    "Explain why day and night occur on Earth. (Short Answer)",
+    "Describe the process of how day turns into night and vice-versa. (Long Answer)",
+    "What is the role of Earth's rotation in the day and night cycle? (Short Answer)"
+  ],
+  "metrics_estimation": {
+    "estimated_avg_time_taken_for_the_1st_time_learners": "10 min",
+    "estimated_avg_time_taken_for_the_2nd_time_learners": "3 min",
+    "number_of_revisions_needed_to_master": "3 (interval of revisit in days: 5)"
+  },
+  "importance": {
+    "importance_for_the_rest_of_the_chapter": "70%",
+    "importance_for_the_olympiad": "Medium",
+    "importance_for_the_iit_neet": "Low",
+    "definition_getting_asked_in_the_unit_test": "High"
+  },
+  "which_aspect_is_important": "Def/concept",
+  "should_you_remember_this": "Yes, this is a fundamental concept that explains a daily natural phenomenon and is crucial for understanding time, calendars, and other related concepts.",
+  "exam_preparation_common_mistakes_exam_tips": {
+    "exam_preparation": "Draw a diagram showing the Earth rotating with a light source representing the Sun to visually explain the concept.",
+    "common_mistakes": "Confusing rotation (day and night) with revolution (seasons).",
+    "exam_tips": "Clearly state that day and night are caused by the Earth's *rotation* on its axis."
+  },
+  "image": [
+    {
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Earth_rotation.gif/250px-Earth_rotation.gif",
+      "description": "Earth's rotationrelative to theSuncauses the 24-hour day/night cycle.",
+      "subtopic": "Day/Night Cycle"
+    },
+    {
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Dagelijkse_gang_straling.svg/250px-Dagelijkse_gang_straling.svg.png",
+      "description": "Diurnal variation of air temperature (blue) lag by 3 to 4 hours behind insolation at solar noon (red).",
+      "subtopic": "Temperature variation"
+    },
+    {
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Tide24_12_mix.gif/250px-Tide24_12_mix.gif",
+      "description": "Map of areas with the different tidal cycles.",
+      "subtopic": "Tidal cycle"
+    }
+  ],
+  "youtube": [
+    {
+      "video_url": "https://www.youtube.com/watch?v=Wr-CRKsTYGs",
+      "video_title": "Day and Night || video for kids",
+      "video_description": "Day & Night This video explains about Day & Night. Stay tuned for more videos: ..."
+    },
+    {
+      "video_url": "https://www.youtube.com/watch?v=ci25lCMi0Dk",
+      "video_title": "How Do Tides Occur? Low tide, High Tide, Spring Tide, Neap Tide",
+      "video_description": "How Do Tides Occur? Low tide, High Tide, Spring Tide, Neap Tide https://youtu.be/ci25lCMi0Dk Tides are very long waves that ..."
+    }
+  ]
+}

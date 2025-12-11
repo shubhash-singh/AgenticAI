@@ -165,32 +165,10 @@
             font-size: 0.8em;
             vertical-align: middle;
             transition: background-color 0.3s ease;
-            position: relative; /* Needed for tooltip positioning */
         }
 
         .info-icon:hover {
             background-color: #138496;
-        }
-
-        .tooltip {
-            position: absolute;
-            bottom: 120%; /* Position above the icon */
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 0.8em;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            z-index: 10;
-        }
-
-        .info-icon:hover .tooltip {
-            opacity: 1;
         }
 
         .explanation-box {
@@ -342,7 +320,7 @@
 
             <div class="object-controls">
                 <label>Drag Objects to Adjust Proximity:</label>
-                <p>Click and drag the circles to change their distance. Proximity affects how quickly heat transfers.</p>
+                <p>Objects are interactive! Click and drag them.</p>
             </div>
 
             <div class="slider-container">
@@ -378,7 +356,7 @@
                 <p><strong>Heat Transfer:</strong> Heat is energy in transit. It naturally moves from regions of higher temperature to regions of lower temperature. This movement is called the "flow of heat."</p>
             </div>
             <div id="explanationDetail4" class="explanation-box">
-                <p><strong>Working Principle:</strong> Heat flows from a region of <strong>higher temperature</strong> to a region of <strong>lower temperature</strong>. This process continues until both objects reach the same temperature, a state known as <strong>thermal equilibrium</strong>.</p>
+                <p><strong>Working Principle:</strong> Heat flows from a region of **higher temperature** to a region of **lower temperature**. This process continues until both objects reach the same temperature, a state known as <strong>thermal equilibrium</strong>.</p>
             </div>
         </section>
 
@@ -387,7 +365,7 @@
             <div class="quiz-question">
                 <p>Q: Heat always flows from:</p>
                 <div class="options">
-                    <label><input type="radio" name="q1" value="a"> A hotter object to a colder object. <span class="info-icon">?<span class="tooltip">This is the fundamental principle of heat transfer.</span></span></label>
+                    <label><input type="radio" name="q1" value="a"> A hotter object to a colder object.</label>
                     <label><input type="radio" name="q1" value="b"> A colder object to a hotter object.</label>
                     <label><input type="radio" name="q1" value="c"> It does not flow; it stays in place.</label>
                 </div>
@@ -398,7 +376,7 @@
                 <p>Q: What does the "Thermal Equilibrium" state represent in this simulation?</p>
                 <div class="options">
                     <label><input type="radio" name="q2" value="a"> The point where the objects start to cool down.</label>
-                    <label><input type="radio" name="q2" value="b"> The point where both objects have reached the same temperature. <span class="info-icon">?<span class="tooltip">When temperatures are equal, there is no net heat flow.</span></span></label>
+                    <label><input type="radio" name="q2" value="b"> The point where both objects have reached the same temperature.</label>
                     <label><input type="radio" name="q2" value="c"> The point where heat transfer stops completely, regardless of temperature.</label>
                 </div>
                 <div class="feedback q2-feedback"></div>
@@ -466,7 +444,6 @@
             document.getElementById('prevStepBtn').addEventListener('click', prevStep);
 
             // Initial setup
-            updateExplanationDisplay(); // Show the first step initially
             updateSimulation();
         }
 
@@ -486,10 +463,9 @@
 
             // Dynamically adjust object temperatures based on heat transfer (if not in equilibrium)
             if (!thermalEquilibrium) {
-                const distance = Math.abs(parseFloat(hotterObject.getAttribute('cx')) - parseFloat(colderObject.getAttribute('cx')));
+                const distance = Math.abs(hotterObject.cx.baseVal.value - colderObject.cx.baseVal.value);
                 // Closer objects transfer heat faster, but let's simplify for now and focus on rate slider
-                // The transfer amount should also be influenced by the temperature difference.
-                const tempChange = (hotterTemp - colderTemp) * 0.01 * heatTransferRate * (50 / distance); // Added distance influence
+                const tempChange = (hotterTemp - colderTemp) * 0.01 * heatTransferRate;
 
                 if (hotterTemp > colderTemp) {
                     hotterTemp -= tempChange;
@@ -517,9 +493,9 @@
             colderTempText.textContent = `${colderTemp.toFixed(1)}°C`;
 
             // Update object colors based on temperature (simplified: shades of red/blue)
-            const maxPossibleTemp = initialTempDiff + 50; // A reasonable max for color scaling
-            const hotterColorValue = Math.min(255, Math.max(100, 255 - (hotterTemp / maxPossibleTemp) * 155)); // Red intensity
-            const colderColorValue = Math.min(255, Math.max(100, 100 + (colderTemp / maxPossibleTemp) * 155)); // Blue intensity
+            const maxTemp = Math.max(hotterTemp, colderTemp, initialTempDiff); // Normalize color scaling
+            const hotterColorValue = Math.min(255, Math.max(100, 255 - (hotterTemp / maxTemp) * 155)); // Red intensity
+            const colderColorValue = Math.min(255, Math.max(100, 100 + (colderTemp / maxTemp) * 155)); // Blue intensity
 
             hotterObject.style.fill = `rgb(${hotterColorValue}, ${100 - (hotterColorValue - 100) * 0.3}, 100)`;
             colderObject.style.fill = `rgb(100, 100, ${colderColorValue})`;
@@ -527,7 +503,7 @@
             // Animate heat flow arrows
             if (!thermalEquilibrium && hotterTemp > colderTemp) {
                 heatFlowGroup.style.opacity = 1;
-                const arrowLength = Math.min(50, (hotterTemp - colderTemp) * 0.5); // Arrow length depends on diff
+                const arrowLength = Math.min(50, (hotterTemp - colderTemp) * 1); // Arrow length depends on diff
                 const arrowX2 = 250 + arrowLength;
                 const arrowY2 = 175;
 
@@ -568,7 +544,7 @@
         function startDrag(e) {
             if (e.target.classList.contains('object')) {
                 activeObject = e.target;
-                const svgRect = activeObject.closest('svg').getBoundingClientRect();
+                const svgRect = e.target.closest('svg').getBoundingClientRect();
                 const clickX = e.clientX - svgRect.left;
                 const clickY = e.clientY - svgRect.top;
                 offsetX = clickX - parseFloat(activeObject.getAttribute('cx'));
@@ -631,10 +607,6 @@
                     detail.style.display = 'none';
                 }
             });
-
-            // Manage button states
-            document.getElementById('prevStepBtn').disabled = currentStep === 0;
-            document.getElementById('nextStepBtn').disabled = currentStep === totalSteps;
         }
 
         function nextStep() {
@@ -654,7 +626,7 @@
         // Hover-to-explain icons
         document.querySelectorAll('.info-icon').forEach(icon => {
             icon.addEventListener('click', (e) => {
-                const detailId = e.target.closest('label').querySelector('.explanation-box').id;
+                const detailId = e.target.closest('div').querySelector('.explanation-box').id;
                 const detailElement = document.getElementById(detailId);
                 if (detailElement.style.display === 'block') {
                     detailElement.style.opacity = 0;
