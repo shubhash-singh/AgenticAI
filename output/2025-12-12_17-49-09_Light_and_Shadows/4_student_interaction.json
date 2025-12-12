@@ -1,0 +1,71 @@
+{
+  "intro": "Hey there, future scientists! Let's explore the amazing world of light and shadows. Get ready to discover how light behaves and what happens when it meets different objects!",
+  "questions": [
+    {
+      "question": "When light bumps into something and can't go through, what does it create?",
+      "type": "mcq",
+      "options": [
+        "A) A reflection",
+        "B) A shadow",
+        "C) A rainbow",
+        "D) An echo"
+      ],
+      "hint": "Think about what you see behind you when you stand in the sun.",
+      "correct_index": 1
+    },
+    {
+      "question": "Which type of object lets light pass through it completely, so you can see clearly on the other side?",
+      "type": "mcq",
+      "options": [
+        "A) Opaque object",
+        "B) Translucent object",
+        "C) Transparent object",
+        "D) Reflective object"
+      ],
+      "hint": "Imagine looking through a clean window.",
+      "correct_index": 2
+    },
+    {
+      "question": "If you shine a flashlight on a wall, and then place your hand in front of the light, what happens to the area on the wall behind your hand?",
+      "type": "mcq",
+      "options": [
+        "A) It gets brighter",
+        "B) It forms a shadow",
+        "C) It shows a reflection",
+        "D) It disappears"
+      ],
+      "hint": "Your hand is blocking the light, isn't it?",
+      "correct_index": 1
+    },
+    {
+      "question": "What is a 'pin-hole camera' used for?",
+      "type": "mcq",
+      "options": [
+        "A) To make shadows bigger",
+        "B) To create an image using light travelling in straight lines",
+        "C) To reflect light",
+        "D) To see through opaque objects"
+      ],
+      "hint": "It's a simple device that captures a picture.",
+      "correct_index": 1
+    },
+    {
+      "question": "Objects that allow some light to pass through, but not clearly, are called:",
+      "type": "mcq",
+      "options": [
+        "A) Opaque",
+        "B) Transparent",
+        "C) Translucent",
+        "D) Luminous"
+      ],
+      "hint": "Think about frosted glass or oiled paper.",
+      "correct_index": 2
+    }
+  ],
+  "followups": [
+    "Try experimenting with different objects and a flashlight to see what kinds of shadows they make!",
+    "Can you think of other examples of opaque, transparent, and translucent objects around your house?",
+    "Imagine you are making shadow puppets. What kind of objects would you use to make clear shadows?"
+  ],
+  "summary": "Light travels in straight lines. When an opaque object blocks this light, a shadow is formed behind it. Transparent objects let light pass through, while translucent objects scatter light."
+}

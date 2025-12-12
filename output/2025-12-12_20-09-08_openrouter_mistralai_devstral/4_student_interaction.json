@@ -1,0 +1,46 @@
+{
+  "intro": "Hey there! Let's explore the fascinating world of light and shadows together. Ready to test your knowledge and learn something new?",
+  "questions": [
+    {
+      "question": "Which type of object would create the darkest shadow when light shines on it?",
+      "type": "mcq",
+      "options": [
+        "A) A clear glass window",
+        "B) A thin sheet of paper",
+        "C) A brick wall",
+        "D) A magnifying glass"
+      ],
+      "hint": "Think about which object blocks the most light.",
+      "correct_index": 2
+    },
+    {
+      "question": "What happens to your shadow as the Sun moves higher in the sky?",
+      "type": "mcq",
+      "options": [
+        "A) It gets longer",
+        "B) It gets shorter",
+        "C) It disappears completely",
+        "D) It remains the same length"
+      ],
+      "hint": "Imagine the Sun moving from the horizon to directly overhead.",
+      "correct_index": 1
+    },
+    {
+      "question": "Why does a pin-hole camera create an image?",
+      "type": "mcq",
+      "options": [
+        "A) Light bounces off the object and enters the camera.",
+        "B) Light travels in straight lines and passes through the pin-hole.",
+        "C) Light bends around the pin-hole to form the image.",
+        "D) The camera itself emits light to form the image."
+      ],
+      "hint": "Remember how light travels and what happens when it passes through a small hole.",
+      "correct_index": 1
+    }
+  ],
+  "followups": [
+    "Try experimenting with different objects to see how they affect shadows.",
+    "Think about how the position of the light source changes the shadow's size and shape."
+  ],
+  "summary": "Great job! Today we learned about how light travels in straight lines, how different objects interact with light, and how shadows are formed. Keep exploring and observing the world around you!"
+}

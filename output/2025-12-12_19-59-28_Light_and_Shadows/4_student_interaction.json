@@ -1,0 +1,46 @@
+{
+  "intro": "Hey there! Ready to explore the fascinating world of light and shadows? Let's test your knowledge with some fun questions!",
+  "questions": [
+    {
+      "question": "Which of the following objects would allow you to see a clear shadow behind it if light were shone on it?",
+      "type": "mcq",
+      "options": [
+        "A) A clear glass window",
+        "B) A thin sheet of paper",
+        "C) A brick wall",
+        "D) A magnifying glass"
+      ],
+      "hint": "Remember, shadows need an object that blocks light completely.",
+      "correct_index": 2
+    },
+    {
+      "question": "You are standing in a park and notice your shadow. As the Sun moves higher in the sky, your shadow will:",
+      "type": "mcq",
+      "options": [
+        "A) Get longer",
+        "B) Get shorter",
+        "C) Disappear completely",
+        "D) Remain the same length"
+      ],
+      "hint": "Think about how the Sun's position affects your shadow during the day.",
+      "correct_index": 1
+    },
+    {
+      "question": "A pin-hole camera creates an image because:",
+      "type": "mcq",
+      "options": [
+        "A) Light bounces off the object and enters the camera.",
+        "B) Light travels in straight lines and passes through the pin-hole.",
+        "C) Light bends around the pin-hole to form the image.",
+        "D) The camera itself emits light to form the image."
+      ],
+      "hint": "What property of light is key to a pin-hole camera's function?",
+      "correct_index": 1
+    }
+  ],
+  "followups": [
+    "Try adjusting the light direction slider to see how shadows change position!",
+    "Remember, opaque objects are key for strong shadows \u2013 test different materials in the simulation!"
+  ],
+  "summary": "Light travels in straight lines. Opaque objects block light to make shadows, transparent objects let light pass, and translucent ones scatter it. Pin-hole cameras use straight-line travel to capture inverted images!"
+}

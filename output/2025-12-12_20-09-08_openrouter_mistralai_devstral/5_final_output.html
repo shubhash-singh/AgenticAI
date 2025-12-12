@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Light and Shadows Lab</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f8ff;
+            color: #333;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        header {
+            text-align: center;
+            padding: 15px 0;
+            background: linear-gradient(135deg, #4a6bff, #6a4aff);
+            color: white;
+            border-radius: 8px 8px 0 0;
+            margin: -15px -15px 20px -15px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .controls {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .control-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #444;
+        }
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        input[type="range"] {
+            flex-grow: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            background: #ddd;
+            border-radius: 4px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #4a6bff;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            font-size: 14px;
+        }
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #4a6bff, #6a4aff);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .simulation-area {
+            background-color: #222;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            height: 400px;
+            margin-bottom: 20px;
+        }
+        .instructions {
+            background-color: #e8f4fd;
+            border-left: 4px solid #4a6bff;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #4a6bff;
+        }
+        .quiz-container {
+            display: none;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 500px;
+            z-index: 100;
+        }
+        .quiz-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 99;
+        }
+        .quiz-question {
+            margin-bottom: 15px;
+        }
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .quiz-option {
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .quiz-option:hover {
+            background-color: #f0f8ff;
+        }
+        .quiz-option.selected {
+            background-color: #e8f4fd;
+            border-color: #4a6bff;
+        }
+        .quiz-option.correct {
+            background-color: #d4edda;
+            border-color: #28a745;
+        }
+        .quiz-option.incorrect {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+        }
+        .quiz-button {
+            background-color: #4a6bff;
+            color: white;
+            border: none;
+            padding: 14px 18px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        .light-source {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #ffeb3b, #ffc107);
+            border-radius: 50%;
+            box-shadow: 0 0 30px #ffeb3b;
+            z-index: 10;
+        }
+        .object {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            z-index: 5;
+        }
+        .opaque {
+            background-color: #333;
+            border: 2px solid #555;
+        }
+        .transparent {
+            background-color: rgba(200, 200, 255, 0.3);
+            border: 2px dashed #4a6bff;
+        }
+        .translucent {
+            background-color: rgba(200, 200, 255, 0.7);
+            border: 2px solid #4a6bff;
+        }
+        .screen {
+            position: absolute;
+            width: 100%;
+            height: 100px;
+            background-color: #ddd;
+            bottom: 0;
+            z-index: 1;
+        }
+        .shadow {
+            position: absolute;
+            bottom: 100px;
+            height: 100px;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+        .light-rays {
+            position: absolute;
+            z-index: 3;
+            pointer-events: none;
+        }
+        .ray {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #ffeb3b);
+            transform-origin: left;
+        }
+        .pinhole {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #333;
+            border-radius: 50%;
+            z-index: 6;
+        }
+        .pinhole-image {
+            position: absolute;
+            bottom: 100px;
+            height: 100px;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 2;
+            display: none;
+        }
+        .value-display {
+            font-size: 12px;
+            color: #666;
+            text-align: right;
+            min-width: 40px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            .simulation-area {
+                height: 300px;
+            }
+            .light-source {
+                width: 40px;
+                height: 40px;
+            }
+            .object {
+                width: 60px;
+                height: 60px;
+            }
+            select, button, .quiz-option {
+                padding: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Light and Shadows Lab</h1>
+        </header>
+
+        <div class="instructions">
+            <h3>How to Use This Lab:</h3>
+            <ol>
+                <li>Choose an object type and see how it affects the shadow</li>
+                <li>Adjust the light intensity to observe changes in shadow darkness</li>
+                <li>Move the object or screen to see how shadow size and sharpness change</li>
+                <li>Try the pin-hole camera mode to see how light creates an image</li>
+                <li>Answer the quiz questions to test your understanding!</li>
+            </ol>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="lightIntensity">Light Intensity</label>
+                <div class="slider-container">
+                    <input type="range" id="lightIntensity" min="0" max="100" value="50">
+                    <span class="value-display" id="intensityValue">50%</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="objectType">Object Type</label>
+                <select id="objectType">
+                    <option value="opaque">Opaque (Blocks all light)</option>
+                    <option value="transparent">Transparent (Lets all light through)</option>
+                    <option value="translucent">Translucent (Lets some light through)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="lightDistance">Distance from Light to Object</label>
+                <div class="slider-container">
+                    <input type="range" id="lightDistance" min="1" max="10" value="5">
+                    <span class="value-display" id="lightDistValue">5</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="screenDistance">Distance from Object to Screen</label>
+                <div class="slider-container">
+                    <input type="range" id="screenDistance" min="1" max="10" value="5">
+                    <span class="value-display" id="screenDistValue">5</span>
+                </div>
+            </div>
+
+            <button id="pinholeButton">Toggle Pin-Hole Camera Mode</button>
+        </div>
+
+        <div class="simulation-area" id="simulationArea">
+            <div class="light-source" id="lightSource"></div>
+            <div class="object opaque" id="object"></div>
+            <div class="screen" id="screen"></div>
+            <div class="shadow" id="shadow"></div>
+            <div class="light-rays" id="lightRays"></div>
+            <div class="pinhole" id="pinhole"></div>
+            <div class="pinhole-image" id="pinholeImage"></div>
+        </div>
+
+        <button id="quizButton" style="background-color: #28a745;">Take the Quiz</button>
+    </div>
+
+    <div class="quiz-overlay" id="quizOverlay"></div>
+    <div class="quiz-container" id="quizContainer">
+        <h2>Light and Shadows Quiz</h2>
+        <div id="quizQuestions"></div>
+        <button class="quiz-button" id="submitQuiz">Submit Answers</button>
+        <div id="quizResult" style="margin-top: 15px; font-weight: bold;"></div>
+    </div>
+
+    <script>
+        // Simulation variables
+        let lightIntensity = 50;
+        let objectType = 'opaque';
+        let lightDistance = 5;
+        let screenDistance = 5;
+        let pinholeMode = false;
+
+        // DOM elements
+        const lightSource = document.getElementById('lightSource');
+        const object = document.getElementById('object');
+        const screen = document.getElementById('screen');
+        const shadow = document.getElementById('shadow');
+        const lightRays = document.getElementById('lightRays');
+        const pinhole = document.getElementById('pinhole');
+        const pinholeImage = document.getElementById('pinholeImage');
+        const simulationArea = document.getElementById('simulationArea');
+
+        // Quiz elements
+        const quizContainer = document.getElementById('quizContainer');
+        const quizOverlay = document.getElementById('quizOverlay');
+        const quizQuestions = document.getElementById('quizQuestions');
+        const submitQuiz = document.getElementById('submitQuiz');
+        const quizResult = document.getElementById('quizResult');
+        const quizButton = document.getElementById('quizButton');
+
+        // Quiz data
+        const quizData = [
+            {
+                question: "What type of object blocks all light and creates a dark shadow?",
+                options: ["Transparent", "Translucent", "Opaque", "All of them"],
+                correct: 2
+            },
+            {
+                question: "How does light travel?",
+                options: ["In curves", "In straight lines", "In circles", "Randomly"],
+                correct: 1
+            },
+            {
+                question: "What happens to the image in a pin-hole camera?",
+                options: ["It appears upside down", "It appears right side up", "It disappears", "It changes color"],
+                correct: 0
+            }
+        ];
+
+        let userAnswers = [null, null, null];
+
+        // Initialize simulation
+        function initSimulation() {
+            updateSimulation();
+            setupEventListeners();
+            setupQuiz();
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            document.getElementById('lightIntensity').addEventListener('input', function(e) {
+                lightIntensity = parseInt(e.target.value);
+                document.getElementById('intensityValue').textContent = lightIntensity + '%';
+                updateSimulation();
+            });
+
+            document.getElementById('objectType').addEventListener('change', function(e) {
+                objectType = e.target.value;
+                object.className = 'object ' + objectType;
+                updateSimulation();
+            });
+
+            document.getElementById('lightDistance').addEventListener('input', function(e) {
+                lightDistance = parseInt(e.target.value);
+                document.getElementById('lightDistValue').textContent = lightDistance;
+                updateSimulation();
+            });
+
+            document.getElementById('screenDistance').addEventListener('input', function(e) {
+                screenDistance = parseInt(e.target.value);
+                document.getElementById('screenDistValue').textContent = screenDistance;
+                updateSimulation();
+            });
+
+            document.getElementById('pinholeButton').addEventListener('click', function() {
+                pinholeMode = !pinholeMode;
+                updateSimulation();
+            });
+
+            quizButton.addEventListener('click', showQuiz);
+        }
+
+        // Update the simulation based on current parameters
+        function updateSimulation() {
+            // Calculate positions based on distances
+            const areaWidth = simulationArea.offsetWidth;
+            const areaHeight = simulationArea.offsetHeight;
+
+            // Position light source (fixed at top center)
+            lightSource.style.left = (areaWidth / 2 - 30) + 'px';
+            lightSource.style.top = '20px';
+
+            // Position object based on light distance
+            const totalDistance = lightDistance + screenDistance;
+            const objectLeft = areaWidth / 2 - 40;
+            const objectTop = 20 + 60 + (lightDistance * 20);
+            object.style.left = objectLeft + 'px';
+            object.style.top = objectTop + 'px';
+
+            // Position screen (fixed at bottom)
+            screen.style.height = '100px';
+
+            // Position pinhole (same as object when in pinhole mode)
+            pinhole.style.left = (areaWidth / 2 - 5) + 'px';
+            pinhole.style.top = objectTop + 35 + 'px';
+            pinhole.style.display = pinholeMode ? 'block' : 'none';
+
+            // Update shadow based on object type and parameters
+            if (pinholeMode) {
+                // Pinhole camera mode
+                shadow.style.display = 'none';
+                pinholeImage.style.display = 'block';
+
+                // Create inverted image
+                const imageHeight = 100;
+                const imageWidth = 80;
+                const imageLeft = areaWidth / 2 - imageWidth / 2;
+
+                pinholeImage.style.left = imageLeft + 'px';
+                pinholeImage.style.width = imageWidth + 'px';
+                pinholeImage.style.height = imageHeight + 'px';
+
+                // Clear previous rays
+                lightRays.innerHTML = '';
+
+                // Draw rays from light through pinhole to screen
+                const rayCount = 10;
+                for (let i = 0; i < rayCount; i++) {
+                    const ray = document.createElement('div');
+                    ray.className = 'ray';
+
+                    // Calculate ray position and angle
+                    const startX = areaWidth / 2;
+                    const startY = 50;
+                    const endX = areaWidth / 2 + (i - rayCount/2) * 10;
+                    const endY = areaHeight - 100;
+
+                    const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+                    const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+
+                    ray.style.width = length + 'px';
+                    ray.style.left = startX + 'px';
+                    ray.style.top = startY + 'px';
+                    ray.style.transform = 'rotate(' + angle + 'deg)';
+                    ray.style.opacity = lightIntensity / 100;
+
+                    lightRays.appendChild(ray);
+                }
+            } else {
+                // Normal shadow mode
+                pinholeImage.style.display = 'none';
+
+                // Calculate shadow properties based on object type
+                let shadowOpacity = 0;
+                let shadowWidth = 80;
+
+                if (objectType === 'opaque') {
+                    shadowOpacity = 0.7 * (lightIntensity / 100);
+                    // Shadow size increases with light distance
+                    shadowWidth = 80 + (lightDistance - 5) * 10;
+                } else if (objectType === 'transparent') {
+                    shadowOpacity = 0;
+                } else if (objectType === 'translucent') {
+                    shadowOpacity = 0.3 * (lightIntensity / 100);
+                    shadowWidth = 80 + (lightDistance - 5) * 5;
+                }
+
+                // Position and style shadow
+                const shadowLeft = areaWidth / 2 - shadowWidth / 2;
+                const shadowTop = areaHeight - 100;
+
+                shadow.style.left = shadowLeft + 'px';
+                shadow.style.top = shadowTop + 'px';
+                shadow.style.width = shadowWidth + 'px';
+                shadow.style.backgroundColor = 'rgba(0, 0, 0, ' + shadowOpacity + ')';
+                shadow.style.display = shadowOpacity > 0 ? 'block' : 'none';
+
+                // Clear previous rays
+                lightRays.innerHTML = '';
+
+                // Draw light rays
+                const rayCount = 15;
+                for (let i = 0; i < rayCount; i++) {
+                    const ray = document.createElement('div');
+                    ray.className = 'ray';
+
+                    // Calculate ray position and angle
+                    const startX = areaWidth / 2;
+                    const startY = 50;
+                    const endX = areaWidth / 2 + (i - rayCount/2) * 10;
+                    const endY = objectTop + 40;
+
+                    const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+                    const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+
+                    ray.style.width = length + 'px';
+                    ray.style.left = startX + 'px';
+                    ray.style.top = startY + 'px';
+                    ray.style.transform = 'rotate(' + angle + 'deg)';
+                    ray.style.opacity = lightIntensity / 100;
+
+                    // Stop rays at object if opaque
+                    if (objectType === 'opaque') {
+                        const objectRight = objectLeft + 80;
+                        if (endX > objectLeft && endX < objectRight) {
+                            const newLength = (objectLeft + 80 - startX) * (i > rayCount/2 ? 1 : -1);
+                            ray.style.width = Math.abs(newLength) + 'px';
+                        }
+                    }
+
+                    lightRays.appendChild(ray);
+                }
+
+                // Draw rays beyond object for transparent/translucent
+                if (objectType !== 'opaque') {
+                    for (let i = 0; i < rayCount; i++) {
+                        const ray = document.createElement('div');
+                        ray.className = 'ray';
+
+                        const startX = areaWidth / 2;
+                        const startY = 50;
+                        const endX = areaWidth / 2 + (i - rayCount/2) * 10;
+                        const endY = areaHeight - 100;
+
+                        const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+                        const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+
+                        ray.style.width = length + 'px';
+                        ray.style.left = startX + 'px';
+                        ray.style.top = startY + 'px';
+                        ray.style.transform = 'rotate(' + angle + 'deg)';
+                        ray.style.opacity = (lightIntensity / 100) * (objectType === 'transparent' ? 1 : 0.5);
+
+                        lightRays.appendChild(ray);
+                    }
+                }
+            }
+
+            // Update light source brightness
+            const brightness = 50 + lightIntensity / 2;
+            lightSource.style.filter = 'brightness(' + brightness + '%)';
+        }
+
+        // Set up quiz
+        function setupQuiz() {
+            quizData.forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'quiz-question';
+                questionDiv.innerHTML = '<strong>Question ' + (index + 1) + ':</strong> ' + question.question;
+
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'quiz-options';
+
+                question.options.forEach((option, optIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'quiz-option';
+                    optionDiv.textContent = option;
+                    optionDiv.dataset.question = index;
+                    optionDiv.dataset.option = optIndex;
+
+                    optionDiv.addEventListener('click', function() {
+                        // Remove selection from siblings
+                        const siblings = this.parentElement.children;
+                        for (let sibling of siblings) {
+                            sibling.classList.remove('selected');
+                        }
+
+                        // Select this option
+                        this.classList.add('selected');
+                        userAnswers[index] = optIndex;
+                    });
+
+                    optionsDiv.appendChild(optionDiv);
+                });
+
+                questionDiv.appendChild(optionsDiv);
+                quizQuestions.appendChild(questionDiv);
+            });
+
+            submitQuiz.addEventListener('click', checkAnswers);
+        }
+
+        // Show quiz
+        function showQuiz() {
+            quizContainer.style.display = 'block';
+            quizOverlay.style.display = 'block';
+        }
+
+        // Check quiz answers
+        function checkAnswers() {
+            let score = 0;
+            let allAnswered = true;
+
+            quizData.forEach((question, index) => {
+                if (userAnswers[index] === null) {
+                    allAnswered = false;
+                    return;
+                }
+
+                const options = document.querySelectorAll(`.quiz-option[data-question="${index}"]`);
+                options[question.correct].classList.add('correct');
+
+                if (userAnswers[index] !== question.correct) {
+                    options[userAnswers[index]].classList.add('incorrect');
+                } else {
+                    score++;
+                }
+            });
+
+            if (!allAnswered) {
+                quizResult.textContent = 'Please answer all questions!';
+                quizResult.style.color = '#dc3545';
+                return;
+            }
+
+            const percentage = Math.round((score / quizData.length) * 100);
+            quizResult.innerHTML = `You scored ${score}/${quizData.length} (${percentage}%)!`;
+            quizResult.style.color = percentage >= 70 ? '#28a745' : '#dc3545';
+
+            submitQuiz.textContent = 'Close Quiz';
+            submitQuiz.removeEventListener('click', checkAnswers);
+            submitQuiz.addEventListener('click', function() {
+                quizContainer.style.display = 'none';
+                quizOverlay.style.display = 'none';
+
+                // Reset quiz for next time
+                document.querySelectorAll('.quiz-option').forEach(option => {
+                    option.classList.remove('selected', 'correct', 'incorrect');
+                });
+                userAnswers = [null, null, null];
+                submitQuiz.textContent = 'Submit Answers';
+                submitQuiz.removeEventListener('click', arguments.callee);
+                submitQuiz.addEventListener('click', checkAnswers);
+            });
+        }
+
+        // Initialize the simulation when the page loads
+        window.addEventListener('load', initSimulation);
+        window.addEventListener('resize', updateSimulation);
+    </script>
+</body>
+</html>

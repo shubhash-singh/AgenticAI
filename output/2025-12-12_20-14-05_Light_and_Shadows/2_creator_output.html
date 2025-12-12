@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <title>Light Angle Lab</title>
+    <style>
+        body{font-family:sans-serif;margin:0;padding:0;display:flex;flex-direction:column;align-items:center;background:#f0f0f0;}
+        h1{margin-top:20px;}
+        #lab{margin:20px;background:#fff;padding:10px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.2);}
+        svg{width:300px;height:300px;}
+        .slider{width:80%;margin:10px;}
+        label{font-size:1.1em;}
+        #angleValue{font-weight:bold;}
+        #result{margin-top:10px;font-size:1.2em;}
+        button{margin-top:10px;padding:10px 20px;font-size:1em;min-width:44px;min-height:44px;}
+    </style>
+</head>
+<body>
+    <h1>Light Angle Lab</h1>
+    <div id=\"lab\">
+        <svg id=\"scene\" viewBox=\"0 0 200 200\">
+            <defs>
+                <linearGradient id=\"lightGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">
+                    <stop offset=\"0%\" stop-color=\"#ffff99\"/>
+                    <stop offset=\"100%\" stop-color=\"#ffcc00\"/>
+                </linearGradient>
+                <marker id=\"arrow\" markerWidth=\"6\" markerHeight=\"6\" refX=\"0\" refY=\"3\" orient=\"auto\">
+                    <path d=\"M0,0 L0,6 L6,3 z\" fill=\"#ff9900\"/>
+                </marker>
+            </defs>
+            <!-- surface -->
+            <line x1=\"20\" y1=\"150\" x2=\"180\" y2=\"150\" stroke=\"#777\" stroke-width=\"2\"/>
+            <!-- light source -->
+            <circle cx=\"100\" cy=\"50\" r=\"8\" fill=\"#ffeb3b\" stroke=\"#caa600\" stroke-width=\"2\"/>
+            <!-- light ray -->
+            <line id=\"ray\" x1=\"100\" y1=\"50\" x2=\"100\" y2=\"150\" stroke=\"url(#lightGrad)\" stroke-width=\"4\" marker-end=\"url(#arrow)\"/>
+        </svg>
+        <div>
+            <label for=\"angleSlider\">Angle: <span id=\"angleValue\">90</span>°</label><br>
+            <input type=\"range\" id=\"angleSlider\" class=\"slider\" min=\"0\" max=\"180\" value=\"90\">
+        </div>
+        <div id=\"result\">Surface brightness: 0.00</div>
+        <button id=\"resetBtn\">Reset</button>
+    </div>
+    <script>
+        const slider=document.getElementById('angleSlider');
+        const angleVal=document.getElementById('angleValue');
+        const ray=document.getElementById('ray');
+        const result=document.getElementById('result');
+        function update(){
+            const deg=Number(slider.value);
+            angleVal.textContent=deg;
+            const rad=deg*Math.PI/180;
+            const length=100;
+            const x=100+length*Math.sin(rad);
+            const y=50+length*Math.cos(rad);
+            ray.setAttribute('x2',x);
+            ray.setAttribute('y2',y);
+            const incidence=Math.abs(90-deg);
+            const brightness=Math.cos(incidence*Math.PI/180);
+            const bright=Math.max(0,brightness).toFixed(2);
+            result.textContent='Surface brightness: '+bright;
+        }
+        slider.addEventListener('input',update);
+        document.getElementById('resetBtn').addEventListener('click',()=>{slider.value=90;update();});
+        update();
+    </script>
+</body>
+</html>

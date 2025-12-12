@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Light and Shadows</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --panel: #111827;
+            --accent: #22c55e;
+            --accent2: #3b82f6;
+            --text: #e5e7eb;
+            --muted: #9ca3af;
+            --danger: #ef4444;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+            background: linear-gradient(180deg, #0b1220, #0f172a);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            padding: 14px 16px;
+            background: rgba(17, 24, 39, 0.8);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 18px;
+            letter-spacing: 0.3px;
+        }
+        header p {
+            margin: 6px 0 0;
+            font-size: 13px;
+            color: var(--muted);
+        }
+        .container {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+        }
+        .canvas-wrap {
+            background: #0b1220;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+        canvas {
+            width: 100%;
+            height: 360px;
+            display: block;
+            background: radial-gradient(1200px 600px at 10% 50%, rgba(59,130,246,0.15), transparent 60%),
+                        radial-gradient(1200px 600px at 90% 50%, rgba(34,197,94,0.12), transparent 60%),
+                        #0b1220;
+        }
+        .controls {
+            display: grid;
+            gap: 10px;
+            background: rgba(17, 24, 39, 0.8);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px;
+        }
+        .row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        label {
+            font-size: 13px;
+            color: var(--muted);
+            display: block;
+            margin-bottom: 6px;
+        }
+        select, button, .toggle {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: #0f172a;
+            color: var(--text);
+            font-size: 14px;
+            outline: none;
+        }
+        button {
+            cursor: pointer;
+            user-select: none;
+            touch-action: manipulation;
+            min-height: 44px;
+        }
+        .btn-accent {
+            background: linear-gradient(180deg, #22c55e, #16a34a);
+            border: none;
+            color: #052e16;
+            font-weight: 700;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.18);
+        }
+        .btn-danger {
+            background: linear-gradient(180deg, #ef4444, #dc2626);
+            border: none;
+            color: #2a0707;
+            font-weight: 700;
+        }
+        .btn-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        .toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            min-height: 44px;
+        }
+        .toggle .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.08);
+            font-size: 12px;
+            color: var(--muted);
+        }
+        .info {
+            background: rgba(17, 24, 39, 0.8);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px;
+        }
+        .info p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .footer {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(17, 24, 39, 0.8);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px;
+        }
+        .challenge {
+            font-size: 13px;
+            color: var(--muted);
+        }
+        .legend {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            font-size: 11px;
+            color: var(--muted);
+            background: rgba(0,0,0,0.35);
+            padding: 6px 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        @media (min-width: 720px) {
+            canvas { height: 420px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Light and Shadows</h1>
+        <p>Explore how light travels in straight lines to form shadows and pin-hole images.</p>
+    </header>
+    <div class="container">
+        <div class="canvas-wrap">
+            <canvas id="scene"></canvas>
+            <div class="legend">Tip: Drag sliders to change light position. Tap buttons to switch modes.</div>
+        </div>
+        <div class="controls">
+            <div class="row">
+                <label for="objectType">Object type</label>
+                <select id="objectType">
+                    <option value="opaque">Wood (opaque)</option>
+                    <option value="transparent">Glass (transparent)</option>
+                    <option value="translucent">Frosted glass (translucent)</option>
+                </select>
+            </div>
+            <div class="row">
+                <label>Object shape</label>
+                <div class="btn-group">
+                    <button id="shape-circle" class="btn-outline">Circle</button>
+                    <button id="shape-square" class="btn-outline">Square</button>
+                    <button id="shape-hand" class="btn-outline">Hand</button>
+                </div>
+            </div>
+            <div class="row-2">
+                <div>
+                    <label for="lightDistance">Light distance: <span id="distVal">200</span> px</label>
+                    <input id="lightDistance" type="range" min="80" max="360" value="200">
+                </div>
+                <div>
+                    <label for="lightAngle">Light angle: <span id="angleVal">0</span>°</label>
+                    <input id="lightAngle" type="range" min="-45" max="45" value="0">
+                </div>
+            </div>
+            <div class="row">
+                <label>Mode</label>
+                <div class="toggle" id="modeToggle">
+                    <span id="modeLabel">Shadow Mode</span>
+                    <span class="pill">Tap to switch</span>
+                </div>
+            </div>
+        </div>
+        <div class="info">
+            <p id="infoText">You're seeing a ___ shadow because the object is ___.</p>
+        </div>
+        <div class="footer">
+            <button id="resetBtn" class="btn-danger">Reset</button>
+            <div class="challenge" id="challengeText">Try This! Make the shadow the same size as the object by moving the light.</div>
+        </div>
+    </div>
+    <script>
+        const canvas = document.getElementById('scene');
+        const ctx = canvas.getContext('2d');
+        const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+
+        function resizeCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = Math.floor(rect.width * dpr);
+            canvas.height = Math.floor(rect.height * dpr);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const state = {
+            mode: 'shadow',
+            objectType: 'opaque',
+            objectShape: 'circle',
+            lightDistance: 200,
+            lightAngleDeg: 0,
+            screenDistance: 160,
+            objectX: 0.5,
+            objectY: 0.5,
+            objectSize: 80,
+            pinholeX: 0.5,
+            pinholeY: 0.5,
+            pinholeSize: 8,
+            virtualObjectSize: 60,
+            virtualObjectX: 0.5,
+            virtualObjectY: 0.35,
+            showRays: true,
+            showLabels: true
+        };
+
+        const ui = {
+            modeToggle: document.getElementById('modeToggle'),
+            modeLabel: document.getElementById('modeLabel'),
+            objectType: document.getElementById('objectType'),
+            lightDistance: document.getElementById('lightDistance'),
+            lightAngle: document.getElementById('lightAngle'),
+            distVal: document.getElementById('distVal'),
+            angleVal: document.getElementById('angleVal'),
+            infoText: document.getElementById('infoText'),
+            resetBtn: document.getElementById('resetBtn'),
+            shapeCircle: document.getElementById('shape-circle'),
+            shapeSquare: document.getElementById('shape-square'),
+            shapeHand: document.getElementById('shape-hand'),
+            challengeText: document.getElementById('challengeText')
+        };
+
+        function setMode(mode) {
+            state.mode = mode;
+            ui.modeLabel.textContent = mode === 'shadow' ? 'Shadow Mode' : 'Pin-Hole Camera Mode';
+            ui.challengeText.textContent = mode === 'shadow' ?
+                'Try This! Make the shadow the same size as the object by moving the light.' :
+                'Try This! Move the light to see how the inverted image changes.';
+            updateInfo();
+            draw();
+        }
+
+        function setObjectType(type) {
+            state.objectType = type;
+            updateInfo();
+            draw();
+        }
+
+        function setObjectShape(shape) {
+            state.objectShape = shape;
+            draw();
+        }
+
+        function setLightDistance(val) {
+            state.lightDistance = val;
+            ui.distVal.textContent = val;
+            draw();
+        }
+
+        function setLightAngle(val) {
+            state.lightAngleDeg = val;
+            ui.angleVal.textContent = val;
+            draw();
+        }
+
+        function resetAll() {
+            state.mode = 'shadow';
+            state.objectType = 'opaque';
+            state.objectShape = 'circle';
+            state.lightDistance = 200;
+            state.lightAngleDeg = 0;
+            ui.objectType.value = 'opaque';
+            ui.lightDistance.value = '200';
+            ui.lightAngle.value = '0';
+            ui.distVal.textContent = '200';
+            ui.angleVal.textContent = '0';
+            setMode('shadow');
+            setObjectType('opaque');
+            setObjectShape('circle');
+            setLightDistance(200);
+            setLightAngle(0);
+        }
+
+        function updateInfo() {
+            const modeText = state.mode === 'shadow' ? 'Shadow Mode' : 'Pin-Hole Camera Mode';
+            const typeText = state.objectType === 'opaque' ? 'opaque' :
+                             state.objectType === 'transparent' ? 'transparent' : 'translucent';
+            const shadowType = state.objectType === 'opaque' ? 'sharp and dark' :
+                               state.objectType === 'transparent' ? 'no shadow' : 'faint and gray';
+            ui.infoText.textContent = `You're seeing a ${shadowType} because the object is ${typeText}. (${modeText})`;
+        }
+
+        function draw() {
+            const w = canvas.clientWidth;
+            const h = canvas.clientHeight;
+            ctx.clearRect(0, 0, w, h);
+
+            const margin = 20;
+            const left = margin;
+            const right = w - margin;
+            const center = (left + right) / 2;
+            const centerY = h / 2;
+
+            const lightAngleRad = (state.lightAngleDeg * Math.PI) / 180;
+            const lightX = left - state.lightDistance * Math.cos(lightAngleRad);
+            const lightY = centerY - state.lightDistance * Math.sin(lightAngleRad);
+
+            const objX = center;
+            const objY = centerY;
+
+            const screenX = right;
+            const screenTop = 40;
+            const screenBottom = h - 40;
+            const screenW = 10;
+
+            drawGrid(w, h);
+            drawLightSource(lightX, lightY);
+
+            if (state.mode === 'shadow') {
+                drawObject(objX, objY, state.objectShape, state.objectSize, state.objectType);
+                drawShadowRays(lightX, lightY, objX, objY, state.objectShape, state.objectSize, state.objectType, screenX, screenTop, screenBottom);
+                drawScreen(screenX, screenTop, screenBottom, screenW);
+            } else {
+                drawPinholeCamera(left, right, centerY, screenTop, screenBottom, screenW, objX, objY);
+                drawVirtualObject(state.virtualObjectX, state.virtualObjectY, state.virtualObjectSize, w, h);
+                drawPinholeRays(lightX, lightY, objX, objY, state.pinholeX, state.pinholeY, state.pinholeSize, screenX, screenTop, screenBottom, w, h);
+            }
+
+            if (state.showLabels) {
+                drawLabels(w, h, lightX, lightY, objX, objY, screenX, screenTop, screenBottom);
+            }
+        }
+
+        function drawGrid(w, h) {
+            ctx.save();
+            ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < w; x += 24) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, h);
+                ctx.stroke();
+            }
+            for (let y = 0; y < h; y += 24) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(w, y);
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+
+        function drawLightSource(x, y) {
+            const grad = ctx.createRadialGradient(x, y, 0, x, y, 120);
+            grad.addColorStop(0, 'rgba(255,255,255,0.35)');
+            grad.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(x, y, 120, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#fbbf24';
+            ctx.beginPath();
+            ctx.arc(x, y, 10, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        function drawObject(x, y, shape, size, type) {
+            ctx.save();
+            ctx.translate(x, y);
+            if (type === 'opaque') {
+                ctx.fillStyle = '#374151';
+                ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+                ctx.lineWidth = 2;
+            } else if (type === 'transparent') {
+                ctx.fillStyle = 'rgba(59,130,246,0.25)';
+                ctx.strokeStyle = 'rgba(59,130,246,0.6)';
+                ctx.lineWidth = 2;
+            } else {
+                ctx.fillStyle = 'rgba(148,163,184,0.35)';
+                ctx.strokeStyle = 'rgba(148,163,184,0.7)';
+                ctx.lineWidth = 2;
+            }
+            if (shape === 'circle') {
+                ctx.beginPath();
+                ctx.arc(0, 0, size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+            } else if (shape === 'square') {
+                ctx.beginPath();
+                ctx.rect(-size, -size, size * 2, size * 2);
+                ctx.fill();
+                ctx.stroke();
+            } else {
+                ctx.beginPath();
+                ctx.moveTo(0, -size);
+                ctx.lineTo(size * 0.6, -size * 0.2);
+                ctx.lineTo(size * 0.3, size * 0.1);
+                ctx.lineTo(size * 0.5, size * 0.6);
+                ctx.lineTo(0, size * 0.4);
+                ctx.lineTo(-size * 0.5, size * 0.6);
+                ctx.lineTo(-size * 0.3, size * 0.1);
+                ctx.lineTo(-size * 0.6, -size * 0.2);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+
+        function drawShadowRays(lightX, lightY, objX, objY, shape, size, type, screenX, screenTop, screenBottom) {
+            const rays = 24;
+            const step = (screenBottom - screenTop) / rays;
+            const top = screenTop;
+            const bottom = screenBottom;
+            const objBounds = getObjectBounds(objX, objY, shape, size);
+            const leftBound = objBounds.left;
+            const rightBound = objBounds.right;
+            const topBound = objBounds.top;
+            const bottomBound = objBounds.bottom;
+
+            for (let i = 0; i <= rays; i++) {
+                const y = top + i * step;
+                const dirX = screenX - lightX;
+                const dirY = y - lightY;
+                const len = Math.hypot(dirX, dirY);
+                const ux = dirX / len;
+                const uy = dirY / len;
+
+                let blocked = false;
+                if (type !== 'transparent') {
+                    const t1 = (leftBound - lightX) / (ux || 1e-9);
+                    const t2 = (rightBound - lightX) / (ux || 1e-9);
+                    const t3 = (topBound - lightY) / (uy || 1e-9);
+                    const t4 = (bottomBound - lightY) / (uy || 1e-9);
+                    const tmin = Math.max(Math.min(t1, t2), Math.min(t3, t4));
+                    const tmax = Math.min(Math.max(t1, t2), Math.max(t3, t4));
+                    if (tmax >= Math.max(0, tmin)) {
+                        blocked = true;
+                    }
+                }
+
+                ctx.save();
+                ctx.strokeStyle = blocked ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.25)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(lightX, lightY);
+                ctx.lineTo(screenX, y);
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            ctx.save();
+            ctx.fillStyle = type === 'opaque' ? 'rgba(0,0,0,0.85)' :
+                             type === 'transparent' ? 'rgba(0,0,0,0)' : 'rgba(0,0,0,0.35)';
+            if (type !== 'transparent') {
+                const shadowTop = Math.max(screenTop, topBound);
+                const shadowBottom = Math.min(screenBottom, bottomBound);
+                if (shadowTop < shadowBottom) {
+                    ctx.fillRect(screenX - 10, shadowTop, 10, shadowBottom - shadowTop);
+                }
+            }
+            ctx.restore();
+        }
+
+        function drawScreen(x, top, bottom, w) {
+            ctx.save();
+            ctx.fillStyle = 'rgba(255,255,255,0.08)';
+            ctx.fillRect(x - w, top, w, bottom - top);
+            ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x - w, top, w, bottom - top);
+            ctx.restore();
+        }
+
+        function drawPinholeCamera(left, right, centerY, screenTop, screenBottom, screenW, objX, objY) {
+            const boxLeft = left + 60;
+            const boxRight = right - 60;
+            const boxTop = screenTop + 20;
+            const boxBottom = screenBottom - 20;
+            ctx.save();
+            ctx.fillStyle = 'rgba(31,41,55,0.9)';
+            ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+            ctx.lineWidth = 2;
+            ctx.fillRect(boxLeft, boxTop, boxRight - boxLeft, boxBottom - boxTop);
+            ctx.strokeRect(boxLeft, boxTop, boxRight - boxLeft, boxBottom - boxTop);
+            const phX = objX;
+            const phY = objY;
+            ctx.fillStyle = '#111827';
+            ctx.beginPath();
+            ctx.arc(phX, phY, state.pinholeSize, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+            ctx.stroke();
+            ctx.fillStyle = 'rgba(255,255,255,0.08)';
+            ctx.fillRect(boxRight - screenW, boxTop, screenW, boxBottom - boxTop);
+            ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+            ctx.strokeRect(boxRight - screenW, boxTop, screenW, boxBottom - boxTop);
+            ctx.restore();
+        }
+
+        function drawVirtualObject(normX, normY, size, w, h) {
+            const x = normX * w;
+            const y = normY * h;
+            ctx.save();
+            ctx.fillStyle = 'rgba(239,68,68,0.25)';
+            ctx.strokeStyle = 'rgba(239,68,68,0.8)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(x, y, size, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function drawPinholeRays(lightX, lightY, objX, objY, phNormX, phNormY, phSize, screenX, screenTop, screenBottom, w, h) {
+            const rays = 18;
+            const step = (screenBottom - screenTop) / rays;
+            const top = screenTop;
+            const bottom = screenBottom;
+            const phX = objX;
+            const phY = objY;
+
+            for (let i = 0; i <= rays; i++) {
+                const y = top + i * step;
+                ctx.save();
+                ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(lightX, lightY);
+                ctx.lineTo(phX, phY);
+                ctx.stroke();
+                ctx.restore();
+                ctx.save();
+                ctx.strokeStyle = 'rgba(34,197,94,0.6)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(phX, phY);
+                ctx.lineTo(screenX, y);
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            const boxRight = screenX;
+            const boxLeft = objX;
+            const boxTop = screenTop + 20;
+            const boxBottom = screenBottom - 20;
+            const imageW = 10;
+            const imageH = boxBottom - boxTop;
+            const imageX = boxRight - imageW;
+            const imageY = boxTop;
+
+            ctx.save();
+            ctx.fillStyle = 'rgba(239,68,68,0.5)';
+            ctx.fillRect(imageX, imageY, imageW, imageH);
+            ctx.restore();
+        }
+
+        function drawLabels(w, h, lightX, lightY, objX, objY, screenX, screenTop, screenBottom) {
+            ctx.save();
+            ctx.fillStyle = 'rgba(255,255,255,0.8)';
+            ctx.font = '12px system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial';
+            ctx.fillText('Light', lightX + 12, lightY - 12);
+            ctx.fillText('Object', objX + 12, objY - 12);
+            ctx.fillText('Screen', screenX + 12, screenTop + 16);
+            ctx.restore();
+        }
+
+        function getObjectBounds(x, y, shape, size) {
+            if (shape === 'circle') {
+                return { left: x - size, right: x + size, top: y - size, bottom: y + size };
+            } else if (shape === 'square') {
+                return { left: x - size, right: x + size, top: y - size, bottom: y + size };
+            } else {
+                return { left: x - size * 0.6, right: x + size * 0.6, top: y - size, bottom: y + size * 0.6 };
+            }
+        }
+
+        ui.modeToggle.addEventListener('click', () => {
+            setMode(state.mode === 'shadow' ? 'pinhole' : 'shadow');
+        });
+        ui.objectType.addEventListener('change', (e) => setObjectType(e.target.value));
+        ui.lightDistance.addEventListener('input', (e) => setLightDistance(parseInt(e.target.value, 10)));
+        ui.lightAngle.addEventListener('input', (e) => setLightAngle(parseInt(e.target.value, 10)));
+        ui.resetBtn.addEventListener('click', resetAll);
+        ui.shapeCircle.addEventListener('click', () => setObjectShape('circle'));
+        ui.shapeSquare.addEventListener('click', () => setObjectShape('square'));
+        ui.shapeHand.addEventListener('click', () => setObjectShape('hand'));
+
+        setMode('shadow');
+        setObjectType('opaque');
+        setObjectShape('circle');
+        setLightDistance(200);
+        setLightAngle(0);
+    </script>
+</body>
+</html>

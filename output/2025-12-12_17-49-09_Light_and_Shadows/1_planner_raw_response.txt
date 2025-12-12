@@ -1,0 +1,166 @@
+{
+  "learning_objectives": [
+    "To differentiate between opaque, transparent, and translucent objects based on their interaction with light.",
+    "To explain the process of shadow formation and identify factors influencing its size and shape.",
+    "To understand that light travels in straight lines and demonstrate its application in a pin-hole camera.",
+    "To predict the characteristics of a shadow given the light source and object properties."
+  ],
+  "key_concepts": [
+    "Opaque Objects",
+    "Transparent Objects",
+    "Translucent Objects",
+    "Light travels in straight lines",
+    "Shadow Formation",
+    "Pin-Hole Camera"
+  ],
+  "variables_to_simulate": [
+    "Light Source Position",
+    "Object Material Type",
+    "Object Position",
+    "Object Shape"
+  ],
+  "user_interactions": {
+    "Light Source Position": [
+      {"control": "Slider", "label": "Light Height", "range": "low to high"},
+      {"control": "Slider", "label": "Light Distance", "range": "close to far"}
+    ],
+    "Object Material Type": [
+      {"control": "Radio Buttons", "options": ["Opaque (e.g., Wood)", "Transparent (e.g., Glass)", "Translucent (e.g., Frosted Glass)"]}
+    ],
+    "Object Position": [
+      {"control": "Drag & Drop", "target": "Object", "axes": "X, Y, Z (distance from light/screen)"}
+    ],
+    "Object Shape": [
+      {"control": "Buttons", "options": ["Circle", "Square", "Triangle", "Hand"]}
+    ],
+    "Pin-Hole Camera Mode": [
+      {"control": "Toggle Button", "label": "Pin-Hole Camera View"}
+    ],
+    "Show Light Rays": [
+      {"control": "Toggle Button", "label": "Show Light Rays"}
+    ]
+  },
+  "simulation_logic": [
+    {
+      "state_name": "Initial Setup",
+      "description": "A virtual room with a light source (sun icon), an opaque object (e.g., square block), and a screen/wall. A clear shadow of the object is cast on the wall. Light rays are initially hidden.",
+      "visuals": [
+        {"element": "Light Source (sun icon)", "position": "top-left"},
+        {"element": "Default Opaque Object (square)", "position": "center between light and screen"},
+        {"element": "Screen/Wall", "position": "right"},
+        {"element": "Shadow of default object", "on": "Screen/Wall"}
+      ]
+    },
+    {
+      "state_name": "Light Source Position Adjustment",
+      "description": "User interacts with 'Light Height' and 'Light Distance' sliders. The light source's position changes, altering the shadow's length, direction, and size on the screen.",
+      "visuals": [
+        {"element": "Light Source", "dynamic_property": "Y-position changes with 'Light Height' slider, Z-position (distance from object) changes with 'Light Distance' slider"},
+        {"element": "Shadow", "dynamic_property": "Length, direction, and size update in real-time based on light source position. Longer/shorter with height, larger/smaller with distance."}
+      ]
+    },
+    {
+      "state_name": "Object Material Change",
+      "description": "User selects an object material (Opaque, Transparent, Translucent). The simulation shows the resulting shadow (or lack thereof).",
+      "visuals": [
+        {"element": "Object", "dynamic_property": "Visual texture changes to reflect selected material."},
+        {"element": "Shadow", "dynamic_property": "If Opaque: Clear, dark shadow. If Transparent: No shadow. If Translucent: Faint, blurry shadow."}
+      ]
+    },
+    {
+      "state_name": "Object Position Adjustment",
+      "description": "User drags and drops the object. Moving the object changes its distance from the light source and the screen, affecting the shadow's size and position.",
+      "visuals": [
+        {"element": "Object", "dynamic_property": "Moves freely in X, Y, and Z (depth) axes."},
+        {"element": "Shadow", "dynamic_property": "Changes size (larger when closer to light, smaller when closer to screen) and position (moves with the object)."}
+      ]
+    },
+    {
+      "state_name": "Object Shape Change",
+      "description": "User selects a different object shape. The object and its shadow update to the new form.",
+      "visuals": [
+        {"element": "Object", "dynamic_property": "Shape changes to selected option (Circle, Square, etc.)."},
+        {"element": "Shadow", "dynamic_property": "Shape always matches the selected object's outline."}
+      ]
+    },
+    {
+      "state_name": "Show Light Rays Toggle",
+      "description": "User toggles 'Show Light Rays'. Straight lines are animated from the light source to the object/screen, illustrating light's path.",
+      "visuals": [
+        {"element": "Light Rays (straight lines)", "dynamic_property": "Appear/disappear. Show light blocked by opaque/translucent objects, or passing through transparent objects."}
+      ]
+    },
+    {
+      "state_name": "Pin-Hole Camera Mode",
+      "description": "The scene switches to demonstrate a pin-hole camera. A bright object (e.g., candle flame) is in front of a box with a small hole. Light rays pass through, forming an inverted image inside.",
+      "visuals": [
+        {"element": "Scene", "changes_to": "Internal view of a pin-hole camera"},
+        {"element": "Bright Object (candle)", "position": "outside the camera"},
+        {"element": "Pin-Hole (small opening)", "position": "front panel of camera"},
+        {"element": "Light Rays (straight lines)", "path": "From candle, through pin-hole, projecting onto the back screen inside the camera"},
+        {"element": "Inverted Image of Candle", "on": "Internal screen of camera"}
+      ]
+    }
+  ],
+  "mobile_ui_plan": {
+    "layout": "Vertical Stack",
+    "sections": [
+      {
+        "name": "Simulation Canvas",
+        "description": "Dominant top section showing the 3D interactive scene (light, object, screen/shadow or pin-hole camera view).",
+        "elements": [
+          {"type": "Light Source Icon", "position": "dynamic"},
+          {"type": "3D Object", "position": "draggable"},
+          {"type": "Screen/Wall", "position": "fixed background"},
+          {"type": "Shadow", "position": "dynamic on screen"}
+        ],
+        "interaction_area": "Main canvas for object drag and drop."
+      },
+      {
+        "name": "Controls Panel",
+        "description": "Middle section with stacked interactive controls.",
+        "elements": [
+          {"type": "Radio Buttons", "label": "Material:", "options": ["Opaque", "Transparent", "Translucent"]},
+          {"type": "Buttons Grid", "label": "Shape:", "options": ["Circle Icon", "Square Icon", "Triangle Icon", "Hand Icon"]},
+          {"type": "Slider", "label": "Light Height (⬆️⬇️)"},
+          {"type": "Slider", "label": "Light Distance (↔️)"}
+        ]
+      },
+      {
+        "name": "Mode & Ray Toggles",
+        "description": "Bottom section with action buttons.",
+        "elements": [
+          {"type": "Toggle Button", "label": "Pin-Hole Camera Mode"},
+          {"type": "Toggle Button", "label": "Show Light Rays"}
+        ]
+      }
+    ],
+    "responsiveness": "Elements will scale, text size adjusts for readability. Touch-friendly controls."
+  },
+  "misconceptions_to_address": [
+    "Shadows are always completely black (they can be shades of gray depending on ambient light).",
+    "Translucent objects do not form shadows (they form faint or fuzzy shadows).",
+    "Transparent objects form shadows (they allow light to pass completely, thus no shadow).",
+    "Shadows appear in front of the object (they are formed behind the opaque object, blocking light).",
+    "Confusing the effect of moving the light source versus moving the object on shadow size.",
+    "The image formed by a pin-hole camera is upright (it is inverted)."
+  ],
+  "text_instructions_for_students": [
+    "Welcome to the Light & Shadows Lab!",
+    "**Explore Shadows:**",
+    "1. **Drag the Object:** Move the object closer or farther from the light, or left/right. Watch how its shadow changes size and position!",
+    "2. **Change Material:** Select 'Opaque', 'Transparent', or 'Translucent'. What happens to the shadow? (Hint: Only opaque objects block all light).",
+    "3. **Change Shape:** Try different shapes like a circle or a hand. Does the shadow always match the object's shape?",
+    "4. **Adjust Light:** Use the 'Light Height' and 'Light Distance' sliders to see how the light's position affects the shadow's length and size.",
+    "5. **See Light Rays:** Toggle 'Show Light Rays' to visualize how light travels in straight lines.",
+    "**Discover the Pin-Hole Camera:**",
+    "1. Tap 'Pin-Hole Camera Mode' to switch scenes.",
+    "2. See how light from the candle travels through a tiny hole to form an upside-down (inverted) image inside the camera!",
+    "Have fun experimenting and understanding light!"
+  ],
+  "file_target": "single_file_html",
+  "safety_constraints": [
+    "The simulation will not depict direct viewing of strong light sources (like the sun) without protection, reinforcing safe practices.",
+    "The simulation accurately represents scientific principles without introducing misleading or incorrect visual phenomena."
+  ]
+}

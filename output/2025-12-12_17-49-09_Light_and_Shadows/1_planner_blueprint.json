@@ -1,0 +1,54 @@
+{
+  "Light Source Position": [
+    {
+      "control": "Slider",
+      "label": "Light Height",
+      "range": "low to high"
+    },
+    {
+      "control": "Slider",
+      "label": "Light Distance",
+      "range": "close to far"
+    }
+  ],
+  "Object Material Type": [
+    {
+      "control": "Radio Buttons",
+      "options": [
+        "Opaque (e.g., Wood)",
+        "Transparent (e.g., Glass)",
+        "Translucent (e.g., Frosted Glass)"
+      ]
+    }
+  ],
+  "Object Position": [
+    {
+      "control": "Drag & Drop",
+      "target": "Object",
+      "axes": "X, Y, Z (distance from light/screen)"
+    }
+  ],
+  "Object Shape": [
+    {
+      "control": "Buttons",
+      "options": [
+        "Circle",
+        "Square",
+        "Triangle",
+        "Hand"
+      ]
+    }
+  ],
+  "Pin-Hole Camera Mode": [
+    {
+      "control": "Toggle Button",
+      "label": "Pin-Hole Camera View"
+    }
+  ],
+  "Show Light Rays": [
+    {
+      "control": "Toggle Button",
+      "label": "Show Light Rays"
+    }
+  ]
+}

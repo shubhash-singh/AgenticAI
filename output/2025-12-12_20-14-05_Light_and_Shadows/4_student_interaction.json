@@ -1,0 +1,59 @@
+{
+  "intro": "Hi there! Let's explore how light makes shadows and how we can use simple tricks like a pin\u2011hole camera. Ready to test your knowledge?",
+  "questions": [
+    {
+      "question": "Which of the following objects will cast a clear, dark shadow when a light source shines on it?",
+      "type": "mcq",
+      "options": [
+        "A) A clear glass window",
+        "B) A thin sheet of paper",
+        "C) A brick wall",
+        "D) A magnifying glass"
+      ],
+      "hint": "Think about which material completely blocks light.",
+      "correct_index": 2
+    },
+    {
+      "question": "You are standing in a park and notice your shadow. As the Sun rises higher in the sky, what happens to the length of your shadow?",
+      "type": "mcq",
+      "options": [
+        "A) It gets longer",
+        "B) It gets shorter",
+        "C) It disappears completely",
+        "D) It stays the same"
+      ],
+      "hint": "Consider the angle at which the sunlight reaches you.",
+      "correct_index": 1
+    },
+    {
+      "question": "A pin\u2011hole camera forms an image because:",
+      "type": "mcq",
+      "options": [
+        "A) Light bounces off the object and enters the camera.",
+        "B) Light travels in straight lines and passes through the tiny hole.",
+        "C) Light bends around the hole to create the picture.",
+        "D) The camera itself emits light to form the image."
+      ],
+      "hint": "Remember the rule about how light moves in space.",
+      "correct_index": 1
+    },
+    {
+      "question": "Which statement best describes a translucent object?",
+      "type": "mcq",
+      "options": [
+        "A) No light can pass through it.",
+        "B) All light passes through it clearly.",
+        "C) Some light passes through, but the image is blurred.",
+        "D) It reflects all light like a mirror."
+      ],
+      "hint": "Think of frosted glass or oiled paper.",
+      "correct_index": 2
+    }
+  ],
+  "followups": [
+    "Try making a simple pin\u2011hole camera at home using a cardboard box and a tiny pin.",
+    "Observe your own shadow at different times of the day and draw its shape.",
+    "Experiment with transparent, translucent, and opaque objects to see how each affects the light."
+  ],
+  "summary": "You learned how opaque objects block light to make shadows, why shadows change with the Sun's position, and how a pin\u2011hole camera uses straight\u2011line light travel to form images. Keep exploring light around you!"
+}

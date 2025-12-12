@@ -1,0 +1,2254 @@
+{
+"index.html": "<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <title>Light & Shadows Lab (CBSE Class 7)</title>
+    <style>
+        :root {
+            --bg-color: #f0f0f5;
+            --panel-bg: #e0e0e5;
+            --control-bg: #d0d0d5;
+            --primary-color: #4CAF50;
+            --primary-dark: #388E3C;
+            --text-color: #333;
+            --label-color: #555;
+            --border-color: #ccc;
+            --shadow-color: rgba(0,0,0,0.2);
+            --light-glow: rgba(255, 255, 100, 0.8);
+            --shadow-umbra: rgba(0,0,0,0.8);
+            --shadow-penumbra: rgba(0,0,0,0.3);
+            --active-control-bg: #c0c0c5;
+            --touch-target-min-size: 44px;
+        }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 5px var(--light-glow); }
+            50% { box-shadow: 0 0 15px var(--light-glow), 0 0 20px var(--light-glow); }
+            100% { box-shadow: 0 0 5px var(--light-glow); }
+        }
+
+        @keyframes pressed {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.98); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.98; }
+        }
+
+        @keyframes vibrate {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(-1px, 1px); }
+            50% { transform: translate(1px, -1px); }
+            75% { transform: translate(-1px, 1px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            -webkit-user-select: none; /* Safari */
+            -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* IE10+ */
+            user-select: none; /* Standard */
+            touch-action: pan-y; /* Allow vertical scrolling, prevent horizontal */
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-dark);
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .lab-scene {
+            flex-grow: 1;
+            position: relative;
+            background-color: var(--panel-bg);
+            border-bottom: 2px solid var(--border-color);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end; /* Align elements to the bottom 'lab bench' */
+            padding-bottom: 20px; /* Space for the bench */
+            min-height: 300px;
+            box-shadow: inset 0 -5px 10px rgba(0,0,0,0.1);
+        }
+
+        .lab-bench {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px; /* Represents the visible part of the bench */
+            background-color: #964F1F; /* Wood color */
+            border-top: 2px solid #7a3e19;
+            box-shadow: inset 0 5px 10px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+        
+        #svg-scene {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 50px); /* Adjust for bench */
+            z-index: 5;
+        }
+
+        .instrument-panel {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #333;
+            color: #00FF00;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            box-shadow: inset 0 0 5px rgba(0,255,0,0.5), 0 2px 5px var(--shadow-color);
+            z-index: 20;
+            min-width: 120px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            border: 1px solid #00AA00;
+        }
+        .instrument-panel div {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .instrument-panel .label {
+            color: #00BB00;
+            font-size: 12px;
+        }
+        .instrument-panel .value {
+            font-size: 16px;
+        }
+
+        .control-panel {
+            background-color: var(--control-bg);
+            padding: 15px;
+            border-top: 2px solid var(--border-color);
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            max-height: 50vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .control-group {
+            background-color: var(--panel-bg);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px var(--shadow-color);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-group label {
+            font-weight: bold;
+            color: var(--label-color);
+            margin-bottom: 5px;
+            display: block;
+            font-size: 14px;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type=\"range\"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: var(--touch-target-min-size); /* Ensure large touch target */
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.9;
+            transition: opacity .2s;
+            border-radius: 5px;
+        }
+
+        input[type=\"range\"]:hover {
+            opacity: 1;
+        }
+
+        input[type=\"range\"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: var(--touch-target-min-size);
+            height: var(--touch-target-min-size);
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            border: 2px solid white;
+        }
+
+        input[type=\"range\"]::-moz-range-thumb {
+            width: var(--touch-target-min-size);
+            height: var(--touch-target-min-size);
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            border: 2px solid white;
+        }
+        
+        .numeric-display {
+            min-width: 60px;
+            padding: 5px 8px;
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            text-align: center;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            color: var(--text-color);
+        }
+
+        .radio-buttons, .shape-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .radio-buttons label, .shape-buttons button {
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            padding: 10px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            min-width: var(--touch-target-min-size);
+            min-height: var(--touch-target-min-size);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .radio-buttons input[type=\"radio\"] {
+            display: none;
+        }
+
+        .radio-buttons input[type=\"radio\"]:checked + label,
+        .shape-buttons button.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-dark);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            animation: pressed 0.1s ease-out;
+        }
+
+        .radio-buttons label:hover, .shape-buttons button:hover {
+            background-color: var(--active-control-bg);
+        }
+
+        .toggle-button {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            padding: 10px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            min-height: var(--touch-target-min-size);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .toggle-button input[type=\"checkbox\"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-switch {
+            width: 44px; /* Ensure touch target */
+            height: 24px;
+            background-color: #ccc;
+            border-radius: 12px;
+            position: relative;
+            transition: background-color 0.2s ease;
+        }
+
+        .toggle-switch:before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #fff;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .toggle-button input[type=\"checkbox\"]:checked + .toggle-switch {
+            background-color: var(--primary-color);
+        }
+
+        .toggle-button input[type=\"checkbox\"]:checked + .toggle-switch:before {
+            transform: translateX(20px);
+        }
+        
+        .toggle-button:hover {
+            background-color: var(--active-control-bg);
+        }
+        .toggle-button.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-dark);
+            animation: pressed 0.1s ease-out;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .button-group button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+            min-height: var(--touch-target-min-size);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-weight: bold;
+        }
+
+        .button-group button.start {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .button-group button.start:hover {
+            background-color: var(--primary-dark);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .button-group button.reset {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .button-group button.reset:hover {
+            background-color: #d32f2f;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .plot-area, .lab-notebook {
+            background-color: #fff;
+            margin: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .plot-area h3, .lab-notebook h3 {
+            margin-top: 0;
+            color: var(--label-color);
+            font-size: 16px;
+        }
+
+        #chartCanvas {
+            width: 100%;
+            height: 150px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+
+        .notebook-log {
+            height: 120px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            padding: 5px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            color: #444;
+            white-space: pre-wrap;
+        }
+        .notebook-log div {
+            padding: 2px 0;
+            border-bottom: 1px dotted #eee;
+        }
+        .notebook-log div:last-child {
+            border-bottom: none;
+        }
+
+        .download-btn {
+            background-color: #607D8B;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 14px;
+            min-height: var(--touch-target-min-size);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .download-btn:hover {
+            background-color: #455A64;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            max-width: 90%;
+            width: 350px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            color: var(--primary-dark);
+            font-size: 18px;
+        }
+        .modal-content p {
+            font-size: 14px;
+            line-height: 1.4;
+            color: var(--text-color);
+        }
+        .modal-content button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 16px;
+            min-height: var(--touch-target-min-size);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .modal-content button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            min-width: var(--touch-target-min-size);
+            min-height: var(--touch-target-min-size);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Lab elements styles */
+        .light-source-stand {
+            position: absolute;
+            left: 10%;
+            bottom: 40px;
+            width: 20px;
+            height: 150px;
+            background-color: #666;
+            border-radius: 5px;
+            z-index: 11;
+            transform-origin: bottom center;
+            transition: left 0.3s ease, height 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .light-source {
+            position: absolute;
+            top: -25px;
+            left: -15px;
+            width: 50px;
+            height: 50px;
+            background-color: #FFEB3B; /* Yellow light */
+            border-radius: 50%;
+            animation: pulse-glow 2s infinite ease-in-out, flicker 0.5s infinite step-end;
+            cursor: grab;
+            z-index: 12;
+            box-shadow: 0 0 10px var(--light-glow), 0 0 20px var(--light-glow), inset 0 0 5px white;
+            transition: all 0.3s ease;
+            min-width: var(--touch-target-min-size);
+            min-height: var(--touch-target-min-size);
+        }
+        .light-source::after { /* Small bulb detail */
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: white;
+            opacity: 0.8;
+        }
+
+        .object-stand {
+            position: absolute;
+            left: 50%;
+            bottom: 40px;
+            width: 20px;
+            height: 100px;
+            background-color: #666;
+            border-radius: 5px;
+            z-index: 11;
+            transform-origin: bottom center;
+            transition: left 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .experiment-object {
+            position: absolute;
+            top: -50px; /* Position relative to stand */
+            left: -35px; /* Adjust for width */
+            width: 70px;
+            height: 70px;
+            background-color: #8B4513; /* Wood color for opaque */
+            border-radius: 5px;
+            cursor: grab;
+            z-index: 12;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            text-align: center;
+            transform-origin: center center;
+            min-width: var(--touch-target-min-size);
+            min-height: var(--touch-target-min-size);
+        }
+        .object-shape-svg {
+            width: 80%;
+            height: 80%;
+            display: block; /* Ensure SVG takes full space */
+        }
+        .object-material-wood { background-color: #8B4513; border-radius: 5px; }
+        .object-material-glass { background-color: rgba(173, 216, 230, 0.4); border: 2px solid #ADD8E6; }
+        .object-material-frosted { background-color: rgba(173, 216, 230, 0.6); border: 1px solid #ADD8E6; filter: blur(1px); }
+
+        .screen-wall {
+            position: absolute;
+            right: 5%;
+            bottom: 40px;
+            width: 20px;
+            height: 180px;
+            background-color: #eee;
+            border: 2px solid #bbb;
+            border-radius: 5px;
+            z-index: 1;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2), inset 0 0 10px rgba(0,0,0,0.05);
+            transition: right 0.3s ease;
+        }
+
+        #shadow-display {
+            position: absolute;
+            right: calc(5% + 20px); /* Just to the left of the screen */
+            bottom: 40px; /* Aligned with the bench */
+            transform: translateX(50%); /* Center shadow on the screen */
+            background-color: transparent;
+            width: 100px;
+            height: 100px;
+            z-index: 2;
+            transition: all 0.05s linear; /* Smooth shadow updates */
+            pointer-events: none; /* Make shadow non-interactive */
+            /* Add some grain/noise filter */
+            filter: url(#grainFilter);
+        }
+
+        .light-ray {
+            stroke: var(--light-glow);
+            stroke-width: 1;
+            opacity: 0.7;
+            pointer-events: none;
+            transition: stroke-dasharray 0.3s ease-out; /* For appearing/disappearing */
+            animation: ray-flicker 0.2s infinite step-end;
+        }
+        @keyframes ray-flicker {
+            0% { opacity: 0.7; }
+            50% { opacity: 0.65; }
+            100% { opacity: 0.7; }
+        }
+
+        #pinhole-camera-view {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            background-color: black;
+            border: 5px solid #333;
+            border-radius: 10px;
+            display: none; /* Hidden by default */
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        }
+        #pinhole-camera-view.active {
+            display: flex;
+            opacity: 1;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+            font-size: 1.2em;
+            text-shadow: 1px 1px 2px black;
+        }
+        #pinhole-image {
+            width: 70%;
+            height: 70%;
+            background-color: transparent; /* Will show inverted shadow */
+            position: relative;
+            transform: rotate(180deg); /* Invert for pinhole camera */
+            filter: invert(1) brightness(0.8); /* Make it look like an inverted image */
+        }
+        #pinhole-image::before {
+            content: \"\";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg width=\"100%\" height=\"100%\" viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cdefs%3E%3Cpattern id=\"smallGrid\" width=\"10\" height=\"10\" patternUnits=\"userSpaceOnUse\"%3E%3Cpath d=\"M 10 0 L 0 0 0 10\" fill=\"none\" stroke=\"%23333\" stroke-width=\"0.5\"/%3E%3C/pattern%3E%3Cpattern id=\"grid\" width=\"100\" height=\"100\" patternUnits=\"userSpaceOnUse\"%3E%3Crect width=\"100\" height=\"100\" fill=\"url(%23smallGrid)\"/%3E%3Cpath d=\"M 100 0 L 0 0 0 100\" fill=\"none\" stroke=\"%23666\" stroke-width=\"1\"/%3E%3C/pattern%3E%3C/defs%3E%3Crect width=\"100%\" height=\"100%\" fill=\"url(%23grid)\"/%3E%3C/svg%3E'); /* Faint grid */
+            background-size: cover;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row;
+            }
+            .lab-scene {
+                flex-grow: 2;
+                border-right: 2px solid var(--border-color);
+                border-bottom: none;
+                max-height: initial;
+            }
+            .control-panel {
+                flex-grow: 1;
+                max-width: 400px;
+                border-top: none;
+                border-left: 2px solid var(--border-color);
+                max-height: initial;
+                overflow-y: auto;
+            }
+            .bottom-strip {
+                display: flex;
+                flex-direction: column;
+                padding: 0 10px;
+            }
+            .plot-area {
+                flex: 1;
+                margin-top: 0;
+                margin-left: 0;
+                margin-bottom: 5px;
+            }
+            .lab-notebook {
+                flex: 1;
+                margin-top: 5px;
+                margin-right: 0;
+                margin-bottom: 0;
+            }
+            .bottom-strip {
+                flex-basis: 250px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                background-color: var(--control-bg);
+                border-top: 2px solid var(--border-color);
+            }
+            .control-panel {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (min-width: 1024px) {
+            .control-panel {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+        
+        /* Easy/Detailed View Toggle */
+        .view-toggle-container {
+            display: flex;
+            justify-content: center;
+            padding: 10px;
+            background-color: var(--panel-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .view-toggle {
+            display: flex;
+            background-color: #e0e0e0;
+            border-radius: 20px;
+            overflow: hidden;
+            width: fit-content;
+        }
+        .view-toggle button {
+            padding: 8px 15px;
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+            font-size: 14px;
+            color: #555;
+            transition: background-color 0.2s, color 0.2s;
+            min-height: var(--touch-target-min-size);
+            min-width: var(--touch-target-min-size);
+        }
+        .view-toggle button.active {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+
+        .hidden-detailed {
+            display: none !important;
+        }
+
+        /* Procedure Panel */
+        #procedure-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 250px;
+            z-index: 20;
+            font-size: 13px;
+            max-height: calc(100% - 20px);
+            overflow-y: auto;
+        }
+        #procedure-panel h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+            margin-bottom: 5px;
+        }
+        #procedure-panel ol {
+            padding-left: 20px;
+            margin: 0;
+        }
+        #procedure-panel li {
+            margin-bottom: 5px;
+            color: var(--label-color);
+        }
+        #procedure-panel li.active-step {
+            font-weight: bold;
+            color: var(--primary-dark);
+            background-color: rgba(76, 175, 80, 0.1);
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        #procedure-panel li.completed-step {
+            color: #888;
+            text-decoration: line-through;
+        }
+        
+        .learning-objective-card, .expected-results-card, .assessment-card {
+            background-color: #fff;
+            margin: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 13px;
+        }
+        .learning-objective-card h3, .expected-results-card h3, .assessment-card h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+        .assessment-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .assessment-card li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+            color: var(--label-color);
+        }
+        .assessment-card li .checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border-color);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .assessment-card li .checkbox.checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-dark);
+        }
+        .assessment-card li .checkbox.checked::before {
+            content: '✓';
+            color: white;
+            font-size: 14px;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class=\"view-toggle-container\">
+        <div class=\"view-toggle\">
+            <button id=\"easyViewBtn\" class=\"active\" aria-pressed=\"true\">Easy View</button>
+            <button id=\"detailedViewBtn\" aria-pressed=\"false\">Detailed View</button>
+        </div>
+    </div>
+
+    <div class=\"container\">
+        <div class=\"lab-scene\">
+            <svg id=\"svg-scene\" viewBox=\"0 0 1000 400\" preserveAspectRatio=\"xMidYMid slice\">
+                <defs>
+                    <filter id=\"grainFilter\" x=\"-50%\" y=\"-50%\" width=\"200%\" height=\"200%\">
+                        <feTurbulence type=\"fractalNoise\" baseFrequency=\"0.7\" numOctaves=\"3\" result=\"noise\"/>
+                        <feComposite operator=\"in\" in2=\"SourceGraphic\" in=\"noise\" result=\"noisycrop\"/>
+                        <feBlend mode=\"multiply\" in=\"SourceGraphic\" in2=\"noisycrop\" result=\"final\"/>
+                        <feColorMatrix type=\"saturate\" values=\"0.5\"/>
+                    </filter>
+                    <filter id=\"dropShadow\" x=\"-20%\" y=\"-20%\" width=\"140%\" height=\"140%\">
+                        <feGaussianBlur in=\"SourceAlpha\" stdDeviation=\"3\" result=\"blur\"/>
+                        <feOffset in=\"blur\" dx=\"2\" dy=\"2\" result=\"offsetBlur\"/>
+                        <feMerge>
+                            <feMergeNode in=\"offsetBlur\"/>
+                            <feMergeNode in=\"SourceGraphic\"/>
+                        </feMerge>
+                    </filter>
+                    <linearGradient id=\"lightGradient\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">
+                        <stop offset=\"0%\" stop-color=\"#FFFACD\"/>
+                        <stop offset=\"100%\" stop-color=\"#FFD700\"/>
+                    </linearGradient>
+
+                    <!-- Object shapes as reusable symbols -->
+                    <symbol id=\"shape-circle\" viewBox=\"0 0 100 100\">
+                        <circle cx=\"50\" cy=\"50\" r=\"40\" />
+                    </symbol>
+                    <symbol id=\"shape-square\" viewBox=\"0 0 100 100\">
+                        <rect x=\"10\" y=\"10\" width=\"80\" height=\"80\" />
+                    </symbol>
+                    <symbol id=\"shape-triangle\" viewBox=\"0 0 100 100\">
+                        <polygon points=\"50,10 90,90 10,90\" />
+                    </symbol>
+                    <symbol id=\"shape-hand\" viewBox=\"0 0 100 100\">
+                        <!-- A simplified hand outline for a child-friendly simulation -->
+                        <path d=\"M50,10 C60,0 70,0 80,10 C90,20 85,30 80,40 L70,40 L75,50 C80,60 80,70 70,70 L65,70 L65,80 C60,90 40,90 35,80 L35,70 L30,70 C20,70 20,60 25,50 L30,40 L20,40 C10,30 15,20 20,10 C30,0 40,0 50,10 Z\" />
+                    </symbol>
+
+                    <!-- Shadow shapes as reusable symbols -->
+                    <symbol id=\"shadow-circle\" viewBox=\"0 0 100 100\">
+                        <circle cx=\"50\" cy=\"50\" r=\"40\" fill=\"var(--shadow-umbra)\" />
+                    </symbol>
+                    <symbol id=\"shadow-square\" viewBox=\"0 0 100 100\">
+                        <rect x=\"10\" y=\"10\" width=\"80\" height=\"80\" fill=\"var(--shadow-umbra)\" />
+                    </symbol>
+                    <symbol id=\"shadow-triangle\" viewBox=\"0 0 100 100\">
+                        <polygon points=\"50,10 90,90 10,90\" fill=\"var(--shadow-umbra)\" />
+                    </symbol>
+                    <symbol id=\"shadow-hand\" viewBox=\"0 0 100 100\">
+                        <path d=\"M50,10 C60,0 70,0 80,10 C90,20 85,30 80,40 L70,40 L75,50 C80,60 80,70 70,70 L65,70 L65,80 C60,90 40,90 35,80 L35,70 L30,70 C20,70 20,60 25,50 L30,40 L20,40 C10,30 15,20 20,10 C30,0 40,0 50,10 Z\" fill=\"var(--shadow-umbra)\" />
+                    </symbol>
+                </defs>
+
+                <!-- Light Rays Group -->
+                <g id=\"light-rays-group\" style=\"display: none;\">
+                    <!-- Rays will be dynamically generated here by JS -->
+                </g>
+
+                <!-- Shadow path. The 'd' attribute will be dynamically updated by JS -->
+                <g id=\"shadow-group\">
+                    <path id=\"penumbra\" fill=\"var(--shadow-penumbra)\" filter=\"url(#grainFilter)\"/>
+                    <use id=\"umbra\" href=\"#shadow-circle\" fill=\"var(--shadow-umbra)\" filter=\"url(#grainFilter)\"/>
+                </g>
+                
+            </svg>
+
+            <!-- Physical elements rendered with DOM for easy dragging/interaction -->
+            <div class=\"lab-bench\"></div>
+
+            <div id=\"lightSourceStand\" class=\"light-source-stand\">
+                <div id=\"lightSource\" class=\"light-source\" role=\"slider\" aria-label=\"Light Source\" tabindex=\"0\"></div>
+            </div>
+
+            <div id=\"objectStand\" class=\"object-stand\">
+                <div id=\"experimentObject\" class=\"experiment-object object-material-wood\" role=\"img\" aria-label=\"Experiment Object\" tabindex=\"0\">
+                    <svg class=\"object-shape-svg\" viewBox=\"0 0 100 100\"><use href=\"#shape-circle\"></use></svg>
+                </div>
+            </div>
+
+            <div id=\"screenWall\" class=\"screen-wall\"></div>
+
+            <!-- Shadow projected onto the area before the screen -->
+            <div id=\"shadowDisplay\" style=\"display: none;\"></div>
+
+            <div id=\"pinhole-camera-view\">
+                <h3>Pin-Hole Camera View</h3>
+                <div id=\"pinhole-image\"></div>
+                <p>Observe the inverted image!</p>
+            </div>
+
+            <div class=\"instrument-panel detailed-view-element\">
+                <div><span class=\"label\">Light Ht:</span><span id=\"instLightHeight\" class=\"value\">0 cm</span></div>
+                <div><span class=\"label\">Light Dist:</span><span id=\"instLightDistance\" class=\"value\">0 cm</span></div>
+                <div><span class=\"label\">Object X:</span><span id=\"instObjectX\" class=\"value\">0 cm</span></div>
+                <div><span class=\"label\">Shadow L:</span><span id=\"instShadowLength\" class=\"value\">0 cm</span></div>
+                <div><span class=\"label\">Umbra %:</span><span id=\"instUmbraRatio\" class=\"value\">0 %</span></div>
+            </div>
+
+            <div id=\"procedure-panel\">
+                <h3>Procedure</h3>
+                <ol>
+                    <li id=\"step1\" class=\"active-step\">1. Adjust Light Height.</li>
+                    <li id=\"step2\">2. Move Object closer/further.</li>
+                    <li id=\"step3\">3. Change Object Shape & Material.</li>
+                    <li id=\"step4\" class=\"detailed-view-element\">4. Observe Umbra & Penumbra.</li>
+                    <li id=\"step5\" class=\"detailed-view-element\">5. Try Pin-Hole Camera View.</li>
+                    <li id=\"step6\" class=\"detailed-view-element\">6. Record observations in notebook.</li>
+                </ol>
+            </div>
+
+            <div class=\"modal-overlay\" id=\"startModal\">
+                <div class=\"modal-content\">
+                    <button class=\"close-modal\" aria-label=\"Close\">&times;</button>
+                    <h2>Welcome to Light & Shadows Lab!</h2>
+                    <p>In this experiment, you will explore how shadows are formed and how their size and shape change based on the light source and object.</p>
+                    <p><strong>Learning Objective:</strong> Understand rectilinear propagation of light, shadow formation (umbra/penumbra), and pin-hole camera principles.</p>
+                    <button id=\"startExperimentBtn\">Start Experiment</button>
+                </div>
+            </div>
+
+            <div class=\"modal-overlay\" id=\"hintModal\">
+                <div class=\"modal-content\">
+                    <button class=\"close-modal\" aria-label=\"Close\">&times;</button>
+                    <h2 id=\"hintTitle\">Hint!</h2>
+                    <p id=\"hintText\"></p>
+                    <button onclick=\"hideModal('hintModal')\">Got it!</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class=\"bottom-strip detailed-view-element\">
+            <div class=\"plot-area\">
+                <h3>Shadow Length vs. Object Distance</h3>
+                <canvas id=\"chartCanvas\"></canvas>
+            </div>
+            <div class=\"lab-notebook\">
+                <h3>Lab Notebook</h3>
+                <div class=\"notebook-log\" id=\"notebookLog\">
+                    <div>[00:00:00] Lab Started.</div>
+                </div>
+                <button class=\"download-btn\" id=\"downloadCsvBtn\">Download CSV</button>
+            </div>
+        </div>
+
+        <div class=\"control-panel\">
+            <div class=\"control-group\">
+                <label for=\"lightHeightSlider\">Light Height</label>
+                <div class=\"slider-container\">
+                    <input type=\"range\" id=\"lightHeightSlider\" min=\"50\" max=\"350\" value=\"200\" aria-label=\"Light Height Slider\">
+                    <span class=\"numeric-display\" id=\"lightHeightValue\">200 cm</span>
+                </div>
+            </div>
+
+            <div class=\"control-group\">
+                <label for=\"lightDistanceSlider\">Light Distance (from object)</label>
+                <div class=\"slider-container\">
+                    <input type=\"range\" id=\"lightDistanceSlider\" min=\"100\" max=\"500\" value=\"250\" aria-label=\"Light Distance Slider\">
+                    <span class=\"numeric-display\" id=\"lightDistanceValue\">250 cm</span>
+                </div>
+            </div>
+
+            <div class=\"control-group\">
+                <label>Object Material Type</label>
+                <div class=\"radio-buttons\">
+                    <input type=\"radio\" id=\"materialOpaque\" name=\"objectMaterial\" value=\"Opaque\" checked aria-label=\"Opaque material\"><label for=\"materialOpaque\">Opaque (e.g., Wood)</label>
+                    <input type=\"radio\" id=\"materialTransparent\" name=\"objectMaterial\" value=\"Transparent\" aria-label=\"Transparent material\"><label for=\"materialTransparent\">Transparent (e.g., Glass)</label>
+                    <input type=\"radio\" id=\"materialTranslucent\" name=\"objectMaterial\" value=\"Translucent\" aria-label=\"Translucent material\"><label for=\"materialTranslucent\">Translucent (e.g., Frosted Glass)</label>
+                </div>
+            </div>
+
+            <div class=\"control-group\">
+                <label>Object Shape</label>
+                <div class=\"shape-buttons\">
+                    <button id=\"shapeCircleBtn\" class=\"active\" data-shape=\"Circle\" aria-label=\"Circle shape\">Circle</button>
+                    <button id=\"shapeSquareBtn\" data-shape=\"Square\" aria-label=\"Square shape\">Square</button>
+                    <button id=\"shapeTriangleBtn\" data-shape=\"Triangle\" aria-label=\"Triangle shape\">Triangle</button>
+                    <button id=\"shapeHandBtn\" data-shape=\"Hand\" aria-label=\"Hand shape\">Hand</button>
+                </div>
+            </div>
+            
+            <div class=\"control-group detailed-view-element\">
+                <label>Experiment Controls</label>
+                <button id=\"pinHoleToggle\" class=\"toggle-button\" role=\"switch\" aria-checked=\"false\">
+                    Pin-Hole Camera View
+                    <input type=\"checkbox\" id=\"pinHoleCameraCheckbox\">
+                    <span class=\"toggle-switch\"></span>
+                </button>
+                <button id=\"showLightRaysToggle\" class=\"toggle-button\" role=\"switch\" aria-checked=\"false\">
+                    Show Light Rays
+                    <input type=\"checkbox\" id=\"lightRaysCheckbox\">
+                    <span class=\"toggle-switch\"></span>
+                </button>
+                <button id=\"noiseToggle\" class=\"toggle-button\" role=\"switch\" aria-checked=\"false\">
+                    Measurement Noise
+                    <input type=\"checkbox\" id=\"measurementNoiseCheckbox\">
+                    <span class=\"toggle-switch\"></span>
+                </button>
+            </div>
+
+            <div class=\"control-group\">
+                <label>Lab Actions</label>
+                <div class=\"button-group\">
+                    <button class=\"start\" id=\"startPauseBtn\">Start Trial</button>
+                    <button class=\"reset\" id=\"resetBtn\">Reset Lab</button>
+                </div>
+                <button class=\"download-btn detailed-view-element\" id=\"recordDataBtn\">Record Data</button>
+            </div>
+
+            <div class=\"control-group detailed-view-element\">
+                <h3>Presets</h3>
+                <div class=\"button-group\">
+                    <button id=\"presetBaseline\" aria-label=\"Apply Baseline preset\">Baseline</button>
+                    <button id=\"presetLargeShadow\" aria-label=\"Apply Large Shadow preset\">Large Shadow</button>
+                    <button id=\"presetSmallShadow\" aria-label=\"Apply Small Shadow preset\">Small Shadow</button>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <div class=\"learning-objective-card detailed-view-element\">
+        <h3>Learning Objective</h3>
+        <p>By the end of this lab, you should be able to:</p>
+        <ul>
+            <li>Explain how shadows are formed.</li>
+            <li>Describe the effect of light source position on shadow size and clarity.</li>
+            <li>Identify umbra and penumbra.</li>
+            <li>Understand the basic principle of a pin-hole camera.</li>
+        </ul>
+    </div>
+
+    <div class=\"expected-results-card detailed-view-element\">
+        <h3>Expected Results</h3>
+        <p>You will observe that:</p>
+        <ul>
+            <li>Shadows are always formed on the opposite side of the light source.</li>
+            <li>The size of the shadow changes with the distance of the object from the light source and the screen.</li>
+            <li>Opaque objects form clear shadows, while transparent objects don't.</li>
+            <li>A pin-hole camera forms an inverted image.</li>
+        </ul>
+    </div>
+
+    <div class=\"assessment-card detailed-view-element\">
+        <h3>Assessment</h3>
+        <ul>
+            <li><div class=\"checkbox\" id=\"assessStep1\"></div> Correctly adjusted light source.</li>
+            <li><div class=\"checkbox\" id=\"assessStep2\"></div> Explored object position.</li>
+            <li><div class=\"checkbox\" id=\"assessStep3\"></div> Changed object shape & material.</li>
+            <li><div class=\"checkbox\" id=\"assessPinhole\"></div> Activated Pin-Hole Camera view.</li>
+            <li><div class=\"checkbox\" id=\"assessRecord\"></div> Recorded at least 3 data points.</li>
+        </ul>
+    </div>
+
+
+    <script>
+        const $ = selector => document.querySelector(selector);
+        const $$ = selector => document.querySelectorAll(selector);
+
+        // Lab Elements
+        const lightSource = $('#lightSource');
+        const lightSourceStand = $('#lightSourceStand');
+        const experimentObject = $('#experimentObject');
+        const objectStand = $('#objectStand');
+        const screenWall = $('#screenWall');
+        const shadowDisplay = $('#shadowDisplay');
+        const pinholeCameraView = $('#pinhole-camera-view');
+        const pinholeImage = $('#pinhole-image');
+        const svgScene = $('#svg-scene');
+        const lightRaysGroup = $('#light-rays-group');
+        const umbraElement = $('#umbra');
+        const penumbraPath = $('#penumbra');
+
+        // Controls
+        const lightHeightSlider = $('#lightHeightSlider');
+        const lightDistanceSlider = $('#lightDistanceSlider');
+        const lightHeightValue = $('#lightHeightValue');
+        const lightDistanceValue = $('#lightDistanceValue');
+        const materialRadios = $$('input[name=\"objectMaterial\"]');
+        const shapeButtons = $$('.shape-buttons button');
+        const pinHoleCameraCheckbox = $('#pinHoleCameraCheckbox');
+        const showLightRaysCheckbox = $('#lightRaysCheckbox');
+        const noiseCheckbox = $('#measurementNoiseCheckbox');
+        const pinHoleToggleBtn = $('#pinHoleToggle');
+        const showLightRaysToggleBtn = $('#showLightRaysToggle');
+        const noiseToggleBtn = $('#noiseToggle');
+        const startPauseBtn = $('#startPauseBtn');
+        const resetBtn = $('#resetBtn');
+        const recordDataBtn = $('#recordDataBtn');
+
+        // Instrument Panel
+        const instLightHeight = $('#instLightHeight');
+        const instLightDistance = $('#instLightDistance');
+        const instObjectX = $('#instObjectX');
+        const instShadowLength = $('#instShadowLength');
+        const instUmbraRatio = $('#instUmbraRatio');
+
+        // Notebook & Chart
+        const notebookLog = $('#notebookLog');
+        const chartCanvas = $('#chartCanvas');
+        const downloadCsvBtn = $('#downloadCsvBtn');
+        let chart; // Will hold Chart.js instance
+
+        // Modals
+        const startModal = $('#startModal');
+        const hintModal = $('#hintModal');
+        const startExperimentBtn = $('#startExperimentBtn');
+        $$('.close-modal').forEach(btn => btn.addEventListener('click', (e) => hideModal(e.target.closest('.modal-overlay').id)));
+
+        // Procedure Panel
+        const procedureSteps = $$('#procedure-panel li');
+        let currentStep = 0;
+
+        // Assessment
+        const assessStep1 = $('#assessStep1');
+        const assessStep2 = $('#assessStep2');
+        const assessStep3 = $('#assessStep3');
+        const assessPinhole = $('#assessPinhole');
+        const assessRecord = $('#assessRecord');
+
+        // View Mode
+        const easyViewBtn = $('#easyViewBtn');
+        const detailedViewBtn = $('#detailedViewBtn');
+        const detailedElements = $$('.detailed-view-element');
+        let isDetailedView = false;
+
+        // Simulation State
+        const simulation = {
+            light: {
+                x: 0, // Calculated from lightDistance
+                y: 0, // Calculated from lightHeight
+                radius: 10 // Representing light source size for penumbra calculation
+            },
+            object: {
+                x: 0, // Relative to scene
+                y: 0, // Fixed height on stand
+                width: 70, // Base object size
+                height: 70,
+                shape: 'Circle',
+                material: 'Opaque'
+            },
+            screen: {
+                x: 0 // Fixed scene position
+            },
+            shadow: {
+                length: 0,
+                width: 0,
+                umbraRatio: 100 // Percentage of umbra
+            },
+            pinHoleMode: false,
+            showRays: false,
+            measurementNoise: false,
+            isPlaying: false,
+            logData: [],
+            trialCounter: 0,
+            animationFrame: null,
+            hapticTimeout: null
+        };
+
+        const BASE_LIGHT_HEIGHT_PX = 400; // SVG height is 400. This is max height in pixels.
+        const BASE_SCENE_WIDTH_PX = 1000; // SVG width is 1000.
+        const BENCH_HEIGHT_PX = 50; // Visual bench height
+        const STAND_OFFSET_FROM_BENCH = 40; // How high stands are above the bench
+        const OBJECT_STAND_HEIGHT = 100; // Visual height of the object stand
+        const LIGHT_STAND_HEIGHT = 150; // Visual height of the light stand
+        const SCREEN_WALL_HEIGHT = 180; // Visual height of the screen wall
+
+        // Convert a 0-100 range to a scaled scene X position (left to right)
+        function scaleToSceneX(value, min_val, max_val, scene_min_px, scene_max_px) {
+            return scene_min_px + (value - min_val) / (max_val - min_val) * (scene_max_px - scene_min_px);
+        }
+
+        // Convert a 0-100 range to a scaled scene Y position (bottom to top, so invert)
+        function scaleToSceneY(value, min_val, max_val, scene_min_px, scene_max_px) {
+            // max_val is visually lower, min_val is visually higher
+            return scene_max_px - (value - min_val) / (max_val - min_val) * (scene_max_px - scene_min_px);
+        }
+
+        function getSceneDimensions() {
+            const svgRect = svgScene.getBoundingClientRect();
+            return {
+                width: svgRect.width,
+                height: svgRect.height - BENCH_HEIGHT_PX // Actual playable height above bench
+            };
+        }
+
+        function updateScenePositions() {
+            const { width: sceneW, height: sceneH } = getSceneDimensions();
+
+            // Light Source Position (mapped from sliders)
+            const lightHeightCm = parseFloat(lightHeightSlider.value); // 50-350 cm
+            const lightDistanceCm = parseFloat(lightDistanceSlider.value); // 100-500 cm
+
+            // Map light height (cm) to SVG y-coordinate (bottom to top)
+            // min/max height in cm corresponds to min/max px from bench
+            const lightY = sceneH - (lightHeightCm - 50) / (350 - 50) * (sceneH - STAND_OFFSET_FROM_BENCH - 50) - STAND_OFFSET_FROM_BENCH; // 50px is lightSource radius for visual centering
+            const lightX = scaleToSceneX(lightDistanceCm, 100, 500, sceneW * 0.05, sceneW * 0.45); // Light can be up to 45% of scene width
+
+            lightSourceStand.style.left = `${lightX - 10}px`; // Adjust for stand width
+            lightSourceStand.style.height = `${sceneH - lightY - STAND_OFFSET_FROM_BENCH}px`;
+            lightSource.style.top = `${lightY - lightSourceStand.offsetTop - (lightSource.offsetHeight / 2)}px`;
+            lightSource.style.left = `${lightX - lightSourceStand.offsetLeft - (lightSource.offsetWidth / 2)}px`;
+
+            simulation.light.x = lightX;
+            simulation.light.y = lightY + lightSource.offsetHeight / 2; // Center of the light source
+
+            // Object Position (mapped from drag-and-drop or defaulted)
+            // objectX is handled by drag-and-drop or initial value
+            // objectY is fixed relative to its stand, just above the bench
+            const objectY = sceneH - STAND_OFFSET_FROM_BENCH - objectStand.offsetHeight + (experimentObject.offsetHeight / 2); // Center of object
+            simulation.object.y = objectY;
+            
+            // Screen position (fixed right, but can appear to move based on Z-axis if simulated)
+            const screenX = sceneW * 0.90; // Fixed at 90% of scene width
+            screenWall.style.left = `${screenX - 10}px`; // Adjust for screen wall width
+            screenWall.style.height = `${sceneH - STAND_OFFSET_FROM_BENCH}px`; // Screen starts from bench up
+            screenWall.style.top = `${STAND_OFFSET_FROM_BENCH}px`; // From the top of the scene, adjusted by bench
+
+            simulation.screen.x = screenX;
+
+            // Update instrument panel
+            instLightHeight.textContent = `${Math.round(lightHeightCm)} cm`;
+            instLightDistance.textContent = `${Math.round(lightDistanceCm)} cm`;
+            instObjectX.textContent = `${Math.round(simulation.object.x / sceneW * 100)} %`; // As percentage of scene width
+        }
+
+        function getObjectBounds() {
+            const objRect = experimentObject.getBoundingClientRect();
+            const svgRect = svgScene.getBoundingClientRect();
+            return {
+                x: objRect.left - svgRect.left + (objRect.width / 2),
+                y: objRect.top - svgRect.top + (objRect.height / 2),
+                width: objRect.width,
+                height: objRect.height
+            };
+        }
+
+        function calculateShadow() {
+            const { width: sceneW, height: sceneH } = getSceneDimensions();
+            const light = simulation.light;
+            const object = getObjectBounds(); // This now returns SVG coords
+            const screenX = simulation.screen.x;
+
+            let shadowScaleFactor = 1;
+            let umbraPenumbraRatio = 1; // 1 means full umbra
+            let penumbraPathData = '';
+
+            if (simulation.object.material === 'Opaque') {
+                // Calculate shadow length and width
+                // Simple geometry: similar triangles
+                // Distance from light to object (L-O)
+                const lightToObjectDistance = object.x - light.x;
+                // Distance from light to screen (L-S)
+                const lightToScreenDistance = screenX - light.x;
+
+                if (lightToObjectDistance <= 0) { // Object is behind or at the light source
+                    simulation.shadow.length = 0;
+                    simulation.shadow.width = 0;
+                    umbraElement.setAttribute('href', '');
+                    penumbraPath.setAttribute('d', '');
+                    return;
+                }
+                
+                shadowScaleFactor = lightToScreenDistance / lightToObjectDistance;
+
+                const shadowX = light.x + lightToObjectDistance * shadowScaleFactor; // This is the screen X position, not relevant for shadow *start*
+                const shadowWidth = object.width * shadowScaleFactor;
+                const shadowHeight = object.height * shadowScaleFactor;
+                
+                // Shadow center on the screen
+                // Simple projection (X-axis is horizontal distance)
+                // Y-axis for vertical projection: Object top relative to light source
+                // light.y is already adjusted for visual center, object.y too.
+                const objectCenterY = object.y; // Center of object
+
+                const shadowTopY = light.y - (light.y - (objectCenterY - object.height / 2)) * shadowScaleFactor;
+                const shadowBottomY = light.y - (light.y - (objectCenterY + object.height / 2)) * shadowScaleFactor;
+                
+                const shadowCenterY = (shadowTopY + shadowBottomY) / 2;
+
+                const umbraWidth = object.width * shadowScaleFactor;
+                const umbraHeight = object.height * shadowScaleFactor;
+
+                umbraElement.setAttribute('x', `${screenX - umbraWidth / 2}`);
+                umbraElement.setAttribute('y', `${shadowCenterY - umbraHeight / 2}`);
+                umbraElement.setAttribute('width', `${umbraWidth}`);
+                umbraElement.setAttribute('height', `${umbraHeight}`);
+
+                // Penumbra calculation for a point light (which this isn't exactly) is complex.
+                // For simplicity, let's represent a penumbra by a slightly larger, fainter shadow.
+                // Or, if light source radius is used:
+                const lightRadius = simulation.light.radius; // The visual radius of the light source
+                const umbraStart = object.x; // Point where umbra starts
+                const umbraEnd = light.x + (object.x - light.x + object.width/2) * (lightToScreenDistance / (object.x - light.x));
+
+                // A simplified penumbra extends further
+                const penumbraScaleFactor = (lightToScreenDistance + lightRadius) / (lightToObjectDistance - lightRadius);
+                const penumbraWidth = object.width * penumbraScaleFactor;
+                const penumbraHeight = object.height * penumbraScaleFactor;
+                
+                // Umbra-penumbra ratio
+                if (lightToObjectDistance > lightToScreenDistance) { // Object is closer to light than screen
+                    umbraPenumbraRatio = 1; // Only umbra
+                } else if (lightToObjectDistance < lightRadius) { // Object very close to light
+                     umbraPenumbraRatio = 0; // Mostly penumbra, or very wide
+                } else {
+                    umbraPenumbraRatio = (lightToObjectDistance / lightToScreenDistance) * (lightToScreenDistance - light.x) / (object.x - light.x);
+                    umbraPenumbraRatio = Math.max(0, Math.min(1, 1 - (lightRadius / (lightToObjectDistance * 2)))); // Simplified
+                }
+                
+                // Update umbra
+                umbraElement.style.fill = `rgba(0,0,0, ${0.8 * umbraPenumbraRatio})`;
+                
+                // For penumbra, we'll draw a slightly larger shadow around the umbra.
+                // This is a simplification. A real penumbra would be a complex shape.
+                // Let's make it a general shape slightly larger than umbra.
+                const penumbraOutlineWidth = umbraWidth * 1.1; // 10% larger
+                const penumbraOutlineHeight = umbraHeight * 1.1; // 10% larger
+
+                // Based on current shape
+                const currentShape = simulation.object.shape;
+                let penumbraShapePath = '';
+                if (currentShape === 'Circle') {
+                    penumbraShapePath = `M ${screenX} ${shadowCenterY} m -${penumbraOutlineWidth / 2}, 0 a ${penumbraOutlineWidth / 2},${penumbraOutlineHeight / 2} 0 1,0 ${penumbraOutlineWidth},0 a ${penumbraOutlineWidth / 2},${penumbraOutlineHeight / 2} 0 1,0 -${penumbraOutlineWidth},0`;
+                } else if (currentShape === 'Square') {
+                    const px = screenX - penumbraOutlineWidth / 2;
+                    const py = shadowCenterY - penumbraOutlineHeight / 2;
+                    penumbraShapePath = `M ${px} ${py} L ${px + penumbraOutlineWidth} ${py} L ${px + penumbraOutlineWidth} ${py + penumbraOutlineHeight} L ${px} ${py + penumbraOutlineHeight} Z`;
+                } else if (currentShape === 'Triangle') {
+                    const cx = screenX;
+                    const py = shadowCenterY - penumbraOutlineHeight / 2;
+                    penumbraShapePath = `M ${cx},${py} L ${cx + penumbraOutlineWidth / 2},${py + penumbraOutlineHeight} L ${cx - penumbraOutlineWidth / 2},${py + penumbraOutlineHeight} Z`;
+                } else if (currentShape === 'Hand') {
+                    // For hand, we'll just scale the path directly
+                    const handPath = $(`#shape-hand`).outerHTML; // Get raw SVG
+                    const tempSVG = document.createElement('div');
+                    tempSVG.innerHTML = handPath;
+                    const pathElem = tempSVG.querySelector('path');
+                    const bbox = pathElem.getBBox();
+                    const scaleX = penumbraOutlineWidth / bbox.width;
+                    const scaleY = penumbraOutlineHeight / bbox.height;
+                    const translateX = screenX - penumbraOutlineWidth / 2 - bbox.x * scaleX;
+                    const translateY = shadowCenterY - penumbraOutlineHeight / 2 - bbox.y * scaleY;
+                    penumbraShapePath = `M ${screenX - umbraWidth/2} ${shadowCenterY - umbraHeight/2} ` + $(`#shape-${simulation.object.shape}`).outerHTML;
+                    
+                    // Simple path scaling for penumbra for complex shapes
+                    // This is very rudimentary and might not scale correctly or be accurate.
+                    penumbraPath.setAttribute('transform', `translate(${translateX},${translateY}) scale(${scaleX},${scaleY})`);
+                    penumbraPath.setAttribute('d', pathElem.getAttribute('d')); // Copy raw path
+                    penumbraPath.setAttribute('fill', 'var(--shadow-penumbra)'); // Ensure proper fill
+                    penumbraPath.setAttribute('filter', 'url(#grainFilter)');
+                    
+                    // Umbra for hand
+                    const umbraScaleX = umbraWidth / bbox.width;
+                    const umbraScaleY = umbraHeight / bbox.height;
+                    const umbraTranslateX = screenX - umbraWidth / 2 - bbox.x * umbraScaleX;
+                    const umbraTranslateY = shadowCenterY - umbraHeight / 2 - bbox.y * umbraScaleY;
+                    umbraElement.setAttribute('transform', `translate(${umbraTranslateX},${umbraTranslateY}) scale(${umbraScaleX},${umbraScaleY})`);
+                    umbraElement.setAttribute('d', pathElem.getAttribute('d'));
+                    umbraElement.setAttribute('fill', `rgba(0,0,0, ${0.8 * umbraPenumbraRatio})`); // Ensure proper fill
+                    umbraElement.setAttribute('filter', 'url(#grainFilter)');
+                    umbraElement.removeAttribute('href'); // No href for dynamic path
+                    
+                }
+
+                if (currentShape !== 'Hand') { // Special handling for Hand shape as it uses direct path
+                    penumbraPath.setAttribute('d', penumbraShapePath);
+                    penumbraPath.removeAttribute('transform'); // Reset transform for simple shapes
+                    
+                    umbraElement.setAttribute('href', `#shadow-${currentShape.toLowerCase()}`); // Use symbol for simple shapes
+                    umbraElement.removeAttribute('d');
+                    umbraElement.removeAttribute('transform');
+                }
+                
+                // Set the penumbra fill to be semi-transparent
+                penumbraPath.style.fill = `rgba(0,0,0, ${0.3 * (1 - umbraPenumbraRatio)})`; // Fades out as umbra gets stronger
+
+                // Final shadow position on the screen based on screen coordinates
+                const actualShadowScreenX = screenX; // Shadow forms at screen
+                const actualShadowScreenY = shadowCenterY; // Center of shadow vertically
+
+                shadowDisplay.style.left = `${actualShadowScreenX - shadowWidth / 2}px`; // Visually centered
+                shadowDisplay.style.top = `${actualShadowScreenY - shadowHeight / 2}px`;
+                shadowDisplay.style.width = `${shadowWidth}px`;
+                shadowDisplay.style.height = `${shadowHeight}px`;
+
+                simulation.shadow.length = shadowHeight; // Vertical length
+                simulation.shadow.width = shadowWidth; // Horizontal width
+                simulation.shadow.umbraRatio = umbraPenumbraRatio * 100;
+                
+            } else if (simulation.object.material === 'Transparent') {
+                umbraElement.setAttribute('href', '');
+                penumbraPath.setAttribute('d', '');
+                shadowDisplay.style.display = 'none';
+                simulation.shadow.length = 0;
+                simulation.shadow.width = 0;
+                simulation.shadow.umbraRatio = 0;
+            } else if (simulation.object.material === 'Translucent') {
+                // Translucent creates a very faint, blurred shadow
+                const lightToObjectDistance = object.x - light.x;
+                const lightToScreenDistance = screenX - light.x;
+
+                if (lightToObjectDistance <= 0) {
+                    umbraElement.setAttribute('href', '');
+                    penumbraPath.setAttribute('d', '');
+                    shadowDisplay.style.display = 'none';
+                    simulation.shadow.length = 0;
+                    simulation.shadow.width = 0;
+                    simulation.shadow.umbraRatio = 0;
+                    return;
+                }
+
+                shadowScaleFactor = lightToScreenDistance / lightToObjectDistance;
+                const shadowWidth = object.width * shadowScaleFactor * 1.2; // Slightly larger and blurrier
+                const shadowHeight = object.height * shadowScaleFactor * 1.2;
+
+                const objectCenterY = object.y;
+                const shadowTopY = light.y - (light.y - (objectCenterY - object.height / 2)) * shadowScaleFactor;
+                const shadowBottomY = light.y - (light.y - (objectCenterY + object.height / 2)) * shadowScaleFactor;
+                const shadowCenterY = (shadowTopY + shadowBottomY) / 2;
+
+                // Translucent only produces a very faint penumbra-like shadow
+                umbraElement.setAttribute('href', `#shadow-${simulation.object.shape.toLowerCase()}`);
+                umbraElement.setAttribute('x', `${screenX - shadowWidth / 2}`);
+                umbraElement.setAttribute('y', `${shadowCenterY - shadowHeight / 2}`);
+                umbraElement.setAttribute('width', `${shadowWidth}`);
+                umbraElement.setAttribute('height', `${shadowHeight}`);
+                umbraElement.style.fill = `rgba(0,0,0,0.1)`; // Very faint
+                umbraElement.style.filter = 'blur(5px) url(#grainFilter)'; // Blurred
+
+                // Hide penumbra
+                penumbraPath.setAttribute('d', '');
+
+                simulation.shadow.length = shadowHeight;
+                simulation.shadow.width = shadowWidth;
+                simulation.shadow.umbraRatio = 10; // Very low umbra ratio
+            }
+
+            // Pin-hole camera view
+            if (simulation.pinHoleMode) {
+                // In a pin-hole camera, the image is inverted.
+                // The image itself is a projected 'shadow' (or light passing through)
+                // We'll invert the shadow element and display it in the pinhole view
+                if (simulation.object.material === 'Opaque') {
+                    const invertedShadowScale = 0.5; // Scale for pinhole view
+
+                    // The pinhole image is formed by light *from* the object, passing *through* a small hole
+                    // Here, we're simplifying by taking the shadow shape and inverting it.
+                    // The actual image size will depend on object size and object-to-pinhole distance vs. pinhole-to-screen distance
+                    // For simplicity, let's just show a scaled, inverted version of the object's shape
+                    let invertedShapeSVG = $(`#shape-${simulation.object.shape.toLowerCase()}`).outerHTML;
+                    pinholeImage.innerHTML = `<svg width=\"100%\" height=\"100%\" viewBox=\"0 0 100 100\" style=\"fill: white; transform: rotate(180deg) scale(${invertedShadowScale});\"><use href=\"#shape-${simulation.object.shape.toLowerCase()}\"></use></svg>`;
+                    
+                } else {
+                    pinholeImage.innerHTML = `<p style=\"color: white;\">No clear image for ${simulation.object.material} object.</p>`;
+                }
+                
+                pinholeCameraView.classList.add('active');
+                shadowDisplay.style.display = 'none'; // Hide normal shadow when in pinhole mode
+            } else {
+                pinholeCameraView.classList.remove('active');
+                if (simulation.object.material === 'Opaque' || simulation.object.material === 'Translucent') {
+                    shadowDisplay.style.display = 'block';
+                }
+            }
+
+            instShadowLength.textContent = `${Math.round(simulation.shadow.length / sceneW * 100)} %`;
+            instUmbraRatio.textContent = `${Math.round(simulation.shadow.umbraRatio)} %`;
+        }
+
+
+        function drawLightRays() {
+            lightRaysGroup.innerHTML = ''; // Clear previous rays
+            if (!simulation.showRays || simulation.object.material !== 'Opaque') return;
+
+            const light = simulation.light;
+            const object = getObjectBounds();
+            const screenX = simulation.screen.x;
+            const screenH = getSceneDimensions().height;
+
+            const numRays = 8;
+            const raySpreadAngle = 60; // degrees
+
+            const objectTop = object.y - object.height / 2;
+            const objectBottom = object.y + object.height / 2;
+
+            // Define points on the object to draw rays to
+            const objectPoints = [
+                { x: object.x - object.width / 2, y: objectTop },
+                { x: object.x + object.width / 2, y: objectTop },
+                { x: object.x - object.width / 2, y: objectBottom },
+                { x: object.x + object.width / 2, y: objectBottom },
+                { x: object.x, y: objectTop },
+                { x: object.x, y: objectBottom },
+                { x: object.x - object.width / 2, y: object.y },
+                { x: object.x + object.width / 2, y: object.y }
+            ];
+
+            objectPoints.forEach(point => {
+                const dx = point.x - light.x;
+                const dy = point.y - light.y;
+                
+                const rayLength = 1000; // Extend beyond the screen
+                const endX = light.x + dx * (rayLength / Math.sqrt(dx*dx + dy*dy));
+                const endY = light.y + dy * (rayLength / Math.sqrt(dx*dx + dy*dy));
+
+                // Rays to show path *to* the object
+                lightRaysGroup.innerHTML += `<line x1=\"${light.x}\" y1=\"${light.y}\" x2=\"${point.x}\" y2=\"${point.y}\" class=\"light-ray\"/>`;
+                
+                // Rays to show shadow formation (passing by the edges)
+                if (point.x === object.x - object.width/2 || point.x === object.x + object.width/2 || point.y === objectTop || point.y === objectBottom) {
+                     lightRaysGroup.innerHTML += `<line x1=\"${point.x}\" y1=\"${point.y}\" x2=\"${endX}\" y2=\"${endY}\" class=\"light-ray\" stroke-dasharray=\"2 2\" />`; // Dotted for shadow projection
+                }
+            });
+        }
+
+
+        let dragTarget = null;
+        let initialX, initialY, currentX, currentY;
+
+        function startDrag(e) {
+            e.preventDefault();
+            dragTarget = e.currentTarget;
+            const rect = dragTarget.getBoundingClientRect();
+            initialX = e.clientX || e.touches[0].clientX;
+            initialY = e.clientY || e.touches[0].clientY;
+
+            dragTarget.style.transition = 'none'; // Disable transition during drag
+            dragTarget.classList.add('dragging');
+
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchmove', drag);
+            document.addEventListener('touchend', endDrag);
+
+            // Optional: trigger haptic feedback or visual "pressed" state
+            if (simulation.hapticTimeout) clearTimeout(simulation.hapticTimeout);
+            dragTarget.style.animation = 'vibrate 0.1s ease-out';
+            simulation.hapticTimeout = setTimeout(() => dragTarget.style.animation = 'none', 100);
+        }
+
+        function drag(e) {
+            if (!dragTarget) return;
+
+            e.preventDefault();
+            currentX = e.clientX || e.touches[0].clientX;
+            currentY = e.clientY || e.touches[0].clientY;
+
+            const dx = currentX - initialX;
+            const dy = currentY - initialY;
+
+            let newLeft = dragTarget.offsetLeft + dx;
+            let newTop = dragTarget.offsetTop + dy;
+
+            const { width: sceneW, height: sceneH } = getSceneDimensions();
+
+            if (dragTarget === lightSource) {
+                // Light source is constrained by stand.
+                // It moves with its stand for distance, and its own height is adjusted.
+                const lightStandLeft = lightSourceStand.offsetLeft + dx;
+                const lightStandHeight = lightSourceStand.offsetHeight - dy; // Invert for visual height adjustment
+
+                // Clamp light stand X position (controls light distance)
+                const minLightX = sceneW * 0.05 - (lightSourceStand.offsetWidth / 2);
+                const maxLightX = sceneW * 0.45 - (lightSourceStand.offsetWidth / 2);
+                const clampedLightStandLeft = Math.max(minLightX, Math.min(maxLightX, lightStandLeft));
+                lightSourceStand.style.left = `${clampedLightStandLeft}px`;
+
+                // Map clamped position back to light distance slider value
+                const lightXCm = (clampedLightStandLeft - (sceneW * 0.05 - (lightSourceStand.offsetWidth / 2))) / (maxLightX - minLightX) * (500 - 100) + 100;
+                lightDistanceSlider.value = lightXCm;
+
+                // Clamp light stand height (controls light height)
+                const minLightStandHeight = sceneH * 0.3; // Min height for stand, implies max light height
+                const maxLightStandHeight = sceneH * 0.8; // Max height for stand, implies min light height
+                const clampedLightStandHeight = Math.max(minLightStandHeight, Math.min(maxLightStandHeight, lightStandHeight));
+                lightSourceStand.style.height = `${clampedLightStandHeight}px`;
+
+                // Map clamped height back to light height slider value (inverted)
+                // When stand is taller, light height is lower.
+                const lightHCm = (1 - (clampedLightStandHeight - minLightStandHeight) / (maxLightStandHeight - minLightStandHeight)) * (350 - 50) + 50;
+                lightHeightSlider.value = lightHCm;
+
+                updateSimulation();
+
+            } else if (dragTarget === experimentObject) {
+                // Object moves horizontally (X-axis) and can slightly move vertically (Y-axis)
+                // Constrain object movement to within the lab scene
+                const minObjX = sceneW * 0.2; // Min X position (left of light)
+                const maxObjX = sceneW * 0.8; // Max X position (right of screen)
+                
+                // Get absolute object position (center)
+                const objectCenterAbsX = objectStand.offsetLeft + (experimentObject.offsetLeft + experimentObject.offsetWidth / 2);
+                const newObjectCenterAbsX = objectCenterAbsX + dx;
+                
+                const clampedObjectCenterAbsX = Math.max(minObjX + experimentObject.offsetWidth/2, Math.min(maxObjX - experimentObject.offsetWidth/2, newObjectCenterAbsX));
+                
+                // Calculate new object stand position
+                objectStand.style.left = `${clampedObjectCenterAbsX - (experimentObject.offsetWidth / 2 + experimentObject.offsetLeft)}px`;
+                
+                // objectY is fixed relative to stand, only adjust visual X for stand
+                simulation.object.x = clampedObjectCenterAbsX;
+
+                updateSimulation();
+            }
+
+            initialX = currentX;
+            initialY = currentY;
+        }
+
+        function endDrag() {
+            if (!dragTarget) return;
+
+            dragTarget.style.transition = 'all 0.3s ease'; // Re-enable transition
+            dragTarget.classList.remove('dragging');
+            
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', endDrag);
+            document.removeEventListener('touchmove', drag);
+            document.removeEventListener('touchend', endDrag);
+            
+            dragTarget = null;
+            updateSimulation(); // Ensure final state is updated
+            checkProcedureStepCompletion();
+        }
+
+        function updateSimulation() {
+            updateScenePositions();
+            calculateShadow();
+            drawLightRays(); // Redraw rays based on new positions
+            updateChart(); // Update chart with new data
+        }
+
+        function logToNotebook(message) {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const logEntry = document.createElement('div');
+            logEntry.textContent = `[${timeString}] ${message}`;
+            notebookLog.prepend(logEntry); // Add to top
+            // Keep log size manageable
+            while (notebookLog.children.length > 50) {
+                notebookLog.removeChild(notebookLog.lastChild);
+            }
+        }
+
+        let dataPoints = [];
+        let chartInitialized = false;
+
+        function updateChart() {
+            if (!chartInitialized) {
+                initializeChart();
+                chartInitialized = true;
+            }
+
+            const ctx = chartCanvas.getContext('2d');
+            
+            chart.data.labels = dataPoints.map(p => p.objectX.toFixed(0) + 'cm');
+            chart.data.datasets[0].data = dataPoints.map(p => p.shadowLength);
+            
+            // Add error bars if noise is enabled
+            if (simulation.measurementNoise) {
+                // Simplified error bars (e.g., +/- 5% of value)
+                chart.data.datasets[0].borderColor = 'rgba(75, 192, 192, 0.7)';
+                // This chart type does not support direct error bars.
+                // A common workaround is to plot a min/max range, but Chart.js needs a plugin for that.
+                // For a simple visual, we'll just add some visual jitter to points.
+                // We won't modify the dataset directly for this, but could show it in a custom plugin.
+            } else {
+                chart.data.datasets[0].borderColor = 'rgba(75, 192, 192, 1)';
+            }
+            
+            chart.update();
+        }
+
+        function initializeChart() {
+            const ctx = chartCanvas.getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Shadow Length (%)',
+                        data: [],
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        fill: false,
+                        tension: 0.1,
+                        pointRadius: 5,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'category',
+                            title: {
+                                display: true,
+                                text: 'Object X Position (relative)',
+                                color: var('--label-color')
+                            },
+                            ticks: { color: var('--text-color') }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Shadow Length (%)',
+                                color: var('--label-color')
+                            },
+                            ticks: { color: var('--text-color') }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: true, labels: { color: var('--text-color') } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y.toFixed(1) + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Dummy Chart.js implementation (as external libraries are not allowed, this is a placeholder/simplified version)
+        // In a real scenario, Chart.js would be loaded via dataURI or similar
+        function Chart(ctx, config) {
+            this.ctx = ctx;
+            this.config = config;
+            this.data = config.data;
+            this.options = config.options;
+            this.canvas = ctx.canvas;
+
+            this.update = function() {
+                this.draw();
+            };
+
+            this.draw = function() {
+                ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                ctx.strokeStyle = this.data.datasets[0].borderColor;
+                ctx.fillStyle = this.data.datasets[0].backgroundColor;
+                ctx.lineWidth = 2;
+
+                const labels = this.data.labels;
+                const data = this.data.datasets[0].data;
+                if (data.length === 0) return;
+
+                const padding = 30;
+                const chartWidth = this.canvas.width - 2 * padding;
+                const chartHeight = this.canvas.height - 2 * padding;
+
+                // Draw axes
+                ctx.beginPath();
+                ctx.moveTo(padding, padding);
+                ctx.lineTo(padding, padding + chartHeight);
+                ctx.lineTo(padding + chartWidth, padding + chartHeight);
+                ctx.stroke();
+
+                // Draw labels (simplified)
+                ctx.fillStyle = var('--text-color');
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'center';
+                labels.forEach((label, i) => {
+                    const x = padding + i * (chartWidth / (labels.length - 1));
+                    ctx.fillText(label, x, padding + chartHeight + 15);
+                });
+                ctx.textAlign = 'right';
+                ctx.fillText('0%', padding - 5, padding + chartHeight);
+                ctx.fillText('100%', padding - 5, padding + 10);
+                
+                // Draw data points and line
+                ctx.beginPath();
+                ctx.moveTo(padding, padding + chartHeight - (data[0] / 100) * chartHeight);
+                data.forEach((value, i) => {
+                    const x = padding + i * (chartWidth / (labels.length - 1));
+                    const y = padding + chartHeight - (value / 100) * chartHeight;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                    
+                    // Draw point
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                });
+                ctx.stroke();
+            };
+            this.draw();
+        }
+
+        function showModal(id, title = '', text = '') {
+            const modal = $(`#${id}`);
+            if (title) $(`#${id} #hintTitle`).textContent = title;
+            if (text) $(`#${id} #hintText`).innerHTML = text;
+            modal.classList.add('active');
+            modal.setAttribute('aria-modal', 'true');
+            modal.setAttribute('role', 'dialog');
+            modal.focus();
+        }
+
+        function hideModal(id) {
+            const modal = $(`#${id}`);
+            modal.classList.remove('active');
+            modal.setAttribute('aria-modal', 'false');
+            modal.removeAttribute('role');
+            // If the start modal is closed, activate the first step
+            if (id === 'startModal' && currentStep === 0) {
+                activateProcedureStep(1);
+            }
+        }
+        
+        // --- Procedure and Assessment ---
+        function activateProcedureStep(stepNum) {
+            if (currentStep > 0 && currentStep <= procedureSteps.length) {
+                procedureSteps[currentStep - 1].classList.remove('active-step');
+                procedureSteps[currentStep - 1].classList.add('completed-step');
+            }
+            currentStep = stepNum;
+            if (currentStep <= procedureSteps.length) {
+                procedureSteps[currentStep - 1].classList.add('active-step');
+                procedureSteps[currentStep - 1].classList.remove('completed-step'); // Re-activate if moving back
+                // For simplicity, highlight relevant controls.
+                // More complex logic would dynamically enable/disable inputs.
+            }
+            checkAssessmentCompletion();
+        }
+
+        function checkProcedureStepCompletion() {
+            // Check light height adjustment
+            if (currentStep === 1 && lightHeightSlider.value !== lightHeightSlider.defaultValue) {
+                activateProcedureStep(2);
+                assessStep1.classList.add('checked');
+                logToNotebook('Step 1: Light Height Adjusted.');
+            }
+            // Check object position adjustment
+            if (currentStep === 2 && objectStand.offsetLeft !== 0) { // Check if object has been moved from initial spot
+                activateProcedureStep(3);
+                assessStep2.classList.add('checked');
+                logToNotebook('Step 2: Object Position Adjusted.');
+            }
+            // Check object shape or material change
+            if (currentStep === 3 && (simulation.object.shape !== 'Circle' || simulation.object.material !== 'Opaque')) {
+                activateProcedureStep(4);
+                assessStep3.classList.add('checked');
+                logToNotebook('Step 3: Object Shape/Material Changed.');
+            }
+            // Step 4 is observation, doesn't need explicit completion, but leads to next
+            if (currentStep === 4 && isDetailedView) {
+                activateProcedureStep(5);
+            }
+        }
+
+        function checkAssessmentCompletion() {
+            if (pinHoleCameraCheckbox.checked) {
+                assessPinhole.classList.add('checked');
+            } else {
+                assessPinhole.classList.remove('checked');
+            }
+            if (dataPoints.length >= 3) {
+                assessRecord.classList.add('checked');
+            } else {
+                assessRecord.classList.remove('checked');
+            }
+        }
+        
+        // --- Event Listeners ---
+        lightHeightSlider.addEventListener('input', () => {
+            lightHeightValue.textContent = `${lightHeightSlider.value} cm`;
+            updateSimulation();
+            checkProcedureStepCompletion();
+        });
+        lightDistanceSlider.addEventListener('input', () => {
+            lightDistanceValue.textContent = `${lightDistanceSlider.value} cm`;
+            updateSimulation();
+            checkProcedureStepCompletion();
+        });
+
+        materialRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                simulation.object.material = e.target.value;
+                experimentObject.className = `experiment-object object-material-${e.target.value.toLowerCase()}`;
+                
+                // Update object shape for visual consistency
+                const currentShapeSvg = experimentObject.querySelector('.object-shape-svg use');
+                if (e.target.value === 'Transparent' || e.target.value === 'Translucent') {
+                    // Transparent objects don't block light much
+                    currentShapeSvg.style.fill = 'rgba(255,255,255,0.2)';
+                    currentShapeSvg.style.stroke = 'rgba(255,255,255,0.5)';
+                    currentShapeSvg.style.filter = 'none';
+                    if (e.target.value === 'Translucent') {
+                        currentShapeSvg.style.filter = 'blur(1px)';
+                    }
+                } else { // Opaque
+                    currentShapeSvg.style.fill = 'white'; // Object is colored by its parent div background
+                    currentShapeSvg.style.stroke = 'none';
+                    currentShapeSvg.style.filter = 'none';
+                }
+
+                logToNotebook(`Object material changed to: ${e.target.value}`);
+                updateSimulation();
+                checkProcedureStepCompletion();
+            });
+        });
+
+        shapeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                shapeButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                simulation.object.shape = button.dataset.shape;
+                experimentObject.querySelector('.object-shape-svg use').setAttribute('href', `#shape-${button.dataset.shape.toLowerCase()}`);
+                logToNotebook(`Object shape changed to: ${button.dataset.shape}`);
+                updateSimulation();
+                checkProcedureStepCompletion();
+            });
+        });
+
+        pinHoleCameraCheckbox.addEventListener('change', () => {
+            simulation.pinHoleMode = pinHoleCameraCheckbox.checked;
+            pinHoleToggleBtn.classList.toggle('active', simulation.pinHoleMode);
+            logToNotebook(`Pin-Hole Camera View: ${simulation.pinHoleMode ? 'On' : 'Off'}`);
+            updateSimulation();
+            checkAssessmentCompletion();
+        });
+
+        showLightRaysCheckbox.addEventListener('change', () => {
+            simulation.showRays = showLightRaysCheckbox.checked;
+            showLightRaysToggleBtn.classList.toggle('active', simulation.showRays);
+            lightRaysGroup.style.display = simulation.showRays ? 'block' : 'none';
+            logToNotebook(`Show Light Rays: ${simulation.showRays ? 'On' : 'Off'}`);
+            updateSimulation();
+        });
+
+        noiseCheckbox.addEventListener('change', () => {
+            simulation.measurementNoise = noiseCheckbox.checked;
+            noiseToggleBtn.classList.toggle('active', simulation.measurementNoise);
+            logToNotebook(`Measurement Noise: ${simulation.measurementNoise ? 'On' : 'Off'}`);
+            // No direct visual change, but affects chart and recorded data
+            updateChart();
+        });
+
+        startPauseBtn.addEventListener('click', () => {
+            if (simulation.isPlaying) {
+                // Pause logic
+                simulation.isPlaying = false;
+                startPauseBtn.textContent = 'Start Trial';
+                startPauseBtn.classList.remove('active');
+                if (simulation.animationFrame) cancelAnimationFrame(simulation.animationFrame);
+                logToNotebook('Trial Paused.');
+            } else {
+                // Start trial logic (e.g., auto-run steps)
+                simulation.isPlaying = true;
+                startPauseBtn.textContent = 'Pause Trial';
+                startPauseBtn.classList.add('active');
+                simulation.trialCounter++;
+                dataPoints = []; // Reset data for new trial
+                logToNotebook(`Trial ${simulation.trialCounter} Started.`);
+                runAutoTrial();
+            }
+        });
+
+        let autoTrialIndex = 0;
+        const autoTrialSteps = [
+            { lightH: 100, lightD: 200, objX: 400, shape: 'Circle', material: 'Opaque', wait: 1000 },
+            { lightH: 200, lightD: 300, objX: 500, shape: 'Square', material: 'Opaque', wait: 1000 },
+            { lightH: 300, lightD: 400, objX: 600, shape: 'Triangle', material: 'Opaque', wait: 1000 },
+            { lightH: 250, lightD: 250, objX: 450, shape: 'Hand', material: 'Translucent', wait: 1000 }
+        ];
+
+        function runAutoTrial() {
+            if (!simulation.isPlaying || autoTrialIndex >= autoTrialSteps.length) {
+                simulation.isPlaying = false;
+                startPauseBtn.textContent = 'Start Trial';
+                startPauseBtn.classList.remove('active');
+                logToNotebook('Trial Finished.');
+                autoTrialIndex = 0;
+                return;
+            }
+
+            const step = autoTrialSteps[autoTrialIndex];
+            lightHeightSlider.value = step.lightH;
+            lightDistanceSlider.value = step.lightD;
+            
+            // Set object X position directly via objectStand.
+            // Convert 'objX' which is an SVG x-coord to left % for the stand.
+            const { width: sceneW } = getSceneDimensions();
+            objectStand.style.left = `${step.objX - (experimentObject.offsetWidth / 2 + experimentObject.offsetLeft)}px`;
+            simulation.object.x = step.objX;
+
+            shapeButtons.forEach(btn => {
+                if (btn.dataset.shape === step.shape) btn.click();
+            });
+            materialRadios.forEach(radio => {
+                if (radio.value === step.material) radio.checked = true;
+                radio.dispatchEvent(new Event('change')); // Trigger change event
+            });
+
+            updateSimulation();
+            recordData(); // Record data for this step
+
+            logToNotebook(`Auto Trial Step ${autoTrialIndex + 1}: Light H ${step.lightH}, D ${step.lightD}, ObjX ${step.objX}, Shape ${step.shape}, Material ${step.material}`);
+
+            autoTrialIndex++;
+            simulation.animationFrame = setTimeout(runAutoTrial, step.wait);
+        }
+
+        resetBtn.addEventListener('click', () => {
+            if (simulation.isPlaying) {
+                cancelAnimationFrame(simulation.animationFrame);
+                simulation.isPlaying = false;
+                startPauseBtn.textContent = 'Start Trial';
+                startPauseBtn.classList.remove('active');
+            }
+            // Reset all controls to default
+            lightHeightSlider.value = 200;
+            lightDistanceSlider.value = 250;
+            $('#materialOpaque').checked = true;
+            $('#materialOpaque').dispatchEvent(new Event('change'));
+            $('#shapeCircleBtn').click(); // Re-select circle
+            pinHoleCameraCheckbox.checked = false;
+            pinHoleCameraCheckbox.dispatchEvent(new Event('change'));
+            showLightRaysCheckbox.checked = false;
+            showLightRaysCheckbox.dispatchEvent(new Event('change'));
+            noiseCheckbox.checked = false;
+            noiseCheckbox.dispatchEvent(new Event('change'));
+
+            // Reset object position to default
+            objectStand.style.left = `${getSceneDimensions().width * 0.5 - (experimentObject.offsetWidth / 2 + experimentObject.offsetLeft)}px`;
+            simulation.object.x = getSceneDimensions().width * 0.5;
+            
+            dataPoints = [];
+            notebookLog.innerHTML = '<div>[00:00:00] Lab Reset.</div>';
+            chartInitialized = false; // Force re-init chart on next data
+            initializeChart(); // Clear chart
+            activateProcedureStep(1); // Reset procedure
+            resetAssessment();
+
+            updateSimulation();
+            logToNotebook('Lab parameters reset.');
+        });
+
+        function resetAssessment() {
+            assessStep1.classList.remove('checked');
+            assessStep2.classList.remove('checked');
+            assessStep3.classList.remove('checked');
+            assessPinhole.classList.remove('checked');
+            assessRecord.classList.remove('checked');
+        }
+
+        recordDataBtn.addEventListener('click', recordData);
+
+        function recordData() {
+            const { width: sceneW } = getSceneDimensions();
+            let shadowLength = simulation.shadow.length;
+            if (simulation.measurementNoise) {
+                shadowLength += (Math.random() - 0.5) * simulation.shadow.length * 0.1; // +/- 5% noise
+                shadowLength = Math.max(0, shadowLength);
+            }
+            
+            const dataPoint = {
+                time: new Date().toLocaleTimeString('en-GB'),
+                lightHeight: parseFloat(lightHeightSlider.value),
+                lightDistance: parseFloat(lightDistanceSlider.value),
+                objectX: Math.round(simulation.object.x / sceneW * 100), // % from left
+                objectShape: simulation.object.shape,
+                objectMaterial: simulation.object.material,
+                shadowLength: Math.round(shadowLength / sceneW * 1000) / 10, // Shadow length as % of scene width, 1 decimal
+                umbraRatio: Math.round(simulation.shadow.umbraRatio)
+            };
+            dataPoints.push(dataPoint);
+            logToNotebook(`Data recorded: Shadow Length ${dataPoint.shadowLength}%, Umbra ${dataPoint.umbraRatio}%`);
+            updateChart();
+            checkAssessmentCompletion();
+        }
+
+        downloadCsvBtn.addEventListener('click', () => {
+            let csv = 'Time,Light Height (cm),Light Distance (cm),Object X (%),Object Shape,Object Material,Shadow Length (%),Umbra Ratio (%)\n';
+            dataPoints.forEach(point => {
+                csv += `${point.time},${point.lightHeight},${point.lightDistance},${point.objectX},${point.objectShape},${point.objectMaterial},${point.shadowLength},${point.umbraRatio}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'light_shadows_data.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            logToNotebook('Data exported to CSV.');
+        });
+
+        // Presets
+        $('#presetBaseline').addEventListener('click', () => applyPreset({ lightH: 200, lightD: 250, objX: 500, shape: 'Circle', material: 'Opaque' }));
+        $('#presetLargeShadow').addEventListener('click', () => applyPreset({ lightH: 100, lightD: 150, objX: 400, shape: 'Square', material: 'Opaque' }));
+        $('#presetSmallShadow').addEventListener('click', () => applyPreset({ lightH: 300, lightD: 400, objX: 600, shape: 'Triangle', material: 'Opaque' }));
+
+        function applyPreset(preset) {
+            lightHeightSlider.value = preset.lightH;
+            lightDistanceSlider.value = preset.lightD;
+            
+            const { width: sceneW } = getSceneDimensions();
+            objectStand.style.left = `${preset.objX - (experimentObject.offsetWidth / 2 + experimentObject.offsetLeft)}px`;
+            simulation.object.x = preset.objX;
+
+            shapeButtons.forEach(btn => {
+                if (btn.dataset.shape === preset.shape) btn.click();
+            });
+            materialRadios.forEach(radio => {
+                if (radio.value === preset.material) radio.checked = true;
+                radio.dispatchEvent(new Event('change'));
+            });
+            logToNotebook(`Preset '${preset.shape} ${preset.material}' applied.`);
+            updateSimulation();
+        }
+
+        // View Toggle
+        easyViewBtn.addEventListener('click', () => toggleView(false));
+        detailedViewBtn.addEventListener('click', () => toggleView(true));
+
+        function toggleView(isDetailed) {
+            isDetailedView = isDetailed;
+            easyViewBtn.classList.toggle('active', !isDetailed);
+            detailedViewBtn.classList.toggle('active', isDetailed);
+
+            detailedElements.forEach(el => {
+                if (isDetailed) {
+                    el.classList.remove('hidden-detailed');
+                } else {
+                    el.classList.add('hidden-detailed');
+                }
+            });
+            logToNotebook(`View mode changed to ${isDetailed ? 'Detailed' : 'Easy'}.`);
+            checkProcedureStepCompletion(); // Re-check if steps unlock based on view
+        }
+
+        // Initial setup
+        window.addEventListener('load', () => {
+            // Set initial object position
+            const { width: sceneW } = getSceneDimensions();
+            objectStand.style.left = `${sceneW * 0.5 - (experimentObject.offsetWidth / 2 + experimentObject.offsetLeft)}px`;
+            simulation.object.x = sceneW * 0.5;
+
+            // Initialize shape/material
+            $('#materialOpaque').checked = true;
+            $('#shapeCircleBtn').classList.add('active');
+
+            updateSimulation(); // Initial rendering
+            initializeChart(); // Initialize Chart.js placeholder
+            showModal('startModal'); // Show welcome modal
+
+            // Attach drag event listeners to light source and object
+            lightSource.addEventListener('mousedown', startDrag);
+            lightSource.addEventListener('touchstart', startDrag, { passive: false });
+            experimentObject.addEventListener('mousedown', startDrag);
+            experimentObject.addEventListener('touchstart', startDrag, { passive: false });
+
+            toggleView(false); // Start in easy view
+            resetAssessment(); // Ensure all assessment checkboxes are unchecked
+        });
+
+        // Debounce resize events
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                const { width, height } = svgScene.getBoundingClientRect();
+                svgScene.setAttribute('viewBox', `0 0 ${width} ${height}`); // Adjust viewBox on resize
+                updateSimulation();
+                chart.resize(); // Re-draw chart on resize (Chart.js specific)
+            }, 200);
+        });
+
+    </script>
+</body>
+</html>"
+}

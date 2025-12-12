@@ -1,0 +1,70 @@
+{
+  "intro": "Great job exploring light and shadows! Let's check what you've learned with a few fun questions.",
+  "questions": [
+    {
+      "question": "Which of these objects will create the clearest, darkest shadow when light shines on it?",
+      "type": "mcq",
+      "options": [
+        "A) A clear glass window",
+        "B) A thin white sheet of paper",
+        "C) A wooden door",
+        "D) A magnifying glass"
+      ],
+      "hint": "Think about which object blocks light completely. The clearer the object, the less shadow it makes.",
+      "correct_index": 2
+    },
+    {
+      "question": "You're standing outside on a sunny day. As the sun moves higher in the sky, what happens to your shadow?",
+      "type": "mcq",
+      "options": [
+        "A) It gets longer",
+        "B) It gets shorter",
+        "C) It disappears completely",
+        "D) It stays the same length"
+      ],
+      "hint": "Try this: hold a pencil straight up on a sunny windowsill. When the sun is low (morning/evening), the shadow is long. When it's high (noon), the shadow is short.",
+      "correct_index": 1
+    },
+    {
+      "question": "In a pin-hole camera, the image formed on the screen is:",
+      "type": "mcq",
+      "options": [
+        "A) Upright and bigger than the object",
+        "B) Upright and smaller than the object",
+        "C) Upside-down and bigger than the object",
+        "D) Upside-down and smaller than the object"
+      ],
+      "hint": "Remember: light travels in straight lines. Rays from the top of an object go through the pinhole and hit the bottom of the screen. Rays from the bottom hit the top.",
+      "correct_index": 3
+    },
+    {
+      "question": "Which statement is true about translucent objects?",
+      "type": "mcq",
+      "options": [
+        "A) They let all light pass through clearly",
+        "B) They block all light completely",
+        "C) They let some light through but scatter it, making things look blurry",
+        "D) They bend light around corners"
+      ],
+      "hint": "Think of frosted glass or wax paper. Can you see clearly through them?",
+      "correct_index": 2
+    },
+    {
+      "question": "You're in a dark room with a flashlight and a ball. To make the ball's shadow on the wall exactly the same size as the ball, where should you hold the flashlight?",
+      "type": "mcq",
+      "options": [
+        "A) Very close to the ball",
+        "B) Very far from the ball",
+        "C) At the same distance from the ball as the ball is from the wall",
+        "D) Right next to the wall"
+      ],
+      "hint": "Imagine the flashlight as the sun. When the light source is very far away (like the sun), shadows are the same size as the object. When it's close, shadows get bigger.",
+      "correct_index": 1
+    }
+  ],
+  "followups": [
+    "Try making shadow puppets with your hands! Notice how moving your hand closer to or farther from the light changes the shadow size.",
+    "Build a simple pin-hole camera using a shoebox, aluminum foil, and tracing paper. Shine a flashlight through it and see the upside-down image!"
+  ],
+  "summary": "You've learned that light travels in straight lines. Opaque objects block all light, making clear shadows. Transparent objects let all light through, so no shadow forms. Translucent objects scatter light, creating faint shadows. The position of the light source changes shadow size - farther light makes smaller shadows. Pin-hole cameras work because light travels straight, creating upside-down images."
+}

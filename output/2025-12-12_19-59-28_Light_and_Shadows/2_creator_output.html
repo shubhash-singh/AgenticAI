@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Light Lab: Shadows & Pin-Hole Camera</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #f0f8ff; padding: 15px; }
+        .container { max-width: 100%; }
+        header { text-align: center; margin-bottom: 15px; }
+        h1 { font-size: 1.8rem; color: #2c3e50; }
+        .objective { color: #3498db; font-size: 1rem; }
+        .controls { display: flex; flex-direction: column; gap: 15px; overflow-x: auto; padding: 10px 0; }
+        .control-group { display: flex; gap: 10px; flex-shrink: 0; }
+        .slider-container { width: 90%; margin: 0 auto; }
+        .slider-label { text-align: center; margin-bottom: 5px; color: #2c3e50; }
+        input[type="range"] { width: 100%; height: 45px; }
+        .buttons { display: flex; gap: 10px; }
+        .btn { padding: 12px; border: none; border-radius: 8px; background: #3498db; color: white; flex: 1; text-align: center; font-size: 1rem; cursor: pointer; }
+        .btn.active { background: #2980b9; }
+        .toggle-container { display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .toggle-label { color: #2c3e50; }
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .toggle-slider { background-color: #3498db; }
+        input:checked + .toggle-slider:before { transform: translateX(20px); }
+        canvas { width: 100%; height: 60vh; background: #ecf0f1; border-radius: 10px; margin: 15px 0; display: block; }
+        .instructions { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 10px; text-align: center; color: #2c3e50; font-size: 0.9rem; border-top: 1px solid #bdc3c7; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Light Lab</h1>
+            <p class="objective">Discover how light creates shadows and pin-hole images!</p>
+        </header>
+        
+        <div class="controls">
+            <div class="control-group">
+                <div class="slider-container">
+                    <div class="slider-label">Light Direction: <span id="angleValue">45°</span></div>
+                    <input type="range" id="lightSlider" min="0" max="360" step="1" value="45">
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <div class="buttons">
+                    <button class="btn active" data-type="opaque">Opaque</button>
+                    <button class="btn" data-type="transparent">Transparent</button>
+                    <button class="btn" data-type="translucent">Translucent</button>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <div class="buttons">
+                    <button class="btn active" data-shape="circle">Circle</button>
+                    <button class="btn" data-shape="square">Square</button>
+                    <button class="btn" data-shape="triangle">Triangle</button>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <div class="toggle-container">
+                    <span class="toggle-label">Pin-Hole Camera</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="cameraToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <canvas id="simulationCanvas"></canvas>
+        
+        <div class="instructions">
+            <p>Move the light slider to change shadow direction. Tap object buttons to test different materials. Switch to Camera Mode to see how pin-holes capture images!</p>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simulationCanvas');
+        const ctx = canvas.getContext('2d');
+        const lightSlider = document.getElementById('lightSlider');
+        const angleValue = document.getElementById('angleValue');
+        const objectButtons = document.querySelectorAll('[data-type]');
+        const shapeButtons = document.querySelectorAll('[data-shape]');
+        const cameraToggle = document.getElementById('cameraToggle');
+
+        let lightAngle = 45;
+        let objectType = 'opaque';
+        let objectShape = 'circle';
+        let isPinHoleMode = false;
+
+        function resizeCanvas() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        lightSlider.addEventListener('input', (e) => {
+            lightAngle = parseInt(e.target.value);
+            angleValue.textContent = `${lightAngle}°`;
+            draw();
+        });
+
+        objectButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                objectButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                objectType = btn.dataset.type;
+                draw();
+            });
+        });
+
+        shapeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                shapeButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                objectShape = btn.dataset.shape;
+                draw();
+            });
+        });
+
+        cameraToggle.addEventListener('change', (e) => {
+            isPinHoleMode = e.target.checked;
+            draw();
+        });
+
+        function drawLightSource() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 4;
+            
+            // Draw light rays
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate((lightAngle * Math.PI) / 180);
+            
+            // Main ray
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(canvas.width / 2, 0);
+            ctx.strokeStyle = '#f1c40f';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Side rays
+            for (let i = -30; i <= 30; i += 15) {
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(canvas.width / 2 * Math.cos(i * Math.PI / 180), canvas.width / 2 * Math.sin(i * Math.PI / 180));
+                ctx.stroke();
+            }
+
+            // Light source
+            ctx.beginPath();
+            ctx.arc(-15, 0, 20, 0, Math.PI * 2);
+            ctx.fillStyle = '#f1c40f';
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function drawObject() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const size = 60;
+
+            ctx.save();
+            ctx.translate(centerX, centerY);
+
+            switch(objectType) {
+                case 'opaque':
+                    ctx.fillStyle = '#e74c3c';
+                    break;
+                case 'transparent':
+                    ctx.fillStyle = '#3498db';
+                    break;
+                case 'translucent':
+                    ctx.fillStyle = '#f1c40f';
+                    break;
+            }
+
+            switch(objectShape) {
+                case 'circle':
+                    ctx.beginPath();
+                    ctx.arc(0, 0, size/2, 0, Math.PI * 2);
+                    ctx.fill();
+                    break;
+                case 'square':
+                    ctx.fillRect(-size/2, -size/2, size, size);
+                    break;
+                case 'triangle':
+                    ctx.beginPath();
+                    ctx.moveTo(0, -size/2);
+                    ctx.lineTo(-size/2, size/2);
+                    ctx.lineTo(size/2, size/2);
+                    ctx.closePath();
+                    ctx.fill();
+                    break;
+            }
+
+            ctx.restore();
+        }
+
+        function drawShadow() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const shadowSize = 120;
+
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate((lightAngle * Math.PI) / 180);
+
+            let opacity = 1;
+            if (objectType === 'translucent') opacity = 0.4;
+            if (objectType === 'transparent') opacity = 0.1;
+
+            ctx.fillStyle = `rgba(0, 0, 0, ${opacity})`;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(shadowSize, 0);
+            ctx.lineTo(shadowSize, shadowSize);
+            ctx.lineTo(-shadowSize, shadowSize);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function drawPinHoleCamera() {
+            const cameraX = canvas.width / 4;
+            const cameraY = canvas.height / 2;
+            const cameraSize = 80;
+
+            // Draw camera body
+            ctx.fillStyle = '#7f8c8d';
+            ctx.fillRect(cameraX - cameraSize/2, cameraY - cameraSize/2, cameraSize, cameraSize);
+
+            // Draw pin-hole
+            ctx.fillStyle = '#2c3e50';
+            ctx.beginPath();
+            ctx.arc(cameraX, cameraY, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw viewfinder
+            ctx.save();
+            ctx.translate(cameraX, cameraY);
+            ctx.scale(1, -1);
+            ctx.translate(0, -cameraSize/2 - 10);
+
+            const scale = 0.5;
+            const offsetX = -canvas.width/4;
+            const offsetY = -canvas.height/4;
+
+            // Draw inverted object
+            ctx.save();
+            ctx.translate(offsetX, offsetY);
+            ctx.scale(scale, scale);
+
+            drawObject();
+            
+            // Draw inverted light rays
+            ctx.restore();
+            
+            // Draw inverted light source
+            ctx.save();
+            ctx.translate(canvas.width/2 - cameraX, canvas.height/2 - (cameraY - cameraSize/2 - 10));
+            ctx.scale(scale, scale);
+            ctx.scale(1, -1);
+            drawLightSource();
+            ctx.restore();
+
+            ctx.restore();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            drawLightSource();
+            drawObject();
+            
+            if (!isPinHoleMode) {
+                drawShadow();
+            } else {
+                drawPinHoleCamera();
+            }
+        }
+
+        // Initial draw
+        draw();
+    </script>
+</body>
+</html>

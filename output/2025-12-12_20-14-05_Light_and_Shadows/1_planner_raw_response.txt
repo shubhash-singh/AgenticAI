@@ -1,0 +1,128 @@
+{
+  "learning_objectives": [
+    "Identify how opaque, transparent and translucent objects affect light.",
+    "Observe how changing light angle and distance changes shadow size and sharpness.",
+    "Explore the pin‑hole camera principle and how straight‑line light creates images."
+  ],
+  "key_concepts": [
+    "Light travels in straight lines",
+    "Opaque vs transparent vs translucent",
+    "Shadow formation",
+    "Pin‑hole camera imaging"
+  ],
+  "variables_to_simulate": [
+    {
+      "name": "Light Angle",
+      "type": "slider",
+      "range": { "min": 0, "max": 180 },
+      "unit": "degrees"
+    },
+    {
+      "name": "Light Distance",
+      "type": "slider",
+      "range": { "min": 5, "max": 30 },
+      "unit": "cm"
+    },
+    {
+      "name": "Object Material",
+      "type": "dropdown",
+      "options": ["Opaque (cardboard)", "Transparent (glass)", "Translucent (frosted plastic)"]
+    },
+    {
+      "name": "Pin‑hole Size",
+      "type": "slider",
+      "range": { "min": 0.2, "max": 2 },
+      "unit": "mm",
+      "applicable_when": "Pin‑hole mode enabled"
+    }
+  ],
+  "user_interactions": [
+    {
+      "control": "Slider",
+      "label": "Light Angle",
+      "action": "Rotate the light source around the object"
+    },
+    {
+      "control": "Slider",
+      "label": "Light Distance",
+      "action": "Move the light source nearer or farther from the object"
+    },
+    {
+      "control": "Dropdown",
+      "label": "Object Material",
+      "action": "Switch between opaque, transparent and translucent objects"
+    },
+    {
+      "control": "Toggle Button",
+      "label": "Pin‑hole Camera",
+      "action": "Enable/disable pin‑hole mode; when on, a small hole appears on a screen"
+    },
+    {
+      "control": "Slider",
+      "label": "Pin‑hole Size",
+      "action": "Adjust the diameter of the hole (visible only in pin‑hole mode)"
+    },
+    {
+      "control": "Drag",
+      "label": "Object Position",
+      "action": "Move the object left‑right to see shadow shift"
+    }
+  ],
+  "simulation_logic": [
+    "Initialize canvas with a light source (yellow circle) on the left, a vertical screen on the right, and a draggable object in the middle.",
+    "When Light Angle changes, recompute ray directions using trigonometry and redraw rays.",
+    "When Light Distance changes, scale ray length and adjust intensity (opacity of rays).",
+    "Based on Object Material:",
+    "  • Opaque – block rays; cast a dark shadow on the screen matching object silhouette.",
+    "  • Transparent – let all rays pass; no shadow appears.",
+    "  • Translucent – allow a fraction (e.g., 30%) of rays to pass; render a faint, fuzzy shadow.",
+    "If Pin‑hole mode is active, hide the object, display a tiny circular aperture on the screen, and project rays through it to form an inverted image of the light source.",
+    "Adjust Pin‑hole Size: smaller hole → sharper image, dimmer; larger hole → brighter but blurrier.",
+    "Update all drawings in real‑time for smooth mobile interaction."
+  ],
+  "mobile_ui_plan": {
+    "layout": "vertical scroll",
+    "sections": [
+      {
+        "id": "header",
+        "content": "Title + brief icon",
+        "height": "auto"
+      },
+      {
+        "id": "canvas",
+        "content": "Full‑width interactive simulation area (aspect ratio 4:3)",
+        "height": "300dp"
+      },
+      {
+        "id": "controls",
+        "content": "Stacked controls: Light Angle slider, Light Distance slider, Object Material dropdown, Pin‑hole toggle, Pin‑hole Size slider (hidden until toggle on), Object drag hint",
+        "height": "auto"
+      },
+      {
+        "id": "info",
+        "content": "Collapsible panel with short text instructions and a ‘Try it yourself!’ button",
+        "height": "auto"
+      }
+    ],
+    "touch_optimizations": "large thumb-friendly sliders, dropdown opens as full‑screen picker, drag uses finger‑track."
+  },
+  "misconceptions_to_address": [
+    "Shadows are always black – show varying darkness based on light intensity and translucency.",
+    "Transparent objects cast shadows – demonstrate no shadow for clear glass.",
+    "A larger pin‑hole always gives a clearer image – illustrate trade‑off between brightness and sharpness.",
+    "Shadow size is only about object size – highlight role of light angle and distance."
+  ],
+  "text_instructions_for_students": [
+    "1. Move the sliders to change where the light comes from and how far it is.",
+    "2. Pick a material for the object and watch how the shadow changes.",
+    "3. Turn on the pin‑hole camera and see the tiny image appear on the screen.",
+    "4. Drag the object left or right to see the shadow move.",
+    "5. Try different pin‑hole sizes – notice the image getting sharper or blurrier."
+  ],
+  "file_target": "single_file_html",
+  "safety_constraints": [
+    "No flashing or stroboscopic lights – keep brightness steady.",
+    "Limit maximum light intensity to avoid eye strain on mobile screens.",
+    "Provide a pause button to stop animation if the student feels uncomfortable."
+  ]
+}

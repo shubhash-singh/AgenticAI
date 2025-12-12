@@ -1,0 +1,136 @@
+```json
+{
+  "learning_objectives": [
+    "Understand the difference between opaque, transparent, and translucent objects.",
+    "Explain how shadows are formed and what conditions are necessary.",
+    "Describe the working of a pin-hole camera and its relation to light traveling in straight lines.",
+    "Apply the concept of light and shadows to real-life scenarios like shadow puppets and sundials."
+  ],
+  "key_concepts": [
+    "Light travels in straight lines.",
+    "Opaque objects block light completely, forming shadows.",
+    "Transparent objects allow light to pass through, forming no shadows.",
+    "Translucent objects allow some light to pass through, forming faint shadows.",
+    "A pin-hole camera works because light travels in straight lines."
+  ],
+  "variables_to_simulate": [
+    "Light source intensity (slider)",
+    "Object type (opaque/transparent/translucent) (dropdown)",
+    "Distance between light source and object (slider)",
+    "Distance between object and screen (slider)"
+  ],
+  "user_interactions": [
+    {
+      "type": "slider",
+      "label": "Light Intensity",
+      "min": 0,
+      "max": 100,
+      "default": 50
+    },
+    {
+      "type": "dropdown",
+      "label": "Object Type",
+      "options": ["Opaque", "Transparent", "Translucent"],
+      "default": "Opaque"
+    },
+    {
+      "type": "slider",
+      "label": "Distance from Light to Object",
+      "min": 1,
+      "max": 10,
+      "default": 5
+    },
+    {
+      "type": "slider",
+      "label": "Distance from Object to Screen",
+      "min": 1,
+      "max": 10,
+      "default": 5
+    },
+    {
+      "type": "button",
+      "label": "Toggle Pin-Hole Camera Mode",
+      "action": "switch_to_pin_hole_camera"
+    }
+  ],
+  "simulation_logic": [
+    {
+      "step": 1,
+      "description": "User selects an object type (opaque/transparent/translucent).",
+      "visual": "Object appears on screen with corresponding properties (e.g., opaque object blocks light)."
+    },
+    {
+      "step": 2,
+      "description": "User adjusts light intensity slider. Brighter light increases shadow contrast.",
+      "visual": "Light rays become more or less intense, affecting shadow darkness."
+    },
+    {
+      "step": 3,
+      "description": "User moves the object closer/farther from the light source. Shadow size changes.",
+      "visual": "Shadow on screen grows or shrinks based on distance."
+    },
+    {
+      "step": 4,
+      "description": "User moves the screen closer/farther from the object. Shadow sharpness changes.",
+      "visual": "Shadow edges become sharper or blurrier."
+    },
+    {
+      "step": 5,
+      "description": "User toggles pin-hole camera mode. A small hole appears, projecting an inverted image.",
+      "visual": "Light passes through the hole, forming an upside-down image on the screen."
+    }
+  ],
+  "mobile_ui_plan": [
+    {
+      "section": "header",
+      "content": "Light and Shadows Simulation",
+      "style": "bold, centered"
+    },
+    {
+      "section": "controls",
+      "content": [
+        "Light Intensity Slider",
+        "Object Type Dropdown",
+        "Distance Sliders",
+        "Pin-Hole Camera Button"
+      ],
+      "style": "stacked vertically, compact"
+    },
+    {
+      "section": "simulation_area",
+      "content": "Interactive canvas showing light source, object, and shadow/screen.",
+      "style": "full-width, responsive"
+    },
+    {
+      "section": "instructions",
+      "content": "Short text prompts guiding the user.",
+      "style": "collapsible, minimal text"
+    },
+    {
+      "section": "quiz",
+      "content": "3 multiple-choice questions from spec.json.",
+      "style": "pop-up after simulation"
+    }
+  ],
+  "misconceptions_to_address": [
+    "Shadows are always black (they can be gray).",
+    "Transparent objects can form shadows (they cannot).",
+    "Pin-hole cameras produce upright images (they produce inverted images).",
+    "Shadow size depends only on object size (it also depends on light distance)."
+  ],
+  "text_instructions_for_students": [
+    "1. Choose an object type and see how it affects the shadow.",
+    "2. Adjust the light intensity to observe changes in shadow darkness.",
+    "3. Move the object or screen to see how shadow size and sharpness change.",
+    "4. Try the pin-hole camera mode to see how light creates an image.",
+    "5. Answer the quiz questions to test your understanding!"
+  ],
+  "file_target": "single_file_html",
+  "safety_constraints": [
+    "No flashing lights (to avoid triggering photosensitivity).",
+    "Clear labels for all interactive elements.",
+    "Responsive design for mobile screens (no horizontal scrolling).",
+    "No external dependencies (all assets embedded)."
+  ]
+}
+```

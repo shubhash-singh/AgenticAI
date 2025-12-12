@@ -1,0 +1,63 @@
+```json
+{
+  "learning_objectives": [
+    "Identify opaque, transparent, and translucent objects by their light-blocking properties",
+    "Explain how shadows form when light travels in straight lines and hits an opaque object",
+    "Describe how a pin-hole camera captures images using straight-line light travel"
+  ],
+  "key_concepts": [
+    "Opaque Objects",
+    "Transparent Objects",
+    "Translucent Objects",
+    "Shadow Formation",
+    "Pin-Hole Camera"
+  ],
+  "variables_to_simulate": [
+    "lightAngle",
+    "objectType",
+    "objectShape",
+    "isPinHoleMode"
+  ],
+  "user_interactions": [
+    {
+      "type": "slider",
+      "id": "lightSlider",
+      "label": "Light Direction",
+      "min": 0,
+      "max": 360,
+      "step": 1,
+      "default": 45
+    },
+    {
+      "type": "buttons",
+      "id": "objectTypeButtons",
+      "label": "Object Type",
+      "options": ["opaque", "transparent", "translucent"],
+      "default": "opaque"
+    },
+    {
+      "type": "buttons",
+      "id": "shapeButtons",
+      "label": "Object Shape",
+      "options": ["circle", "square", "triangle"],
+      "default": "circle"
+    },
+    {
+      "type": "toggle",
+      "id": "cameraToggle",
+      "label": "Pin-Hole Camera Mode",
+      "default": false
+    }
+  ],
+  "simulation_logic": "Step 1: Draw light source at angle specified by 'lightAngle' variable.\nStep 2: Render selected object (shape+type) at fixed position.\nStep 3a (Shadow Mode): Cast shadow behind object with opacity based on object type (opaque=100%, translucent=40%, transparent=0%).\nStep 3b (Pin-Hole Mode): Show inverted image inside camera box when 'isPinHoleMode' is true.\nStep 4: Update rendering continuously as sliders/buttons change",
+  "mobile_ui_plan": "Vertical layout:\n1. Header: Title + objective (1 line)\n2. Controls Section (scrollable horizontal row):\n   - Light slider (width: 90%)\n   - Object type buttons (3 equal columns)\n   - Shape buttons (3 equal columns)\n   - Camera toggle switch\n3. Canvas View (full width, 60vh):\n   - Light source icon\n   - Object placeholder\n   - Shadow/image display area\n4. Instruction bar (fixed bottom): 2-line guidance text",
+  "misconceptions_to_address": [
+    "Shadows are always completely black (show gray-scale gradients)",
+    "Transparent objects cannot cast any shadow (demonstrate faint shadows)",
+    "Pin-hole cameras work via light bending (emphasize straight-line travel)"
+  ],
+  "text_instructions_for_students": "Move the light slider to change shadow direction. Tap object buttons to test different materials. Switch to Camera Mode to see how pin-holes capture images. Observe how shadow darkness changes with object type!",
+  "file_target": "single_file_html",
+  "safety_constraints": "No external resources; all graphics rendered via HTML5 Canvas. No user data collection. Content strictly educational (CBSE Class 7 level)."
+}
+```

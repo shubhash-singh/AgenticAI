@@ -1,0 +1,64 @@
+{
+  "learning_objectives": [
+    "Understand how light travels in straight lines and forms shadows when blocked by opaque objects.",
+    "Differentiate between opaque, transparent, and translucent objects based on their interaction with light.",
+    "Explain the working principle of a pin-hole camera using the concept of straight-line propagation of light.",
+    "Predict how the position of a light source affects the size and shape of a shadow.",
+    "Apply knowledge of light and shadows to real-life examples like sundials and shadow puppets."
+  ],
+  "key_concepts": [
+    "Light travels in straight lines",
+    "Opaque objects block light and form shadows",
+    "Transparent objects allow light to pass through completely",
+    "Translucent objects scatter light and form faint shadows",
+    "Pin-hole camera works due to straight-line travel of light"
+  ],
+  "variables_to_simulate": [
+    "Position of light source (Sun or torch)",
+    "Type of object (opaque, transparent, translucent)",
+    "Distance between object and light source",
+    "Size and shape of the shadow formed"
+  ],
+  "user_interactions": [
+    "Drag light source to change its position",
+    "Select object type from dropdown menu",
+    "Move object closer or farther from light source using slider",
+    "Toggle between different object shapes (circle, square, triangle)"
+  ],
+  "simulation_logic": [
+    "Start with default setup: Sun as light source, opaque object, and surface for shadow",
+    "When user drags light source, update shadow position and size in real-time",
+    "If user selects transparent object, show no shadow formation",
+    "If user selects translucent object, show faint or blurred shadow",
+    "When object is moved closer to light source, increase shadow size; when moved away, decrease shadow size",
+    "Update pin-hole camera view when user toggles camera mode, showing inverted image due to straight-line light travel"
+  ],
+  "mobile_ui_plan": [
+    "Top section: Light source (Sun/torch) that can be dragged horizontally",
+    "Middle section: Object placement area with dropdown for object type and slider for distance",
+    "Bottom section: Shadow display area showing real-time shadow changes",
+    "Side panel (accessible via swipe): Toggle for pin-hole camera view and object shape selection",
+    "Control buttons at bottom: Reset simulation, Show explanation, Take quiz"
+  ],
+  "misconceptions_to_address": [
+    "Shadows are always completely black - they can be gray depending on ambient light",
+    "Transparent objects form clear shadows - they don't form shadows at all",
+    "Shadows change shape randomly - they maintain the silhouette of the object blocking light",
+    "Pin-hole cameras work by bending light - they work because light travels in straight lines"
+  ],
+  "text_instructions_for_students": [
+    "Drag the Sun or torch to see how shadow position changes",
+    "Try different object types to see which ones form shadows",
+    "Move the object closer and farther to observe shadow size changes",
+    "Switch to pin-hole camera mode to see how images are formed",
+    "Test your understanding with the quiz questions at the end"
+  ],
+  "file_target": "single_file_html",
+  "safety_constraints": [
+    "No external links or resources loaded",
+    "All content self-contained in single HTML file",
+    "No user data collection or tracking",
+    "No executable code beyond simulation logic",
+    "Accessible design following WCAG guidelines"
+  ]
+}

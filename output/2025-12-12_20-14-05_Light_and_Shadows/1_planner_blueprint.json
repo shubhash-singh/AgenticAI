@@ -1,0 +1,9 @@
+{
+  "name": "Light Angle",
+  "type": "slider",
+  "range": {
+    "min": 0,
+    "max": 180
+  },
+  "unit": "degrees"
+}

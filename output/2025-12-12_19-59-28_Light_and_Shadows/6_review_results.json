@@ -1,0 +1,13 @@
+{
+  "scores": {
+    "pedagogical_clarity": 4,
+    "conceptual_correctness": 5,
+    "mobile_responsiveness": 4,
+    "interactivity_quality": 4,
+    "code_reliability": 4,
+    "safety_age_appropriateness": 5
+  },
+  "pass": true,
+  "required_changes": [],
+  "return_to": "none"
+}
