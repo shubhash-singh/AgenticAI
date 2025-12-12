@@ -1,0 +1,70 @@
+{
+  "intro": "Hey there, future scientists! Let's explore the fascinating world of light and shadows. It's all about how light helps us see and what happens when it bumps into things!",
+  "questions": [
+    {
+      "question": "When light cannot pass through an object at all, what do we call that object?",
+      "type": "mcq",
+      "options": [
+        "A) Transparent",
+        "B) Translucent",
+        "C) Opaque",
+        "D) Reflective"
+      ],
+      "hint": "Think about things like a wall or a door \u2013 light doesn't go through them!",
+      "correct_index": 2
+    },
+    {
+      "question": "Why does a shadow form?",
+      "type": "mcq",
+      "options": [
+        "A) Light bends around the object.",
+        "B) The object lets some light pass through.",
+        "C) The object blocks the light.",
+        "D) Light travels in wavy lines."
+      ],
+      "hint": "Remember how light travels in straight lines and what happens when something stops it?",
+      "correct_index": 2
+    },
+    {
+      "question": "Which of these is an example of a translucent object?",
+      "type": "mcq",
+      "options": [
+        "A) A clear glass bottle",
+        "B) Oiled paper",
+        "C) A wooden box",
+        "D) A mirror"
+      ],
+      "hint": "Think about objects where you can see light passing through, but not very clearly.",
+      "correct_index": 1
+    },
+    {
+      "question": "A pin-hole camera works because:",
+      "type": "mcq",
+      "options": [
+        "A) Light bounces off the object.",
+        "B) Light travels in curves.",
+        "C) Light travels in straight lines.",
+        "D) The camera makes its own light."
+      ],
+      "hint": "This is a key property of how light moves!",
+      "correct_index": 2
+    },
+    {
+      "question": "As the sun moves higher in the sky during the day, what usually happens to your shadow?",
+      "type": "mcq",
+      "options": [
+        "A) It gets longer.",
+        "B) It gets shorter.",
+        "C) It disappears.",
+        "D) It stays the same."
+      ],
+      "hint": "Think about where the light source (the Sun) is in relation to you.",
+      "correct_index": 1
+    }
+  ],
+  "followups": [
+    "Try making shadow puppets with a flashlight and your hands!",
+    "Observe shadows around you at different times of the day and see how they change."
+  ],
+  "summary": "We learned that light helps us see, travels in straight lines, and creates shadows when it's blocked by opaque objects. We also discovered the difference between transparent, translucent, and opaque materials, and how a pin-hole camera uses light's straight-line travel to create images."
+}

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Light Source Intensity Experiment Lab</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #2c3e50; /* Dark blue-gray for lab feel */
+            color: #ecf0f1; /* Light text */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top */
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            line-height: 1.6;
+        }
+
+        .container {
+            background-color: #34495e; /* Slightly lighter than body for sections */
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            padding: 30px;
+            width: 90%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        h1 {
+            color: #a2d2ff; /* A bit vibrant for a title */
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 2.2em;
+            letter-spacing: 1px;
+        }
+
+        h2 {
+            color: #b1eaff;
+            border-bottom: 2px solid #5a7d9a;
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-size: 1.6em;
+        }
+        
+        h3 {
+            color: #d1e2f7;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .panel {
+            background-color: #283a4a;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #d1e2f7;
+            touch-action: manipulation; /* For better touch experience */
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 10px; /* Height of the track */
+            -webkit-appearance: none;
+            background: #4a6781;
+            border-radius: 5px;
+            outline: none;
+            margin-top: 10px;
+            cursor: pointer;
+            touch-action: pan-y; /* Allow vertical scrolling if needed, but horizontal for slider */
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 44px; /* Ensure touch target is at least 44px */
+            height: 44px; /* Ensure touch target is at least 44px */
+            border-radius: 50%;
+            background: #87ceeb; /* Sky blue */
+            border: 2px solid #ecf0f1;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            transition: background 0.2s ease;
+            margin-top: -17px; /* Adjust to center the thumb vertically on the track */
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #87ceeb;
+            border: 2px solid #ecf0f1;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            transition: background 0.2s ease;
+        }
+
+        input[type="range"]:hover::-webkit-slider-thumb,
+        input[type="range"]:active::-webkit-slider-thumb {
+            background: #6aadda; /* Darker blue on hover/active */
+        }
+
+        input[type="range"]:hover::-moz-range-thumb,
+        input[type="range"]:active::-moz-range-thumb {
+            background: #6aadda;
+        }
+
+        .description {
+            font-size: 0.9em;
+            color: #bdc3c7;
+            margin-top: 8px;
+        }
+
+        .observation-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 20px;
+        }
+
+        .experimental-results {
+            background-color: #1e2a36;
+            border-radius: 8px;
+            padding: 15px 25px;
+            border: 1px solid #4a6781;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 300px;
+            margin-top: 10px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1em;
+        }
+
+        .result-value {
+            font-weight: bold;
+            color: #87ceeb;
+            min-width: 50px; /* Ensure space for values */
+            text-align: right;
+        }
+
+        .light-simulation {
+            width: 100%;
+            height: 300px;
+            background-color: #1b2631; /* Darker background for the simulation space */
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden; /* Important for the light beam */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            border: 1px solid #4a6781;
+        }
+
+        .light-simulation svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Initial light source properties (default: 5) */
+        .light-source {
+            fill: #ffe082; /* Soft yellow */
+            filter: brightness(100%) drop-shadow(0 0 10px rgba(255, 230, 100, 0.5));
+            transition: fill 0.3s ease, filter 0.3s ease, transform 0.3s ease;
+            transform-origin: center center;
+        }
+
+        .illuminated-surface {
+            fill: #7f8c8d; /* Neutral gray */
+            transition: fill 0.3s ease;
+        }
+
+        /* Styles for the light beam */
+        .light-beam {
+            fill: url(#lightGradient); /* Gradient for a softer look */
+            transition: opacity 0.3s ease, points 0.3s ease; /* Animate polygon points */
+            transform-origin: top center;
+        }
+
+        /* SVG definitions for gradient */
+        defs {
+            width: 0;
+            height: 0;
+            position: absolute; /* Hide defs from layout */
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: flex-start;
+            }
+            .control-panel {
+                flex: 0 0 300px; /* Fixed width for control panel */
+                padding: 25px;
+            }
+            .observation-area {
+                flex: 1;
+                margin-left: 25px;
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Light Source Intensity Experiment Lab</h1>
+
+        <div class="panel control-panel">
+            <h2>Control Panel</h2>
+            <div class="control-group">
+                <label for="lightIntensitySlider">Light Source Intensity</label>
+                <input type="range" id="lightIntensitySlider" min="1" max="10" value="5">
+                <p class="description">Adjust this slider to change how bright the light source is. A higher number means a brighter light.</p>
+            </div>
+        </div>
+
+        <div class="panel observation-area">
+            <h2>Observation Area</h2>
+            <div class="light-simulation">
+                <svg width="100%" height="100%" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet">
+                    <defs>
+                        <radialGradient id="lightGradient" cx="50%" cy="0%" r="75%" fx="50%" fy="0%">
+                            <stop offset="0%" style="stop-color:rgb(255,255,200); stop-opacity:1" />
+                            <stop offset="70%" style="stop-color:rgb(255,255,200); stop-opacity:0.3" />
+                            <stop offset="100%" style="stop-color:rgb(255,255,200); stop-opacity:0" />
+                        </radialGradient>
+                    </defs>
+
+                    <!-- Light Source -->
+                    <circle id="lightSource" class="light-source" cx="200" cy="50" r="30"></circle>
+
+                    <!-- Light Beam - represented as a trapezoid/polygon -->
+                    <polygon id="lightBeam" class="light-beam" points="180,80 220,80 300,300 100,300" style="opacity: 0.5;"></polygon>
+
+                    <!-- Illuminated Surface -->
+                    <rect id="illuminatedSurface" class="illuminated-surface" x="0" y="270" width="400" height="30"></rect>
+                </svg>
+            </div>
+            <div class="experimental-results">
+                <h3>Experimental Results</h3>
+                <div class="result-item">
+                    <span>Intensity Level:</span>
+                    <span id="intensityReading" class="result-value">5</span>
+                </div>
+                <div class="result-item">
+                    <span>Brightness Output:</span>
+                    <span id="brightnessOutput" class="result-value">Normal</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const slider = document.getElementById('lightIntensitySlider');
+        const intensityReading = document.getElementById('intensityReading');
+        const brightnessOutput = document.getElementById('brightnessOutput');
+        const lightSource = document.getElementById('lightSource');
+        const lightBeam = document.getElementById('lightBeam');
+        const illuminatedSurface = document.getElementById('illuminatedSurface');
+
+        function updateLightSimulation() {
+            const value = parseInt(slider.value, 10);
+            intensityReading.textContent = value;
+
+            // Update brightness output text
+            let brightnessText;
+            if (value <= 2) brightnessText = "Very Low";
+            else if (value <= 4) brightnessText = "Low";
+            else if (value <= 6) brightnessText = "Normal";
+            else if (value <= 8) brightnessText = "High";
+            else brightnessText = "Very High";
+            brightnessOutput.textContent = brightnessText;
+
+            // --- Visual Feedback ---
+
+            // 1. Light Source: Radius, fill color, filter brightness
+            // Base radius 30px, scales up to 45px (1.5x)
+            const newRadius = 30 + (value - 1) * (15 / 9); // min=1 (30), max=10 (45)
+            lightSource.setAttribute('r', newRadius);
+
+            // Brightness filter: 100% for min (value 1), up to 300% for max (value 10)
+            const brightnessScale = 1 + (value - 1) * (2 / 9); // min=1 -> 1x, max=10 -> 3x
+            
+            // Color interpolation from soft yellow to bright white-yellow
+            // R: 255 (fixed)
+            // G: 224 (value 1) to 255 (value 10)
+            // B: 130 (value 1) to 255 (value 10)
+            const red = 255;
+            const green = Math.round(224 + (value - 1) * (31 / 9)); 
+            const blue = Math.round(130 + (value - 1) * (125 / 9)); 
+            const lightColor = `rgb(${red},${green},${blue})`;
+
+            lightSource.style.fill = lightColor;
+            // Adjust glow size based on intensity (10px to 20px) and opacity (0.5 to 1.0)
+            const glowSize = 10 + (value - 1) * (10 / 9);
+            const glowOpacity = 0.5 + (value - 1) * (0.5 / 9);
+            lightSource.style.filter = `brightness(${brightnessScale * 100}%) drop-shadow(0 0 ${glowSize}px rgba(255, 230, 100, ${glowOpacity}))`;
+            
+            // 2. Light Beam: Opacity and spread
+            // Opacity: from 0.2 to 1.0
+            const beamOpacity = 0.2 + (value - 1) * (0.8 / 9);
+            lightBeam.style.opacity = beamOpacity;
+
+            // Spread of the beam (polygon points)
+            // Top width: from 20 (value 1) to 60 (value 10)
+            // Bottom width: from 100 (value 1) to 200 (value 10)
+            const topWidth = 20 + (value - 1) * (40 / 9); 
+            const bottomWidth = 100 + (value - 1) * (100 / 9); 
+
+            const svgCenterX = 200; // From viewBox 0 0 400 300
+            const beamTopY = 80;
+            const beamBottomY = 300;
+
+            const x1 = svgCenterX - topWidth / 2;
+            const x2 = svgCenterX + topWidth / 2;
+            const x3 = svgCenterX + bottomWidth / 2;
+            const x4 = svgCenterX - bottomWidth / 2;
+
+            lightBeam.setAttribute('points', `${x1},${beamTopY} ${x2},${beamTopY} ${x3},${beamBottomY} ${x4},${beamBottomY}`);
+            
+            // 3. Illuminated Surface: Color changes with intensity
+            // From neutral gray (initial fill #7f8c8d) to brighter yellow-gray
+            // R: 127 (value 1) to 227 (value 10)
+            // G: 140 (value 1) to 240 (value 10)
+            // B: 141 (value 1) to 191 (value 10)
+            const surfaceR = Math.round(127 + (value - 1) * (100 / 9)); 
+            const surfaceG = Math.round(140 + (value - 1) * (100 / 9)); 
+            const surfaceB = Math.round(141 + (value - 1) * (50 / 9)); 
+            illuminatedSurface.style.fill = `rgb(${surfaceR},${surfaceG},${surfaceB})`;
+        }
+
+        // Initialize simulation with default value
+        updateLightSimulation();
+
+        // Add event listener
+        slider.addEventListener('input', updateLightSimulation);
+    </script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+{
+  "learning_objectives": [
+    "Differentiate between opaque, transparent, and translucent objects by observing how they interact with light.",
+    "Understand the process of shadow formation and identify the essential components for its creation.",
+    "Explore the working principle of a pin-hole camera and its ability to form images.",
+    "Recognize real-world applications of light and shadow phenomena."
+  ],
+  "key_concepts": [
+    "Light as a source of vision",
+    "Opaque Objects",
+    "Transparent Objects",
+    "Translucent Objects",
+    "Shadow Formation",
+    "Pin-Hole Camera",
+    "Light travels in straight lines"
+  ],
+  "variables_to_simulate": [
+    {
+      "name": "Light Source Intensity",
+      "description": "Controls the brightness of the light source.",
+      "type": "slider",
+      "min": 1,
+      "max": 10,
+      "default": 5
+    },
+    {
+      "name": "Object Type",
+      "description": "Selects the type of object placed in the light path.",
+      "type": "dropdown",
+      "options": ["Opaque", "Transparent", "Translucent"],
+      "default": "Opaque"
+    },
+    {
+      "name": "Object Distance",
+      "description": "Adjusts the distance of the object from the light source.",
+      "type": "slider",
+      "min": 1,
+      "max": 10,
+      "default": 5
+    },
+    {
+      "name": "Screen Distance",
+      "description": "Adjusts the distance of the screen from the object.",
+      "type": "slider",
+      "min": 1,
+      "max": 10,
+      "default": 5
+    }
+  ],
+  "user_interactions": [
+    "Adjust 'Light Source Intensity' slider to see changes in shadow darkness.",
+    "Select 'Object Type' from dropdown to observe how light passes through different materials.",
+    "Drag and drop different objects (represented by icons) into the light path.",
+    "Adjust 'Object Distance' and 'Screen Distance' sliders to observe changes in shadow size and sharpness.",
+    "Tap on an object icon to get its definition and properties."
+  ],
+  "simulation_logic": [
+    {
+      "step": 1,
+      "description": "Initialize: Display a light source (e.g., a sun icon or bulb icon) emitting rays. Show an opaque object in the path of the light, casting a shadow on a screen. Display definitions of Opaque, Transparent, Translucent objects."
+    },
+    {
+      "step": 2,
+      "description": "Light Source Intensity: As the 'Light Source Intensity' slider is moved, update the number/brightness of light rays. Higher intensity leads to a darker shadow (more light blocked)."
+    },
+    {
+      "step": 3,
+      "description": "Object Type Selection: When 'Object Type' is changed: \n- Opaque: Blocks all light, forms a clear shadow.\n- Transparent: Allows all light to pass, no shadow.\n- Translucent: Allows some light to pass, forms a fuzzy/dim shadow. Visually represent this scattering of light."
+    },
+    {
+      "step": 4,
+      "description": "Object Interaction: Allow users to drag and drop object icons (e.g., a brick, glass, oiled paper) into the simulation. Update the 'Object Type' based on the dropped icon. Display definitions on tap."
+    },
+    {
+      "step": 5,
+      "description": "Object Distance: As 'Object Distance' changes, the size of the shadow on the screen will vary. When the object is closer to the light source, the shadow gets larger. When it's further, the shadow gets smaller. Visually update the shadow size and sharpness."
+    },
+    {
+      "step": 6,
+      "description": "Screen Distance: As 'Screen Distance' changes, the shadow size may appear to change relative to the screen, but the actual shadow size cast by the object remains consistent relative to the object and light source. Focus on demonstrating shadow sharpness (closer screen = sharper shadow)."
+    },
+    {
+      "step": 7,
+      "description": "Pin-Hole Camera: Include a separate interactive module. Show a simplified pin-hole camera. When an object is placed in front, an inverted image forms inside. Demonstrate how light rays from different parts of the object travel in straight lines through the pin-hole to form the inverted image."
+    },
+    {
+      "step": 8,
+      "description": "Real-World Examples: Integrate image examples of Shadow Puppets, Sundials, and Photography with brief descriptions, perhaps as clickable elements that reveal more info or short animations."
+    }
+  ],
+  "mobile_ui_plan": {
+    "layout": "vertical",
+    "sections": [
+      {
+        "name": "Simulation Area",
+        "elements": ["Light Source Visual", "Object Visual", "Shadow Visual", "Pin-hole Camera Visual (toggleable)"]
+      },
+      {
+        "name": "Controls Area",
+        "elements": ["Light Source Intensity Slider", "Object Type Dropdown", "Object Distance Slider", "Screen Distance Slider", "Object Library (draggable icons)"]
+      },
+      {
+        "name": "Information Area",
+        "elements": ["Concept Definitions (popup on tap)", "Real-world Examples (carousel/cards)"]
+      }
+    ]
+  },
+  "misconceptions_to_address": [
+    "Shadows are always black (they can be shades of gray, especially with translucent objects or ambient light).",
+    "Confusing transparent and translucent objects.",
+    "Thinking the shadow moves because the object moves, when it's often the light source's movement.",
+    "The image formed in a pin-hole camera is upright (it's inverted)."
+  ],
+  "text_instructions_for_students": [
+    "Welcome! Let's explore light and shadows.",
+    "See the light bulb? Drag different objects (brick, glass, paper) into its beam to see what happens.",
+    "Use the sliders to change how bright the light is, or how far the object and screen are.",
+    "Look at the 'Pin-Hole Camera' tab to see how it works. Tap on objects to learn their names!",
+    "Can you make the shadow disappear? What about making it bigger or smaller?",
+    "Explore the 'Real-World Fun' section to see where we use shadows every day!"
+  ],
+  "file_target": "single_file_html",
+  "safety_constraints": [
+    "No external script execution beyond the core simulation and UI framework (e.g., no arbitrary JavaScript evaluation).",
+    "All user-generated content (if any, though not intended here) would be sanitized.",
+    "No collection of personal data.",
+    "Ensure all visual elements are appropriate for a Class 7 audience."
+  ]
+}

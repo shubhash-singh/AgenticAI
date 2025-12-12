@@ -1,0 +1,8 @@
+{
+  "name": "Light Source Intensity",
+  "description": "Controls the brightness of the light source.",
+  "type": "slider",
+  "min": 1,
+  "max": 10,
+  "default": 5
+}

@@ -1,0 +1,173 @@
+```json
+{
+  "learning_objectives": [
+    "Differentiate between opaque, transparent, and translucent objects.",
+    "Explain the formation of shadows by understanding how light travels.",
+    "Describe the working principle of a pin-hole camera.",
+    "Identify real-life applications of light and shadow phenomena."
+  ],
+  "key_concepts": [
+    "Light Travels in Straight Lines",
+    "Opaque Objects",
+    "Transparent Objects",
+    "Translucent Objects",
+    "Shadow Formation",
+    "Pin-Hole Camera"
+  ],
+  "variables_to_simulate": [
+    {
+      "name": "light_source_intensity",
+      "description": "Brightness of the light source.",
+      "min": 0.1,
+      "max": 1.0,
+      "default": 0.7
+    },
+    {
+      "name": "object_type",
+      "description": "Type of object blocking the light (Opaque, Transparent, Translucent).",
+      "options": ["Opaque", "Transparent", "Translucent"],
+      "default": "Opaque"
+    },
+    {
+      "name": "object_distance_from_light",
+      "description": "Distance of the object from the light source.",
+      "min": 1,
+      "max": 5,
+      "default": 3
+    },
+    {
+      "name": "screen_distance_from_object",
+      "description": "Distance of the screen from the object.",
+      "min": 1,
+      "max": 5,
+      "default": 3
+    }
+  ],
+  "user_interactions": [
+    {
+      "type": "slider",
+      "variable": "light_source_intensity",
+      "label": "Light Brightness"
+    },
+    {
+      "type": "dropdown",
+      "variable": "object_type",
+      "label": "Object Type"
+    },
+    {
+      "type": "slider",
+      "variable": "object_distance_from_light",
+      "label": "Object Distance (from Light)"
+    },
+    {
+      "type": "slider",
+      "variable": "screen_distance_from_object",
+      "label": "Screen Distance (from Object)"
+    },
+    {
+      "type": "button",
+      "action": "reset_simulation",
+      "label": "Reset Simulation"
+    }
+  ],
+  "simulation_logic": [
+    "1. **Initialization:** Display a light source, an opaque object, and a screen. The initial positions and intensities are set by default values.",
+    "2. **Light Source Representation:** The light source emits rays represented as thin lines traveling outwards.",
+    "3. **Object Interaction:** Based on `object_type`: ",
+    "   - **Opaque:** Blocks all light rays. Rays hitting the object stop. A dark shadow area is formed on the screen.",
+    "   - **Transparent:** Allows all light rays to pass through. No shadow is formed, or a very faint outline if there's a refractive index difference.",
+    "   - **Translucent:** Allows some light rays to pass through, scattering them. A fuzzy or less defined shadow is formed.",
+    "4. **Shadow Formation:** Light rays that are not blocked by the object continue in a straight line to the screen, forming a lit area. The area behind the object where light is blocked is the shadow.",
+    "5. **Distance Effects:** ",
+    "   - Increasing `object_distance_from_light` moves the object further from the light source, potentially changing shadow size and sharpness.",
+    "   - Increasing `screen_distance_from_object` moves the screen further from the object, which will enlarge the shadow if the object is opaque.",
+    "6. **Intensity Effect:** Increasing `light_source_intensity` makes the lit areas brighter and can make shadows appear darker by contrast.",
+    "7. **Pin-Hole Camera Logic (Separate View/Mode):**",
+    "   - User selects an object and a light source.",
+    "   - A small 'pin-hole' aperture is shown.",
+    "   - Only rays passing through the pin-hole reach the screen inside the camera.",
+    "   - Due to straight-line travel, an inverted image of the object is formed on the screen inside.",
+    "8. **Visual Updates:** All visual elements (light rays, shadow shape/intensity, image in pin-hole camera) update dynamically as simulation variables change."
+  ],
+  "mobile_ui_plan": {
+    "layout": "vertical",
+    "sections": [
+      {
+        "title": "Simulation Area",
+        "content": "Interactive canvas displaying light source, object, and screen/camera.",
+        "height_ratio": 0.6
+      },
+      {
+        "title": "Controls",
+        "content": "Sliders, dropdowns, and buttons for user interaction.",
+        "height_ratio": 0.3
+      },
+      {
+        "title": "Information & Examples",
+        "content": "Brief explanations, MCQs, real-life examples, and diagrams.",
+        "height_ratio": 0.1
+      }
+    ],
+    "elements": [
+      "Interactive Canvas (Top)",
+      "Sliders (Light Brightness, Object Distance, Screen Distance)",
+      "Dropdown (Object Type)",
+      "Buttons (Reset, Switch to Pin-hole Camera Mode)",
+      "Text Areas for explanations and MCQs (Bottom)"
+    ]
+  },
+  "misconceptions_to_address": [
+    "**Shadows are always black:** Shadows are areas of reduced light, they can be shades of gray. Their darkness depends on the ambient light and the intensity of the light source.",
+    "**Transparent objects cast shadows:** Transparent objects allow light to pass through, so they do not form distinct shadows.",
+    "**Pin-hole camera works by reflection:** Pin-hole cameras work due to the straight-line propagation of light, not reflection.",
+    "**Shadows change shape randomly:** While shadows can change shape and size based on light source position and object orientation, they follow predictable geometric rules.",
+    "**Light bends:** For this level, we emphasize light travels in straight lines. Bending (refraction) is a more advanced concept."
+  ],
+  "text_instructions_for_students": [
+    "Welcome to the Light and Shadows simulation!",
+    "Drag the sliders or select from the dropdown to change how light interacts with objects.",
+    "See how different objects create different shadows.",
+    "Notice how changing the distance affects the shadow's size.",
+    "Tap 'Switch to Pin-hole Camera' to see how a simple camera works!",
+    "Experiment and have fun exploring light!"
+  ],
+  "file_target": "single_file_html",
+  "safety_constraints": [
+    "No user data collection.",
+    "No external links within the core simulation, except for potential educational videos if explicitly integrated.",
+    "All interactive elements must be clearly labeled and intuitive for a Class 7 student.",
+    "Simulation should run smoothly on common mobile browsers.",
+    "Visuals should be age-appropriate and clear."
+  ],
+  "images": [
+    {
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Light_rays_from_sun.svg/300px-Light_rays_from_sun.svg.png",
+      "description": "Illustration of light rays traveling in straight lines from the Sun."
+    },
+    {
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Shadow_formation.svg/300px-Shadow_formation.svg.png",
+      "description": "Diagram showing the formation of a shadow behind an opaque object."
+    },
+    {
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Pinhole_camera_principle.svg/300px-Pinhole_camera_principle.svg.png",
+      "description": "Diagram illustrating the working principle of a pin-hole camera, showing an inverted image."
+    },
+    {
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Opaque_vs_transparent.svg/300px-Opaque_vs_transparent.svg.png",
+      "description": "Visual comparison of opaque and transparent materials."
+    },
+    {
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Translucent_material_example.svg/300px-Translucent_material_example.svg.png",
+      "description": "Example of a translucent material allowing some light to pass through."
+    },
+    {
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Shadow_puppet_show.jpg/300px-Shadow_puppet_show.jpg",
+      "description": "Real-life application: Shadow puppets creating shapes."
+    },
+    {
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Sundial_in_Prague.jpg/300px-Sundial_in_Prague.jpg",
+      "description": "Real-life application: A sundial telling time using shadows."
+    }
+  ]
+}
+```

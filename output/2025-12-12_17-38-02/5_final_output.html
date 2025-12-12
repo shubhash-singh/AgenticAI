@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Light Intensity Lab Experiment</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a2e;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        #lab-container {
+            background-color: #2e2e4a;
+            border-radius: 12px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+            border: 2px solid #5a5a7a;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: #8aff8a; /* A vibrant green for title */
+            margin-bottom: 15px;
+            font-size: 2.2em;
+        }
+
+        p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: #c0c0e0;
+        }
+
+        #control-panel {
+            background-color: #3a3a5a;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid #5a5a7a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        label[for="intensitySlider"] {
+            display: block;
+            margin-bottom: 12px;
+            font-size: 1.2em;
+            color: #a0f0a0;
+            padding: 10px 0; /* Ensures touch target */
+        }
+
+        #intensitySlider {
+            -webkit-appearance: none;
+            width: 80%;
+            max-width: 400px;
+            height: 10px;
+            background: #5a5a7a;
+            border-radius: 5px;
+            outline: none;
+            transition: background 0.2s ease;
+            margin: 0 auto 15px;
+            cursor: grab;
+        }
+
+        #intensitySlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 28px; /* Touch target >= 44px */
+            height: 28px; /* Touch target >= 44px */
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: grab;
+            transition: background 0.2s ease, box-shadow 0.2s ease;
+            border: 3px solid #eee;
+            margin-top: -9px; /* Centering the thumb on the track */
+            box-shadow: 0 0 8px rgba(0,0,0,0.4);
+        }
+
+        #intensitySlider::-moz-range-thumb {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: grab;
+            transition: background 0.2s ease, box-shadow 0.2s ease;
+            border: 3px solid #eee;
+            box-shadow: 0 0 8px rgba(0,0,0,0.4);
+        }
+
+        #intensitySlider::-ms-thumb {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: grab;
+            transition: background 0.2s ease, box-shadow 0.2s ease;
+            border: 3px solid #eee;
+            box-shadow: 0 0 8px rgba(0,0,0,0.4);
+        }
+
+        #intensitySlider:hover::-webkit-slider-thumb, #intensitySlider:focus::-webkit-slider-thumb {
+            background: #5CB85C;
+            box-shadow: 0 0 0 5px rgba(76, 175, 80, 0.3);
+        }
+        #intensitySlider:active::-webkit-slider-thumb {
+            background: #3E8E41;
+            cursor: grabbing;
+        }
+
+        #intensity-readout {
+            font-size: 1.1em;
+            color: #d0d0f0;
+            padding: 5px;
+            background-color: #4a4a6a;
+            border-radius: 5px;
+            min-width: 180px; /* Ensure readability */
+        }
+
+        #experiment-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+            padding: 30px 20px;
+            background-color: #3a3a5a;
+            border-radius: 10px;
+            border: 1px dashed #5a5a7a;
+        }
+
+        #light-source-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #light-source-svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible; /* Allows glow to extend */
+        }
+
+        #light-bulb {
+            fill: #FFD700; /* Gold color for the bulb */
+            transition: fill 0.3s ease-out; /* Smooth transition for potential future fill change */
+        }
+
+        #source-label {
+            position: absolute;
+            bottom: -25px;
+            font-size: 0.9em;
+            color: #b0b0e0;
+            white-space: nowrap;
+        }
+
+        #illuminated-surface {
+            width: 90%;
+            max-width: 500px;
+            height: 200px;
+            background-color: rgb(40, 40, 60); /* Default dark color */
+            border-radius: 10px;
+            border: 2px solid #6a6a8a;
+            transition: background-color 0.4s ease-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            position: relative;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+            background-size: 25px 25px;
+            font-size: 0.9em;
+            color: #c0c0c0;
+        }
+
+        #surface-label {
+            position: absolute;
+            top: -25px;
+            font-size: 0.9em;
+            color: #b0b0e0;
+            white-space: nowrap;
+        }
+
+        #meter-display {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            color: #e0ffb0; /* Light greenish for meter reading */
+            margin-top: auto; /* Push to bottom */
+            margin-bottom: 5px;
+            border: 1px solid #7eff7e;
+            box-shadow: inset 0 0 8px rgba(126, 255, 126, 0.3);
+        }
+
+        @media (max-width: 600px) {
+            #lab-container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            p {
+                font-size: 1em;
+            }
+            #intensitySlider {
+                width: 95%;
+            }
+            #light-source-container {
+                width: 100px;
+                height: 100px;
+            }
+            #illuminated-surface {
+                height: 150px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="lab-container">
+        <h1>Light Source Intensity Lab Experiment</h1>
+        <p>Welcome to our science experiment! Use the slider to change how bright the light is. Watch the light bulb get brighter and see how the surface below it changes color and brightness. The meter will show you the light level.</p>
+
+        <div id="control-panel">
+            <label for="intensitySlider">Adjust Light Intensity:</label>
+            <input type="range" id="intensitySlider" min="0.1" max="1.0" step="0.01" value="0.7">
+            <div id="intensity-readout">
+                Current Setting: <span id="currentIntensityValue">0.70</span>
+            </div>
+        </div>
+
+        <div id="experiment-area">
+            <div id="light-source-container">
+                <svg id="light-source-svg" viewBox="0 0 100 100">
+                    <defs>
+                        <filter id="light-glow-filter">
+                            <feGaussianBlur in="SourceGraphic" stdDeviation="0" result="blurOut"/>
+                            <feMerge>
+                                <feMergeNode in="SourceGraphic"/>
+                                <feMergeNode in="blurOut"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    <circle cx="50" cy="50" r="40" filter="url(#light-glow-filter)" id="light-bulb"/>
+                </svg>
+                <div id="source-label">Light Source</div>
+            </div>
+            <div id="illuminated-surface">
+                <div id="surface-label">Illuminated Surface (Results Area)</div>
+                <div id="meter-display">
+                    Light Meter Reading: <span id="meter-value">0.70</span> lux
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const intensitySlider = document.getElementById('intensitySlider');
+        const currentIntensityValue = document.getElementById('currentIntensityValue');
+        const lightBulb = document.getElementById('light-bulb');
+        const glowFilter = document.getElementById('light-glow-filter');
+        const gaussianBlur = glowFilter.querySelector('feGaussianBlur');
+        const illuminatedSurface = document.getElementById('illuminated-surface');
+        const meterValue = document.getElementById('meter-value');
+
+        const MIN_INTENSITY = parseFloat(intensitySlider.min);
+        const MAX_INTENSITY = parseFloat(intensitySlider.max);
+
+        function updateLightSimulation(value) {
+            // Update numerical display
+            currentIntensityValue.textContent = value.toFixed(2);
+            meterValue.textContent = value.toFixed(2);
+
+            // Normalize value for calculations (0 to 1 scale)
+            const normalizedValue = (value - MIN_INTENSITY) / (MAX_INTENSITY - MIN_INTENSITY);
+
+            // --- Update Light Source Glow (SVG Filter) ---
+            // stdDeviation ranges from a small value (almost no blur) to a larger value (strong glow)
+            const glowSpread = normalizedValue * 15; // Max stdDeviation 15 for a visible glow
+            gaussianBlur.setAttribute('stdDeviation', glowSpread.toFixed(1));
+
+            // --- Update Illuminated Surface Color ---
+            // Interpolate colors from a dark bluish-gray to a light yellow
+            const r_start = 40, g_start = 40, b_start = 60;
+            const r_end = 255, g_end = 255, b_end = 180;
+
+            const currentR = Math.round(r_start + (r_end - r_start) * normalizedValue);
+            const currentG = Math.round(g_start + (g_end - g_start) * normalizedValue);
+            const currentB = Math.round(b_start + (b_end - b_start) * normalizedValue);
+
+            illuminatedSurface.style.backgroundColor = `rgb(${currentR}, ${currentG}, ${currentB})`;
+        }
+
+        // Set initial state based on default value
+        updateLightSimulation(parseFloat(intensitySlider.value));
+
+        // Add event listener for slider changes
+        intensitySlider.addEventListener('input', (event) => {
+            updateLightSimulation(parseFloat(event.target.value));
+        });
+    </script>
+</body>
+</html>

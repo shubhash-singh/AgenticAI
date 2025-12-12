@@ -258,14 +258,37 @@ def generate_default_blueprint_from_spec(spec: Dict[str, Any]) -> Dict[str, Any]
 
 # ---------- Output helpers ----------
 
-def make_timestamped_output_dir(base_dir: str = "output") -> Path:
+def sanitize_filename(name: str) -> str:
+    """
+    Sanitize a string to be safe for use in filenames/directory names.
+    Removes or replaces invalid characters.
+    """
+    import re
+    # Replace spaces and special characters with underscores
+    sanitized = re.sub(r'[^\w\s-]', '', name)
+    # Replace spaces and multiple underscores with single underscore
+    sanitized = re.sub(r'[\s_]+', '_', sanitized)
+    # Remove leading/trailing underscores
+    sanitized = sanitized.strip('_')
+    # Limit length to avoid filesystem issues
+    if len(sanitized) > 50:
+        sanitized = sanitized[:50]
+    return sanitized or "Unknown"
+
+
+def make_timestamped_output_dir(base_dir: str = "output", concept_name: str = None) -> Path:
     """
     Create a directory like:
-      output/YYYY-MM-DD_HH-MM-SS/
+      output/YYYY-MM-DD_HH-MM-SS_ConceptName/
     Returns the Path to the timestamped folder.
     """
     now = datetime.now()
     folder_name = now.strftime("%Y-%m-%d_%H-%M-%S")
+    
+    if concept_name:
+        sanitized_concept = sanitize_filename(concept_name)
+        folder_name = f"{folder_name}_{sanitized_concept}"
+    
     root = Path(base_dir) / folder_name
     root.mkdir(parents=True, exist_ok=True)
     return root
@@ -288,7 +311,7 @@ def generate_simulation_with_checks(
     Orchestrate generation using provided chain-like objects.
 
     All outputs are written to:
-      output_root/YYYY-MM-DD_HH-MM-SS/
+      output_root/YYYY-MM-DD_HH-MM-SS_ConceptName/
 
     Returns (passed: bool, html_text: str, output_folder: Path)
     """
@@ -296,22 +319,25 @@ def generate_simulation_with_checks(
     print("SIMULATION GENERATOR")
     print("=" * 70)
     
-    # prepare output folder - always create it
-    output_dir = make_timestamped_output_dir(output_root)
-    print(f"Outputs will be saved to: {output_dir}")
-
-    # 1. Load spec
+    # 1. Load spec first to get concept name for folder
     print("\n[1/7] Loading concept...")
     try:
         spec = load_spec(spec_path)
         spec_json = json.dumps(spec, indent=2, ensure_ascii=False)
         concept_name = spec.get('Concept', 'Unknown Concept')
         print(f"✓ Concept: {concept_name}")
-        if save_intermediates:
-            (output_dir / "spec.json").write_text(spec_json, encoding="utf-8")
     except Exception as e:
         print(f"✗ Failed to load: {e}")
+        # Create output dir with fallback name
+        output_dir = make_timestamped_output_dir(output_root)
         return False, "", output_dir
+    
+    # prepare output folder with concept name
+    output_dir = make_timestamped_output_dir(output_root, concept_name)
+    print(f"Outputs will be saved to: {output_dir}")
+    
+    if save_intermediates:
+        (output_dir / "spec.json").write_text(spec_json, encoding="utf-8")
 
     # 2. Chains presence check
     print("\n[2/7] Validating provided agents...")

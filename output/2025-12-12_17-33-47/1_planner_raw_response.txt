@@ -1,0 +1,190 @@
+```json
+{
+  "learning_objectives": [
+    "Understand that heat flows from hotter to colder objects.",
+    "Recognize temperature as a measure of hotness/coldness.",
+    "Identify real-life examples of heat flow.",
+    "Distinguish between heat and temperature."
+  ],
+  "key_concepts": [
+    "Flow of heat",
+    "Hot and cold objects",
+    "Temperature",
+    "Heat transfer (basic concept)"
+  ],
+  "variables_to_simulate": [
+    {
+      "name": "Object A Temperature",
+      "unit": "°C",
+      "min": 0,
+      "max": 100,
+      "initial": 80
+    },
+    {
+      "name": "Object B Temperature",
+      "unit": "°C",
+      "min": 0,
+      "max": 100,
+      "initial": 20
+    }
+  ],
+  "user_interactions": [
+    {
+      "type": "slider",
+      "variable": "Object A Temperature",
+      "label": "Object A Temp"
+    },
+    {
+      "type": "slider",
+      "variable": "Object B Temperature",
+      "label": "Object B Temp"
+    },
+    {
+      "type": "button",
+      "action": "start_simulation",
+      "label": "Start Flow"
+    },
+    {
+      "type": "button",
+      "action": "reset_simulation",
+      "label": "Reset"
+    }
+  ],
+  "simulation_logic": [
+    {
+      "step": 1,
+      "description": "On 'Start Flow' button press, compare temperatures of Object A and Object B."
+    },
+    {
+      "step": 2,
+      "description": "If Object A Temperature > Object B Temperature, heat flows from A to B. Visually represent this flow with animated arrows from A to B. Update a 'Heat Flow' indicator to show 'A -> B'."
+    },
+    {
+      "step": 3,
+      "description": "If Object B Temperature > Object A Temperature, heat flows from B to A. Visually represent this flow with animated arrows from B to A. Update a 'Heat Flow' indicator to show 'B -> A'."
+    },
+    {
+      "step": 4,
+      "description": "If Object A Temperature == Object B Temperature, show 'Thermal Equilibrium' and stop animation. Update 'Heat Flow' indicator to 'Balanced'."
+    },
+    {
+      "step": 5,
+      "description": "Simulate a gradual temperature change over time: If heat is flowing (A->B or B->A), slightly decrease the hotter object's temperature and slightly increase the colder object's temperature for each simulation tick, simulating energy transfer. This should be a small, constant rate for simplicity."
+    },
+    {
+      "step": 6,
+      "description": "On 'Reset' button press, reset both temperatures to their initial values and stop any ongoing animation."
+    }
+  ],
+  "mobile_ui_plan": {
+    "layout": "vertical",
+    "elements": [
+      {
+        "type": "title",
+        "text": "Flow of Heat"
+      },
+      {
+        "type": "image",
+        "src": "placeholder_hot_cold_objects.png",
+        "alt": "Visual representation of two objects",
+        "caption": "Imagine these are two objects."
+      },
+      {
+        "type": "variable_display",
+        "variable": "Object A Temperature",
+        "label": "Object A Temperature",
+        "unit": "°C"
+      },
+      {
+        "type": "slider",
+        "variable": "Object A Temperature",
+        "label": "Adjust Object A Temp"
+      },
+      {
+        "type": "variable_display",
+        "variable": "Object B Temperature",
+        "label": "Object B Temperature",
+        "unit": "°C"
+      },
+      {
+        "type": "slider",
+        "variable": "Object B Temperature",
+        "label": "Adjust Object B Temp"
+      },
+      {
+        "type": "animation_area",
+        "description": "Visual representation of heat flow between objects."
+      },
+      {
+        "type": "status_indicator",
+        "label": "Heat Flow Direction:",
+        "id": "heat_flow_indicator"
+      },
+      {
+        "type": "button",
+        "action": "start_simulation",
+        "label": "Start Heat Flow"
+      },
+      {
+        "type": "button",
+        "action": "reset_simulation",
+        "label": "Reset Simulation"
+      },
+      {
+        "type": "real_life_examples",
+        "title": "Real Life Examples:",
+        "items": [
+          "Hot pan on stove",
+          "Ice melting in hand",
+          "Sun warming your face"
+        ],
+        "visual_aid": "placeholder_real_life_examples.png"
+      },
+      {
+        "type": "explanation_snippet",
+        "title": "Remember:",
+        "text": "Heat always travels from HOT to COLD. Like water flowing downhill!"
+      }
+    ]
+  },
+  "misconceptions_to_address": [
+    {
+      "misconception": "Heat flows from cold to hot.",
+      "explanation": "Heat energy always moves from a region of higher temperature (hotter) to a region of lower temperature (colder)."
+    },
+    {
+      "misconception": "Heat and temperature are the same thing.",
+      "explanation": "Temperature measures how hot or cold an object is, while heat is the energy that flows between objects due to a temperature difference."
+    },
+    {
+      "misconception": "Heat only flows when objects are touching.",
+      "explanation": "Heat can flow through direct contact (conduction), by movement of fluids (convection), and even through empty space (radiation). (This hints at future topics)."
+    }
+  ],
+  "text_instructions_for_students": [
+    "Welcome to the Heat Flow simulation!",
+    "1. Adjust the temperature of Object A and Object B using the sliders.",
+    "2. Click 'Start Heat Flow' to see how heat moves.",
+    "3. Observe the direction of the arrows – this shows where the heat is going.",
+    "4. Notice how the temperatures change slightly over time as heat flows.",
+    "5. Click 'Reset Simulation' to try different temperature combinations.",
+    "Think: Where does the heat naturally want to go?"
+  ],
+  "file_target": "single_file_html",
+  "safety_constraints": [
+    "Do not allow temperatures to go below absolute zero (-273.15°C) if simulating further.",
+    "Ensure visual representation of heat flow is clear and intuitive.",
+    "Keep text concise and appropriate for Class 7 level."
+  ],
+  "images_assets": [
+    {
+      "placeholder_name": "placeholder_hot_cold_objects.png",
+      "description": "Simple icons representing a hot object (e.g., a sun symbol) and a cold object (e.g., a snowflake symbol)."
+    },
+    {
+      "placeholder_name": "placeholder_real_life_examples.png",
+      "description": "A collage of simple icons: a cooking pot on a stove, an ice cube melting, a person feeling the sun."
+    }
+  ]
+}
+```

@@ -1,0 +1,71 @@
+{
+  "intro": "Hey there, budding scientist! Let's explore the fascinating world of light and shadows. Get ready to observe and understand how light plays its part in creating those dark patches we see all around us!",
+  "questions": [
+    {
+      "question": "When you stand in sunlight, the dark patch on the ground behind you is called a:",
+      "type": "mcq",
+      "options": [
+        "A) Reflection",
+        "B) Refraction",
+        "C) Shadow",
+        "D) Rainbow"
+      ],
+      "hint": "Think about what happens when something blocks light.",
+      "correct_index": 2
+    },
+    {
+      "question": "An object that allows light to pass through it completely, so you can see clearly through it, is called:",
+      "type": "mcq",
+      "options": [
+        "A) Opaque",
+        "B) Translucent",
+        "C) Transparent",
+        "D) Luminous"
+      ],
+      "hint": "What kind of material lets you see the other side without any blur?",
+      "correct_index": 2
+    },
+    {
+      "question": "Objects that do not allow any light to pass through them are known as:",
+      "type": "mcq",
+      "options": [
+        "A) Transparent",
+        "B) Translucent",
+        "C) Opaque",
+        "D) Reflective"
+      ],
+      "hint": "Imagine a solid wall \u2013 can light pass through it?",
+      "correct_index": 2
+    },
+    {
+      "question": "What is the main reason a shadow is formed?",
+      "type": "mcq",
+      "options": [
+        "A) Light bends around the object.",
+        "B) Light bounces off the object.",
+        "C) The object absorbs all the light.",
+        "D) The object blocks the path of light."
+      ],
+      "hint": "Recall the description of how shadows are made. What does the object *do* to the light?",
+      "correct_index": 3
+    },
+    {
+      "question": "A pin-hole camera works because light:",
+      "type": "mcq",
+      "options": [
+        "A) Travels in waves.",
+        "B) Travels in straight lines.",
+        "C) Bends around corners.",
+        "D) Reflects off the pin-hole."
+      ],
+      "hint": "What is the key property of light that allows an image to be formed through a small opening?",
+      "correct_index": 1
+    }
+  ],
+  "followups": [
+    "Try creating shadow puppets with your hands and a flashlight to see how different shapes are formed!",
+    "Observe how your shadow changes length and direction throughout the day. What do you notice?",
+    "Think about the objects around you. Can you classify them as opaque, transparent, or translucent?"
+  ],
+  "summary": "Light travels in straight lines. When an opaque object blocks this path, a shadow is formed behind it. Objects can be transparent (light passes through), translucent (some light passes through), or opaque (no light passes through). A pin-hole camera uses light traveling in straight lines to create an image."
+}

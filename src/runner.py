@@ -27,7 +27,7 @@ def make_chain(prompt_template: str, llm_instance):
 
 def build_all_chains():
     planner_llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash-lite",
+        model="gemini-2.5-flash",
         temperature=0.3,
         api_key=os.getenv("GOOGLE_API_KEY")
     )
@@ -69,6 +69,13 @@ Convert the learning topic into a complete simulation blueprint for a CBSE Class
 Input: spec.json content provided below:
 {spec_json}
 
+Instructions:
+- Follow everything from the spec.json file
+- Output should be mainly focused on visuals 
+- Use less text and more images/graphics
+- Leave no room for improvement
+- Make it engaging and interactive
+
 Produce a JSON blueprint containing:
 1. learning_objectives (3-5)
 2. key_concepts
@@ -100,10 +107,14 @@ Input blueprint:
 {plan}
 
 Instructions:
-- Follow everything from the plan
+- Follow everything from the blueprint and don't skip any part of it
 - Output should be mainly focused on visuals 
-- Use less text and more images/graphics
 - Leave no room for improvement
+- Make it engaging and interactive
+- The simulation spuld feel like a experimantal lab and sjow experimental results
+- The simulation should be completely self-contained and should not require any external resources
+- The simulation should be complex enough and should not be too simple
+- The simulation should be scientifically accurate and should not be too complex
 
 Task:
 - Produce a COMPLETE, RUNNABLE single-file HTML document

@@ -1,0 +1,7 @@
+{
+  "name": "light_source_intensity",
+  "description": "Brightness of the light source.",
+  "min": 0.1,
+  "max": 1.0,
+  "default": 0.7
+}
