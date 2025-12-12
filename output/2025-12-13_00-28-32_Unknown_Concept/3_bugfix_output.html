@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earth Rotation & Revolution - Interactive Simulation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f9f9f9;
+        }
+        #app { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 16px; 
+            background: white;
+            min-height: 100vh;
+        }
+        header {
+            padding: 16px 0;
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        h1 { font-size: 24px; margin-bottom: 8px; }
+        .subtitle { font-size: 14px; color: #666; }
+        
+        #visual-area {
+            position: relative;
+            height: 50vh;
+            min-height: 300px;
+            background: linear-gradient(180deg, #0a0a1a 0%, #1a1a2e 100%);
+            border-radius: 8px;
+            margin: 16px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+        }
+        
+        svg {
+            width: 95%;
+            max-width: 500px;
+            height: auto;
+            display: block;
+        }
+        
+        .star {
+            fill: #ffffff;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+        
+        .sun {
+            fill: url(#sunGradient);
+            filter: drop-shadow(0 0 10px rgba(233, 69, 96, 0.6));
+        }
+        
+        .earth {
+            fill: url(#earthGradient);
+            stroke: #ffffff;
+            stroke-width: 2;
+            transition: transform 0.3s ease;
+        }
+        
+        .moon {
+            fill: #f0e68c;
+            stroke: #d4c87a;
+            stroke-width: 1;
+        }
+        
+        .axis-line {
+            stroke: #e94560;
+            stroke-width: 3;
+            stroke-dasharray: 6 4;
+            opacity: 0.7;
+        }
+        
+        .orbit-path {
+            fill: none;
+            stroke: rgba(240, 230, 140, 0.3);
+            stroke-width: 2;
+            stroke-dasharray: 4 4;
+        }
+        
+        .controls {
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .control-group {
+            margin: 16px 0;
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 44px;
+            cursor: pointer;
+        }
+        
+        button {
+            width: 100%;
+            min-height: 48px;
+            padding: 12px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 8px 0;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        #info {
+            padding: 16px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 12px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .legend-dot.sun { background: #e94560; }
+        .legend-dot.earth { background: #4CAF50; }
+        .legend-dot.moon { background: #f0e68c; }
+        .legend-dot.axis { background: #e94560; }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Earth Rotation & Revolution</h1>
+            <p class="subtitle">Interactive simulation showing Earth's rotation on its axis and revolution around the Sun</p>
+        </header>
+        
+        <div id="visual-area">
+            <svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <radialGradient id="sunGradient" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#fff9c4"/>
+                        <stop offset="50%" stop-color="#ffeb3b"/>
+                        <stop offset="100%" stop-color="#e94560"/>
+                    </radialGradient>
+                    <radialGradient id="earthGradient" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#87CEEB"/>
+                        <stop offset="70%" stop-color="#2196F3"/>
+                        <stop offset="100%" stop-color="#0D47A1"/>
+                    </radialGradient>
+                </defs>
+                
+                <!-- Stars background -->
+                <g id="stars">
+                    <!-- Generated stars will be added here -->
+                </g>
+                
+                <!-- Sun -->
+                <circle id="sun" class="sun" cx="300" cy="200" r="40"></circle>
+                
+                <!-- Earth's orbit path -->
+                <circle id="orbit" class="orbit-path" cx="300" cy="200" r="150"></circle>
+                
+                <!-- Earth with axis line -->
+                <g id="earthGroup">
+                    <!-- Axis line through Earth -->
+                    <line id="axis" class="axis-line" x1="0" y1="0" x2="0" y2="0"></line>
+                    <!-- Earth -->
+                    <circle id="earth" class="earth" cx="450" cy="200" r="20"></circle>
+                    <!-- Moon -->
+                    <circle id="moon" class="moon" cx="470" cy="200" r="6"></circle>
+                </g>
+                
+                <!-- Visual metaphor text -->
+                <text x="300" y="380" text-anchor="middle" font-size="14" fill="#ffffff" opacity="0.7">
+                    Earth as a spinning top on a merry-go-round
+                </text>
+            </svg>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Rotation Speed</span>
+                    <span id="rotationValue">1.0x</span>
+                </div>
+                <input type="range" id="rotationSlider" min="0" max="3" step="0.1" value="1">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Revolution Speed</span>
+                    <span id="revolutionValue">1.0x</span>
+                </div>
+                <input type="range" id="revolutionSlider" min="0" max="3" step="0.1" value="1">
+            </div>
+            
+            <button id="toggleAnimation">Pause</button>
+            <button id="resetView">Reset View</button>
+            
+            <div class="legend">
+                <div class="legend-item"><span class="legend-dot sun"></span> Sun</div>
+                <div class="legend-item"><span class="legend-dot earth"></span> Earth</div>
+                <div class="legend-item"><span class="legend-dot moon"></span> Moon</div>
+                <div class="legend-item"><span class="legend-dot axis"></span> Axis</div>
+            </div>
+        </div>
+        
+        <div id="info">
+            <div class="info-row">
+                <span>Earth Rotation:</span>
+                <span id="rotationInfo">Spinning on axis</span>
+            </div>
+            <div class="info-row">
+                <span>Earth Revolution:</span>
+                <span id="revolutionInfo">Orbiting the Sun</span>
+            </div>
+            <div class="info-row">
+                <span>Visual Metaphor:</span>
+                <span>Spinning top on a merry-go-round</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize stars
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const svg = document.querySelector('svg');
+            const rect = svg.getBoundingClientRect();
+            const width = 600;
+            const height = 400;
+            
+            for (let i = 0; i < 50; i++) {
+                const star = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+                const size = Math.random() * 2 + 1;
+                
+                star.setAttribute('cx', x);
+                star.setAttribute('cy', y);
+                star.setAttribute('r', size);
+                star.setAttribute('class', 'star');
+                star.style.opacity = Math.random() * 0.7 + 0.3;
+                
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        // Animation variables
+        let rotationSpeed = 1;
+        let revolutionSpeed = 1;
+        let isAnimating = true;
+        let rotationAngle = 0;
+        let revolutionAngle = 0;
+        let lastTime = 0;
+        
+        // DOM elements
+        const earth = document.getElementById('earth');
+        const moon = document.getElementById('moon');
+        const axis = document.getElementById('axis');
+        const earthGroup = document.getElementById('earthGroup');
+        const rotationSlider = document.getElementById('rotationSlider');
+        const revolutionSlider = document.getElementById('revolutionSlider');
+        const rotationValue = document.getElementById('rotationValue');
+        const revolutionValue = document.getElementById('revolutionValue');
+        const toggleButton = document.getElementById('toggleAnimation');
+        const resetButton = document.getElementById('resetView');
+        const rotationInfo = document.getElementById('rotationInfo');
+        const revolutionInfo = document.getElementById('revolutionInfo');
+        
+        // Initialize
+        createStars();
+        updatePositions();
+        
+        // Event listeners
+        rotationSlider.addEventListener('input', (e) => {
+            rotationSpeed = parseFloat(e.target.value);
+            rotationValue.textContent = rotationSpeed.toFixed(1) + 'x';
+            rotationInfo.textContent = 'Rotation: ' + rotationSpeed.toFixed(1) + 'x speed';
+        });
+        
+        revolutionSlider.addEventListener('input', (e) => {
+            revolutionSpeed = parseFloat(e.target.value);
+            revolutionValue.textContent = revolutionSpeed.toFixed(1) + 'x';
+            revolutionInfo.textContent = 'Revolution: ' + revolutionSpeed.toFixed(1) + 'x speed';
+        });
+        
+        toggleButton.addEventListener('click', () => {
+            isAnimating = !isAnimating;
+            toggleButton.textContent = isAnimating ? 'Pause' : 'Play';
+        });
+        
+        resetButton.addEventListener('click', () => {
+            rotationSpeed = 1;
+            revolutionSpeed = 1;
+            rotationAngle = 0;
+            revolutionAngle = 0;
+            rotationSlider.value = '1';
+            revolutionSlider.value = '1';
+            rotationValue.textContent = '1.0x';
+            revolutionValue.textContent = '1.0x';
+            rotationInfo.textContent = 'Rotation: 1.0x speed';
+            revolutionInfo.textContent = 'Revolution: 1.0x speed';
+            updatePositions();
+        });
+        
+        // Animation loop
+        function animate(currentTime) {
+            if (!lastTime) lastTime = currentTime;
+            const deltaTime = currentTime - lastTime;
+            lastTime = currentTime;
+            
+            if (isAnimating) {
+                // Update angles based on speed
+                rotationAngle += rotationSpeed * 0.005 * deltaTime;
+                revolutionAngle += revolutionSpeed * 0.002 * deltaTime;
+                
+                updatePositions();
+            }
+            
+            requestAnimationFrame(animate);
+        }
+        
+        // Update positions
+        function updatePositions() {
+            const centerX = 300;
+            const centerY = 200;
+            const orbitRadius = 150;
+            
+            // Calculate Earth position on orbit
+            const earthX = centerX + orbitRadius * Math.cos(revolutionAngle);
+            const earthY = centerY + orbitRadius * Math.sin(revolutionAngle);
+            
+            // Update Earth position
+            earth.setAttribute('cx', earthX);
+            earth.setAttribute('cy', earthY);
+            
+            // Update Moon position relative to Earth
+            const moonOrbitRadius = 20;
+            const moonX = earthX + moonOrbitRadius * Math.cos(revolutionAngle * 12);
+            const moonY = earthY + moonOrbitRadius * Math.sin(revolutionAngle * 12);
+            
+            moon.setAttribute('cx', moonX);
+            moon.setAttribute('cy', moonY);
+            
+            // Update axis line through Earth
+            const axisLength = 25;
+            const axisX1 = earthX + axisLength * Math.cos(rotationAngle);
+            const axisY1 = earthY + axisLength * Math.sin(rotationAngle);
+            const axisX2 = earthX - axisLength * Math.cos(rotationAngle);
+            const axisY2 = earthY - axisLength * Math.sin(rotationAngle);
+            
+            axis.setAttribute('x1', axisX1);
+            axis.setAttribute('y1', axisY1);
+            axis.setAttribute('x2', axisX2);
+            axis.setAttribute('y2', axisY2);
+            
+            // Rotate Earth on its axis
+            earthGroup.setAttribute('transform', 'rotate(' + (rotationAngle * 180 / Math.PI) + ' ' + earthX + ' ' + earthY + ')');
+        }
+        
+        // Start animation
+        requestAnimationFrame(animate);
+    </script>
+</body>
+</html>

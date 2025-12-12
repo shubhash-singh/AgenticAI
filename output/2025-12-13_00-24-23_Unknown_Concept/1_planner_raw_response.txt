@@ -1,0 +1,69 @@
+{
+  "learning_objectives": [
+    "Students will be able to explain how heat transfers through solids by conduction",
+    "Students will be able to distinguish between conductors and insulators",
+    "Students will be able to predict how different materials affect heat transfer rates"
+  ],
+  "key_concepts": [
+    "Heat conduction through solids",
+    "Conductors vs insulators",
+    "Particle vibration and energy transfer"
+  ],
+  "visual_design": {
+    "main_display": "Animated cross-section of a metal rod with vibrating particles that glow and transfer energy along the rod",
+    "color_scheme": ["#FF6B6B", "#4ECDC4", "#FFD93D"],
+    "animation_style": "smooth",
+    "visual_metaphor": "People in a line passing a ball (energy) to their neighbor"
+  },
+  "variables_to_simulate": [
+    {
+      "name": "Heat Source Temperature",
+      "control_type": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 50,
+      "unit": "°C",
+      "visual_effect": "Changes the glow intensity of particles at the heated end and speed of vibration"
+    },
+    {
+      "name": "Material Type",
+      "control_type": "toggle",
+      "options": ["Conductor (Metal)", "Insulator (Wood)"],
+      "default": "Conductor (Metal)",
+      "visual_effect": "Changes particle density and vibration transfer speed along the rod"
+    },
+    {
+      "name": "Rod Length",
+      "control_type": "slider",
+      "min": 1,
+      "max": 10,
+      "default": 5,
+      "unit": "cm",
+      "visual_effect": "Changes the length of the rod and time for heat to reach the other end"
+    }
+  ],
+  "layout_structure": {
+    "sections": [
+      {"id": "header", "height": "60px", "content": "Title and brief description"},
+      {"id": "visual-area", "height": "50vh", "content": "Main interactive visualization"},
+      {"id": "controls", "height": "auto", "content": "Sliders and buttons"},
+      {"id": "info", "height": "auto", "content": "Current values and observations"}
+    ],
+    "spacing": "16px between sections"
+  },
+  "simulation_logic": [
+    "Step 1: Initialize visual with default values",
+    "Step 2: When slider moves, calculate new value",
+    "Step 3: Animate visual change over 300ms",
+    "Step 4: Update display text with new values"
+  ],
+  "text_instructions": "Observe how heat travels through different materials",
+  "misconceptions_to_address": [
+    "Heat makes particles move from one end to another",
+    "All solids conduct heat equally well"
+  ],
+  "safety_constraints": [
+    "Age-appropriate content",
+    "No external resources"
+  ]
+}

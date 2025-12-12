@@ -1,0 +1,71 @@
+{
+  "learning_objectives": [
+    "Students will be able to explain why celestial bodies appear to move across the sky",
+    "Students will be able to identify Earth's rotation as the cause of daily apparent motion",
+    "Students will be able to identify Earth's revolution as the cause of annual apparent motion"
+  ],
+  "key_concepts": [
+    "Apparent motion of celestial bodies",
+    "Earth's rotation causes daily motion",
+    "Earth's revolution causes annual motion"
+  ],
+  "visual_design": {
+    "main_display": "Animated night sky scene showing Earth rotating with Sun, Moon, and stars moving across the sky. The scene includes a visible axis line through Earth and orbital path around the Sun.",
+    "color_scheme": ["#1a1a2e", "#e94560", "#f0e68c"],
+    "animation_style": "smooth",
+    "visual_metaphor": "Earth as a spinning top on a merry-go-round"
+  },
+  "variables_to_simulate": [
+    {
+      "name": "EarthRotationSpeed",
+      "control_type": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 50,
+      "unit": "speed",
+      "visual_effect": "changes how fast Earth spins on its axis, affecting how quickly Sun/Moon/stars move across the sky"
+    },
+    {
+      "name": "EarthOrbitSpeed",
+      "control_type": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 20,
+      "unit": "speed",
+      "visual_effect": "changes how fast Earth orbits the Sun, affecting the Sun's apparent annual position"
+    },
+    {
+      "name": "ViewMode",
+      "control_type": "toggle",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "unit": "mode",
+      "visual_effect": "switches between daily view (fast rotation) and annual view (orbital motion)"
+    }
+  ],
+  "layout_structure": {
+    "sections": [
+      {"id": "header", "height": "60px", "content": "Title and brief description"},
+      {"id": "visual-area", "height": "50vh", "content": "Main interactive visualization"},
+      {"id": "controls", "height": "auto", "content": "Sliders and buttons"},
+      {"id": "info", "height": "auto", "content": "Current values and observations"}
+    ],
+    "spacing": "16px between sections"
+  },
+  "simulation_logic": [
+    "Step 1: Initialize visual with default values",
+    "Step 2: When slider moves, calculate new value",
+    "Step 3: Animate visual change over 300ms",
+    "Step 4: Update display text with new values"
+  ],
+  "text_instructions": "Watch how Earth's spin makes the sky move",
+  "misconceptions_to_address": [
+    "The Sun moves around Earth",
+    "Stars actually move across the sky"
+  ],
+  "safety_constraints": [
+    "Age-appropriate content",
+    "No external resources"
+  ]
+}

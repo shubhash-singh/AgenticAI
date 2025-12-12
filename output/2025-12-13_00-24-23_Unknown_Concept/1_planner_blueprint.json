@@ -1,0 +1,10 @@
+{
+  "main_display": "Animated cross-section of a metal rod with vibrating particles that glow and transfer energy along the rod",
+  "color_scheme": [
+    "#FF6B6B",
+    "#4ECDC4",
+    "#FFD93D"
+  ],
+  "animation_style": "smooth",
+  "visual_metaphor": "People in a line passing a ball (energy) to their neighbor"
+}

@@ -1,0 +1,10 @@
+{
+  "main_display": "Animated night sky scene showing Earth rotating with Sun, Moon, and stars moving across the sky. The scene includes a visible axis line through Earth and orbital path around the Sun.",
+  "color_scheme": [
+    "#1a1a2e",
+    "#e94560",
+    "#f0e68c"
+  ],
+  "animation_style": "smooth",
+  "visual_metaphor": "Earth as a spinning top on a merry-go-round"
+}

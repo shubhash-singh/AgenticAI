@@ -1,0 +1,50 @@
+{
+  "intro": "Welcome, young explorers! Get ready to discover the fascinating world of celestial motion. This simulation will help you understand why the Sun, Moon, and stars appear to move across our sky. Have fun experimenting and learning!",
+  "questions": [
+    {
+      "question": "What happens to the stars in the night sky when you increase Earth's rotation speed using the slider?",
+      "type": "mcq",
+      "options": [
+        "A) The stars stop moving completely",
+        "B) The stars appear to move faster across the sky",
+        "C) The stars change colors and sizes",
+        "D) The stars start orbiting the Earth"
+      ],
+      "correct_index": 1,
+      "hint": "Watch the stars carefully as you move the rotation speed slider. What do you notice about how quickly they cross the sky?",
+      "explanation": "When Earth spins faster on its axis, the stars appear to move faster across our sky. This is because we're on a rotating platform (Earth), so everything in the sky seems to move in the opposite direction."
+    },
+    {
+      "question": "If you set Earth's revolution speed to maximum, what will happen to the constellations visible in the sky throughout the year?",
+      "type": "mcq",
+      "options": [
+        "A) The same constellations will be visible all year round",
+        "B) Constellations will change more quickly, showing different ones in shorter time",
+        "C) All constellations will disappear from view",
+        "D) The constellations will start moving in circles around the Sun"
+      ],
+      "correct_index": 1,
+      "hint": "Think about how Earth's yearly journey around the Sun changes our view of distant stars. What happens if this journey happens faster?",
+      "explanation": "Earth's revolution around the Sun changes our perspective of the stars throughout the year. If Earth orbits faster, we see different constellations more quickly because we're viewing them from different positions in space at a faster rate."
+    },
+    {
+      "question": "In real life, where would you observe the apparent motion of celestial bodies?",
+      "type": "mcq",
+      "options": [
+        "A) In a swimming pool looking at the water",
+        "B) In the sky during the day and night",
+        "C) Inside a dark closet with no windows",
+        "D) Underwater in the ocean"
+      ],
+      "correct_index": 1,
+      "hint": "Think about when you've seen the Sun rise and set, or when you've watched stars at night. Where do these observations happen?",
+      "explanation": "The apparent motion of celestial bodies is observed in the sky! During the day, we see the Sun's apparent motion, and at night, we observe the Moon and stars moving across the sky. This is the real-world application of what you're learning in this simulation."
+    }
+  ],
+  "followups": [
+    "Try setting both rotation and revolution speeds to maximum. What do you notice about the combined effect on celestial motion?",
+    "Can you find a combination of rotation and revolution speeds that creates the most dramatic change in the night sky?",
+    "Challenge: Before adjusting any sliders, predict how the Moon's apparent motion will change when you increase Earth's rotation speed"
+  ],
+  "summary": "Great job exploring the simulation! Remember, the apparent motion of celestial bodies is caused by Earth's rotation (spinning on its axis) and revolution (orbiting the Sun). This is why we see the Sun, Moon, and stars moving across our sky, even though it's really Earth that's moving!"
+}

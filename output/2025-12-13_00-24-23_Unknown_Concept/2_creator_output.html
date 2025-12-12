@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conduction - Interactive Simulation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f9f9f9;
+        }
+        #app { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 16px; 
+            background: white;
+            min-height: 100vh;
+        }
+        header {
+            padding: 16px 0;
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        h1 { font-size: 24px; margin-bottom: 8px; }
+        .subtitle { font-size: 14px; color: #666; }
+        
+        #visual-area {
+            position: relative;
+            height: 50vh;
+            min-height: 300px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin: 16px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        #controls {
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .control-group {
+            margin: 16px 0;
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 44px;
+            cursor: pointer;
+        }
+        
+        button {
+            width: 100%;
+            min-height: 48px;
+            padding: 12px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 8px 0;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        #info {
+            padding: 16px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .rod-container {
+            position: relative;
+            width: 90%;
+            max-width: 500px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .rod {
+            width: 100%;
+            height: 24px;
+            background: linear-gradient(90deg, #FF6B6B, #4ECDC4);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+        }
+        
+        .particles {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 0;
+        }
+        
+        .particle {
+            position: absolute;
+            top: -6px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #FFD93D;
+            box-shadow: 0 0 10px #FFD93D, 0 0 20px rgba(255, 217, 61, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .energy-ball {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #FF6B6B, #FF4444);
+            box-shadow: 0 0 15px #FF6B6B, 0 0 30px rgba(255, 107, 107, 0.5);
+            transform: translate(-50%, -50%);
+            transition: left 0.5s ease;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 12px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .dot-red { background: #FF6B6B; box-shadow: 0 0 8px #FF6B6B; }
+        .dot-teal { background: #4ECDC4; box-shadow: 0 0 8px #4ECDC4; }
+        .dot-yellow { background: #FFD93D; box-shadow: 0 0 8px #FFD93D; }
+        
+        .info-text {
+            font-size: 14px;
+            margin: 8px 0;
+        }
+        
+        .value-display {
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Conduction: Heat Transfer</h1>
+            <p class="subtitle">Watch energy flow through a metal rod as particles vibrate and transfer heat</p>
+        </header>
+        
+        <div id="visual-area">
+            <div class="rod-container">
+                <div class="rod">
+                    <div class="particles" id="particles"></div>
+                    <div class="energy-ball" id="energyBall"></div>
+                </div>
+                <div class="legend">
+                    <div class="legend-item"><div class="legend-dot dot-red"></div>Hot end</div>
+                    <div class="legend-item"><div class="legend-dot dot-teal"></div>Cold end</div>
+                    <div class="legend-item"><div class="legend-dot dot-yellow"></div>Particles</div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="controls">
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Temperature</span>
+                    <span id="tempValue">50%</span>
+                </div>
+                <input type="range" id="temperature" min="0" max="100" value="50">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Heat Source</span>
+                    <span id="sourceValue">Left</span>
+                </div>
+                <button id="toggleSource">Switch Heat Source</button>
+            </div>
+            
+            <div class="control-group">
+                <button id="reset">Reset Simulation</button>
+            </div>
+        </div>
+        
+        <div id="info">
+            <div class="info-text">Current State: <span class="value-display" id="currentState">Energy flowing left to right</span></div>
+            <div class="info-text">Particle Activity: <span class="value-display" id="particleActivity">Medium</span></div>
+            <div class="info-text">Energy Transfer: <span class="value-display" id="energyTransfer">Active</span></div>
+        </div>
+    </div>
+    
+    <script>
+        // Simulation state
+        const state = {
+            temperature: 50,
+            heatSource: 'left', // 'left' or 'right'
+            particles: [],
+            energyPosition: 0, // 0 to 100
+            energyDirection: 1, // 1 for right, -1 for left
+            animationId: null
+        };
+        
+        // DOM elements
+        const particlesContainer = document.getElementById('particles');
+        const energyBall = document.getElementById('energyBall');
+        const temperatureSlider = document.getElementById('temperature');
+        const tempValue = document.getElementById('tempValue');
+        const toggleSourceBtn = document.getElementById('toggleSource');
+        const sourceValue = document.getElementById('sourceValue');
+        const resetBtn = document.getElementById('reset');
+        const currentState = document.getElementById('currentState');
+        const particleActivity = document.getElementById('particleActivity');
+        const energyTransfer = document.getElementById('energyTransfer');
+        
+        // Initialize particles
+        function initParticles() {
+            particlesContainer.innerHTML = '';
+            state.particles = [];
+            
+            // Create 15 particles evenly spaced
+            for (let i = 0; i < 15; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                const position = (i / 14) * 100;
+                particle.style.left = position + '%';
+                particle.style.background = '#FFD93D';
+                particle.style.boxShadow = '0 0 10px #FFD93D, 0 0 20px rgba(255, 217, 61, 0.5)';
+                particlesContainer.appendChild(particle);
+                
+                state.particles.push({
+                    element: particle,
+                    position: position,
+                    vibration: 0,
+                    glow: 0
+                });
+            }
+            
+            // Position energy ball
+            state.energyPosition = state.heatSource === 'left' ? 0 : 100;
+            energyBall.style.left = state.energyPosition + '%';
+            updateEnergyDirection();
+        }
+        
+        // Update particle vibrations based on temperature and position
+        function updateParticles() {
+            const tempFactor = state.temperature / 100;
+            
+            state.particles.forEach((particle, index) => {
+                const position = particle.position;
+                const sourcePos = state.heatSource === 'left' ? 0 : 100;
+                const distance = Math.abs(position - sourcePos);
+                
+                // Calculate vibration intensity based on distance from heat source
+                const baseVibration = tempFactor * (1 - distance / 100);
+                particle.vibration = Math.max(0, Math.min(1, baseVibration));
+                
+                // Calculate glow intensity
+                const glowIntensity = particle.vibration;
+                particle.glow = glowIntensity;
+                
+                // Apply visual effects
+                const scale = 1 + particle.vibration * 0.5;
+                const glowColor = `rgba(255, 217, 61, ${glowIntensity})`;
+                
+                particle.element.style.transform = `scale(${scale})`;
+                particle.element.style.boxShadow = 
+                    `0 0 ${10 + glowIntensity * 20}px #FFD93D, 
+                     0 0 ${20 + glowIntensity * 30}px ${glowColor}`;
+            });
+        }
+        
+        // Update energy ball movement
+        function updateEnergyBall() {
+            // Speed based on temperature
+            const speed = 0.5 + (state.temperature / 100) * 2;
+            
+            state.energyPosition += state.energyDirection * speed;
+            
+            // Bounce at ends
+            if (state.energyPosition >= 100) {
+                state.energyPosition = 100;
+                state.energyDirection = -1;
+            } else if (state.energyPosition <= 0) {
+                state.energyPosition = 0;
+                state.energyDirection = 1;
+            }
+            
+            energyBall.style.left = state.energyPosition + '%';
+            
+            // Make nearby particles glow more
+            state.particles.forEach(particle => {
+                const distance = Math.abs(particle.position - state.energyPosition);
+                if (distance < 10) {
+                    const transferGlow = 1 - (distance / 10);
+                    particle.element.style.boxShadow = 
+                        `0 0 ${20 + transferGlow * 30}px #FFD93D, 
+                         0 0 ${40 + transferGlow * 50}px rgba(255, 217, 61, ${transferGlow})`;
+                }
+            });
+        }
+        
+        // Update energy direction indicator
+        function updateEnergyDirection() {
+            const direction = state.heatSource === 'left' ? 'right' : 'left';
+            currentState.textContent = `Energy flowing ${state.heatSource} to ${direction}`;
+            energyTransfer.textContent = 'Active';
+        }
+        
+        // Update activity level display
+        function updateActivityDisplay() {
+            const temp = state.temperature;
+            if (temp < 30) {
+                particleActivity.textContent = 'Low';
+            } else if (temp < 70) {
+                particleActivity.textContent = 'Medium';
+            } else {
+                particleActivity.textContent = 'High';
+            }
+        }
+        
+        // Animation loop
+        function animate() {
+            updateParticles();
+            updateEnergyBall();
+            state.animationId = requestAnimationFrame(animate);
+        }
+        
+        // Event listeners
+        temperatureSlider.addEventListener('input', (e) => {
+            state.temperature = parseInt(e.target.value);
+            tempValue.textContent = state.temperature + '%';
+            updateActivityDisplay();
+        });
+        
+        toggleSourceBtn.addEventListener('click', () => {
+            state.heatSource = state.heatSource === 'left' ? 'right' : 'left';
+            sourceValue.textContent = state.heatSource.charAt(0).toUpperCase() + state.heatSource.slice(1);
+            state.energyPosition = state.heatSource === 'left' ? 0 : 100;
+            energyBall.style.left = state.energyPosition + '%';
+            updateEnergyDirection();
+            updateParticles();
+        });
+        
+        resetBtn.addEventListener('click', () => {
+            state.temperature = 50;
+            state.heatSource = 'left';
+            temperatureSlider.value = '50';
+            tempValue.textContent = '50%';
+            sourceValue.textContent = 'Left';
+            initParticles();
+            updateEnergyDirection();
+            updateActivityDisplay();
+        });
+        
+        // Initialize
+        initParticles();
+        updateEnergyDirection();
+        updateActivityDisplay();
+        animate();
+    </script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+{
+  "intro": "Welcome, young scientists! Get ready to explore the fascinating world of heat conduction through our interactive simulation. See how heat travels through materials and discover the science behind everyday objects!",
+  "questions": [
+    {
+      "question": "Looking at the animated metal rod, what do you notice about the glowing particles as you watch them move along the rod?",
+      "type": "mcq",
+      "options": [
+        "A) The particles themselves travel from one end to the other end of the rod",
+        "B) The glowing energy (heat) moves along the rod while the particles stay in place",
+        "C) The particles disappear as they reach the cold end of the rod",
+        "D) The particles change color but don't move at all"
+      ],
+      "correct_index": 1,
+      "hint": "Watch carefully - are the individual particles moving positions, or is something else traveling through them?",
+      "explanation": "The glowing energy moves along the rod, but the particles themselves stay mostly in their positions, just vibrating more. This is how heat conduction works - energy transfers through collisions between neighboring particles."
+    },
+    {
+      "question": "What would happen if you increased the heat source temperature to maximum in the simulation?",
+      "type": "mcq",
+      "options": [
+        "A) The particles would stop vibrating completely",
+        "B) The particles would vibrate more slowly and the heat would travel slower",
+        "C) The particles would vibrate more vigorously and heat would travel faster through the rod",
+        "D) The rod would melt immediately"
+      ],
+      "correct_index": 2,
+      "hint": "Try adjusting the temperature slider and observe how the particles behave when they receive more energy",
+      "explanation": "When you increase the temperature, the particles at the heated end gain more energy and vibrate more vigorously. This means they collide more frequently and transfer energy faster to their neighbors, so heat travels through the rod more quickly."
+    },
+    {
+      "question": "In real life, where would you see heat conduction happening just like in our simulation?",
+      "type": "mcq",
+      "options": [
+        "A) Feeling the handle of a metal spoon get warm when the bowl is in hot soup",
+        "B) Seeing steam rise from a cup of hot chocolate",
+        "C) Feeling cool air from an air conditioner circulate around the room",
+        "D) Watching sunlight warm your skin on a summer day"
+      ],
+      "correct_index": 0,
+      "hint": "Think about situations where heat moves through a solid object without the material itself flowing",
+      "explanation": "The metal spoon handle warming up is a perfect example of conduction - heat travels through the solid metal from the hot end (in the soup) to the cold end (the handle) through particle vibrations, just like in our simulation. The other options show convection (B, C) and radiation (D)."
+    }
+  ],
+  "followups": [
+    "Try setting both variables to maximum. What do you notice?",
+    "Can you find a combination that creates the most interesting result?",
+    "Challenge: Predict the outcome before making changes"
+  ],
+  "summary": "Great job exploring conduction! Remember that heat travels through solids when particles vibrate and pass energy to their neighbors. Good conductors like metals transfer heat quickly, while insulators slow down this process. This is why metal spoons get hot but wooden spoons stay cool!"
+}
