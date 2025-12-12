@@ -1,0 +1,8 @@
+{
+  "name": "temp_object_A",
+  "description": "Temperature of Object A (in Celsius)",
+  "initial_value": 80,
+  "min": 0,
+  "max": 100,
+  "step": 1
+}

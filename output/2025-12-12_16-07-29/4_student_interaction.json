@@ -1,0 +1,58 @@
+{
+  "intro": "Hey there, young scientists! Let's explore how heat moves around. Get ready to see heat in action!",
+  "questions": [
+    {
+      "question": "Imagine you're holding a hot mug of cocoa. Where does the heat energy go?",
+      "type": "prediction",
+      "options": [
+        "It stays in the mug.",
+        "It flows from the mug to your hands.",
+        "It flows from your hands to the mug.",
+        "It disappears into the air."
+      ],
+      "hint": "Think about what happens to your hands and the cocoa when you hold it for a while.",
+      "correct_index": 1
+    },
+    {
+      "question": "Heat always flows from an object with a temperature that is:",
+      "type": "mcq",
+      "options": [
+        "Lower to higher.",
+        "Higher to lower.",
+        "The same.",
+        "It doesn't flow at all."
+      ],
+      "hint": "Remember our analogy of water flowing downhill!",
+      "correct_index": 1
+    },
+    {
+      "question": "If you put a cold spoon into hot soup, what happens to the heat energy?",
+      "type": "prediction",
+      "options": [
+        "The soup gets hotter and the spoon gets colder.",
+        "The heat moves from the spoon to the soup.",
+        "The heat moves from the soup to the spoon.",
+        "The heat stays where it is."
+      ],
+      "hint": "What do you think makes the spoon eventually feel warm?",
+      "correct_index": 2
+    },
+    {
+      "question": "When two objects with different temperatures are in contact, they will keep exchanging heat until:",
+      "type": "mcq",
+      "options": [
+        "One object becomes very hot and the other very cold.",
+        "Heat stops flowing completely.",
+        "Both objects reach the same temperature.",
+        "The hotter object runs out of heat."
+      ],
+      "hint": "This state where everything is the same temperature is called thermal equilibrium.",
+      "correct_index": 2
+    }
+  ],
+  "followups": [
+    "Great job exploring how heat moves! It's like a natural rule that energy likes to spread out.",
+    "Understanding heat flow helps us understand many things, like why we wear sweaters in winter!"
+  ],
+  "summary": "Heat energy naturally flows from hotter objects to colder objects until they reach the same temperature."
+}

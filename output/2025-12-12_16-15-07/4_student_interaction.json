@@ -1,0 +1,46 @@
+{
+  "intro": "Let's explore how heat moves! Imagine touching something hot \u2013 what happens to the heat?",
+  "questions": [
+    {
+      "question": "If you touch a hot stove and a cold metal railing, which one will transfer heat *to* your hand?",
+      "type": "prediction",
+      "options": [
+        "The hot stove",
+        "The cold metal railing",
+        "Both will transfer heat to your hand",
+        "Neither will transfer heat to your hand"
+      ],
+      "hint": "Think about where heat likes to go! Does it go from cold to hot, or hot to cold?",
+      "correct_index": 0
+    },
+    {
+      "question": "What do we call the movement of heat from a hotter object to a colder object?",
+      "type": "mcq",
+      "options": [
+        "Temperature change",
+        "Heat flow",
+        "Energy storage",
+        "Cooling down"
+      ],
+      "hint": "This movement is a key idea we're learning about!",
+      "correct_index": 1
+    },
+    {
+      "question": "When a hot object and a cold object are placed next to each other, heat will naturally move from:",
+      "type": "prediction",
+      "options": [
+        "The hot object to the cold object",
+        "The cold object to the hot object",
+        "There will be no movement of heat",
+        "Heat will move equally in both directions"
+      ],
+      "hint": "Remember our analogy of water flowing downhill!",
+      "correct_index": 0
+    }
+  ],
+  "followups": [
+    "Great job observing how heat moves!",
+    "Keep noticing how heat flows in your everyday life!"
+  ],
+  "summary": "Heat always flows from hotter things to colder things until they reach a similar temperature."
+}

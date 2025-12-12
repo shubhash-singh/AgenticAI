@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temperature Object A Simulator</title>
+    <style>
+        /* Basic styling to center content and make it look clean */
+        body {
+            font-family: sans-serif; /* Use a common, readable font */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Make body fill the viewport height */
+            margin: 0; /* Remove default body margin */
+            background-color: #f0f0f0; /* Light background color */
+            color: #333; /* Dark gray text color */
+            padding: 15px; /* Add some padding around the container */
+            box-sizing: border-box; /* Include padding in element's total width and height */
+        }
+
+        .container {
+            background-color: #fff; /* White background for the main content area */
+            padding: 30px;
+            border-radius: 8px; /* Slightly rounded corners */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+            text-align: center;
+            max-width: 400px; /* Limit width for better readability on large screens */
+            width: 100%; /* Make it responsive */
+        }
+
+        h1 {
+            color: #0056b3; /* A nice blue color for the title */
+            margin-bottom: 25px;
+            font-size: 1.8em; /* Slightly larger title */
+        }
+
+        .control-group {
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center items horizontally within the group */
+        }
+
+        label {
+            display: block; /* Make label take its own line */
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #555;
+            min-height: 44px; /* Ensure a good touch target size for the label */
+            line-height: 1.2; /* Adjust line height for multiline labels */
+            display: flex; /* Use flex to vertically center text */
+            align-items: center; /* Vertically center text */
+            justify-content: center; /* Horizontally center text */
+            text-align: center; /* Fallback for older browsers */
+        }
+
+        /* Styling for the range input (slider) */
+        input[type="range"] {
+            width: 100%;
+            height: 44px; /* Overall height for easier interaction */
+            -webkit-appearance: none; /* Remove default styling for Chrome/Safari */
+            appearance: none; /* Remove default styling for other browsers */
+            background: transparent; /* Make background transparent to show custom track */
+            margin: 0; /* Reset default margin */
+            padding: 0; /* Reset default padding */
+            cursor: grab; /* Indicate it's draggable */
+        }
+
+        /* Styles for the slider thumb (the draggable circle) */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 30px; /* Thumb width */
+            height: 30px; /* Thumb height */
+            background: #007bff; /* Bright blue thumb color */
+            border: 1px solid #0056b3; /* Darker blue border */
+            border-radius: 50%; /* Make it a circle */
+            cursor: grab;
+            margin-top: -8px; /* Vertically center the thumb on the track (track height 14px, thumb 30px -> (30-14)/2 = 8) */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 30px;
+            height: 30px;
+            background: #007bff;
+            border: 1px solid #0056b3;
+            border-radius: 50%;
+            cursor: grab;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        input[type="range"]::-ms-thumb {
+            width: 30px;
+            height: 30px;
+            background: #007bff;
+            border: 1px solid #0056b3;
+            border-radius: 50%;
+            cursor: grab;
+            margin-top: 0; /* No explicit margin needed for IE/Edge */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Styles for the slider track (the bar the thumb slides on) */
+        input[type="range"]::-webkit-slider-runnable-track {
+            height: 14px; /* Track height */
+            background: linear-gradient(to right, #add8e6 0%, #ff6347 100%); /* Blue (cold) to Red (hot) gradient */
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type="range"]::-moz-range-track {
+            height: 14px;
+            background: linear-gradient(to right, #add8e6 0%, #ff6347 100%);
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type="range"]::-ms-track {
+            height: 14px;
+            background: transparent; /* Hide the default track */
+            border-color: transparent;
+            color: transparent; /* Remove the default fill */
+        }
+
+        /* For IE/Edge, provide a fill for the track */
+        input[type="range"]::-ms-fill-lower {
+            background: linear-gradient(to right, #add8e6 0%, #ff6347 100%);
+            border-radius: 5px;
+        }
+
+        input[type="range"]::-ms-fill-upper {
+            background: linear-gradient(to right, #add8e6 0%, #ff6347 100%);
+            border-radius: 5px;
+        }
+
+        .value-display {
+            margin-top: 20px; /* Space above the value display */
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #007bff;
+            min-height: 44px; /* Ensure this display area is also a good size */
+            display: flex; /* Use flexbox for centering */
+            align-items: center; /* Vertically center content */
+            justify-content: center; /* Horizontally center content */
+            background-color: #e9f5ff; /* Light background for the value display */
+            border-radius: 5px;
+            padding: 5px 10px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Temperature Controller</h1>
+        <div class="control-group">
+            <label for="temperatureSlider">Temperature of Object A (°C)</label>
+            <input 
+                type="range" 
+                id="temperatureSlider" 
+                min="0" 
+                max="100" 
+                step="1" 
+                value="70"
+                aria-label="Adjust temperature for Object A in degrees Celsius"
+            >
+            <div class="value-display">
+                <span id="currentTemperature">70</span> °C
+            </div>
+            <!--
+                Future Generator Note:
+                This is where you could add more complex visual feedback that reacts to the slider's value.
+                For example, a CSS-animated thermometer graphic, or a simple representation
+                of the object's state (e.g., its color changing from blue to red based on temperature).
+                The 'currentTemperature' value can be used to drive these visuals via JavaScript.
+            -->
+        </div>
+        <!--
+            Future Generator Note:
+            Additional simulation controls or outputs can be added here.
+            For instance, controls for other objects, a simple chart, or text descriptions
+            that explain what happens at the current temperature setting.
+        -->
+    </div>
+
+    <script>
+        // Get the slider element from the page
+        const temperatureSlider = document.getElementById('temperatureSlider');
+        // Get the span element where we will show the temperature number
+        const currentTemperatureDisplay = document.getElementById('currentTemperature');
+
+        // Set the initial number display to match the slider's starting value
+        currentTemperatureDisplay.textContent = temperatureSlider.value;
+
+        // Listen for when the slider's value changes (as the user drags it)
+        temperatureSlider.addEventListener('input', (event) => {
+            // Update the displayed number with the slider's new value
+            currentTemperatureDisplay.textContent = event.target.value;
+
+            // Future Generator Note:
+            // This is the place to add logic for updating other parts of the simulation.
+            // For instance, if you have a visual thermometer, you would change its height here.
+            // If other objects in the simulation react to this temperature, their updates
+            // would be triggered from within this event listener.
+        });
+    </script>
+</body>
+</html>

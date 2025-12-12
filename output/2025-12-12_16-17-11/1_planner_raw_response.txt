@@ -1,0 +1,163 @@
+```json
+{
+  "learning_objectives": [
+    "Define heat flow and explain its direction.",
+    "Differentiate between heat and temperature.",
+    "Identify real-world examples of heat flow.",
+    "Understand the concept of thermal equilibrium."
+  ],
+  "key_concepts": [
+    "Heat flow",
+    "Temperature",
+    "Hot and Cold Objects",
+    "Thermal Equilibrium",
+    "Heat Transfer (Introduction)"
+  ],
+  "variables_to_simulate": [
+    {
+      "name": "object1_temperature",
+      "label": "Object 1 Temp (°C)",
+      "min": 0,
+      "max": 100,
+      "default": 80
+    },
+    {
+      "name": "object2_temperature",
+      "label": "Object 2 Temp (°C)",
+      "min": 0,
+      "max": 100,
+      "default": 20
+    },
+    {
+      "name": "heat_transfer_rate",
+      "label": "Heat Transfer Rate (arbitrary units)",
+      "min": 0,
+      "max": 10,
+      "default": 5
+    },
+    {
+      "name": "time",
+      "label": "Time (simulated units)",
+      "min": 0,
+      "max": 50,
+      "default": 0
+    }
+  ],
+  "user_interactions": [
+    "slider: object1_temperature",
+    "slider: object2_temperature",
+    "button: start_simulation",
+    "button: reset_simulation"
+  ],
+  "simulation_logic": [
+    "Initialize two objects with default temperatures (object1_temperature, object2_temperature).",
+    "When 'start_simulation' button is pressed:",
+    "  If object1_temperature > object2_temperature:",
+    "    Calculate heat flow from object 1 to object 2. The rate is proportional to the temperature difference and heat_transfer_rate.",
+    "    Decrease object1_temperature by a small amount proportional to the heat flow.",
+    "    Increase object2_temperature by a small amount proportional to the heat flow.",
+    "    Increment time.",
+    "  Else if object2_temperature > object1_temperature:",
+    "    Calculate heat flow from object 2 to object 1. The rate is proportional to the temperature difference and heat_transfer_rate.",
+    "    Decrease object2_temperature by a small amount proportional to the heat flow.",
+    "    Increase object1_temperature by a small amount proportional to the heat flow.",
+    "    Increment time.",
+    "  Else (temperatures are equal):",
+    "    Stop simulation (thermal equilibrium reached).",
+    "Update the visual representation of object temperatures and time.",
+    "When 'reset_simulation' button is pressed:",
+    "  Reset object1_temperature and object2_temperature to their default values.",
+    "  Reset time to 0."
+  ],
+  "mobile_ui_plan": {
+    "layout": "vertical",
+    "elements": [
+      {
+        "type": "text",
+        "content": "Simulate the Flow of Heat!",
+        "style": "h2"
+      },
+      {
+        "type": "text",
+        "content": "Use the sliders to set the initial temperatures of two objects. Then, press 'Start Simulation' to see how heat flows from the hotter object to the colder one until they reach the same temperature (thermal equilibrium).",
+        "style": "paragraph"
+      },
+      {
+        "type": "slider",
+        "variable": "object1_temperature",
+        "label": "Object 1 Temp (°C)",
+        "min": 0,
+        "max": 100,
+        "step": 1
+      },
+      {
+        "type": "slider",
+        "variable": "object2_temperature",
+        "label": "Object 2 Temp (°C)",
+        "min": 0,
+        "max": 100,
+        "step": 1
+      },
+      {
+        "type": "text",
+        "variable": "current_object1_temperature",
+        "label": "Current Object 1 Temp:",
+        "style": "span"
+      },
+      {
+        "type": "text",
+        "variable": "current_object2_temperature",
+        "label": "Current Object 2 Temp:",
+        "style": "span"
+      },
+      {
+        "type": "text",
+        "variable": "current_time",
+        "label": "Time Elapsed:",
+        "style": "span"
+      },
+      {
+        "type": "text",
+        "variable": "simulation_status",
+        "content": "Status: Ready",
+        "style": "bold"
+      },
+      {
+        "type": "button",
+        "action": "start_simulation",
+        "label": "Start Simulation"
+      },
+      {
+        "type": "button",
+        "action": "reset_simulation",
+        "label": "Reset Simulation"
+      },
+      {
+        "type": "image",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/System_boundary.svg/250px-System_boundary.svg.png",
+        "alt": "Thermodynamic system diagram",
+        "caption": "Imagine our two objects interacting within a boundary."
+      },
+      {
+        "type": "text",
+        "content": "Think about: Why does your hand feel cold when you touch ice? Where is the heat flowing?",
+        "style": "callout"
+      }
+    ]
+  },
+  "misconceptions_to_address": [
+    "Heat flows from cold to hot.",
+    "Heat and temperature are the same thing.",
+    "Heat stops flowing when objects are touched.",
+    "Heat flows only if objects are visibly touching."
+  ],
+  "text_instructions_for_students": "Hi there! Let's learn about how heat moves. Heat always flows from a hotter object to a colder object, just like water flows downhill. This movement is called the 'flow of heat'. In this simulation, you can set the initial temperatures of two objects. Press 'Start Simulation' to watch heat travel from the warmer object to the cooler one. See how their temperatures change until they become the same! Remember, temperature measures how hot or cold something is, while heat is the energy that moves because of this difference. Try to answer these: 1. If you put a hot spoon in cold water, which way does the heat flow? 2. What happens when the temperatures of both objects are the same?",
+  "file_target": "single_file_html",
+  "safety_constraints": [
+    "No external scripts should be loaded except for potentially a simple physics engine if needed (not expected here).",
+    "User input should be validated to stay within specified ranges.",
+    "The simulation should not cause excessive resource usage on the user's device.",
+    "All interactive elements must be clearly labeled and understandable for a Class 7 student."
+  ]
+}
+```

@@ -1,0 +1,7 @@
+{
+  "name": "object1_temperature",
+  "label": "Object 1 Temp (°C)",
+  "min": 0,
+  "max": 100,
+  "default": 80
+}

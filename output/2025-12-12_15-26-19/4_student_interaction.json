@@ -1,0 +1,46 @@
+{
+  "intro": "Welcome, budding scientists! Let's explore how heat likes to move around. Imagine two objects, like a warm cup of water and your hand. What do you think happens to the heat?",
+  "questions": [
+    {
+      "question": "When you place a hot object (Object A) next to a cold object (Object B), how does the heat energy move?",
+      "type": "prediction",
+      "options": [
+        "Heat moves from Object A to Object B.",
+        "Heat moves from Object B to Object A.",
+        "Heat stays in both objects.",
+        "Heat moves back and forth equally."
+      ],
+      "hint": "Think about what happens when you touch something hot. Does your hand get hotter or colder?",
+      "correct_index": 0
+    },
+    {
+      "question": "If Object A is at 70\u00b0C and Object B is at 20\u00b0C, in which direction will heat flow?",
+      "type": "mcq",
+      "options": [
+        "From A to B",
+        "From B to A",
+        "No heat will flow",
+        "Heat will flow in both directions at the same rate"
+      ],
+      "hint": "Heat always flows from a higher temperature to a lower temperature.",
+      "correct_index": 0
+    },
+    {
+      "question": "What happens to the temperature of Object B if it is colder than Object A and heat is flowing from A to B?",
+      "type": "prediction",
+      "options": [
+        "The temperature of Object B will increase.",
+        "The temperature of Object B will decrease.",
+        "The temperature of Object B will stay the same.",
+        "The temperature of Object B will fluctuate."
+      ],
+      "hint": "If heat is added to an object, what usually happens to its temperature?",
+      "correct_index": 0
+    }
+  ],
+  "followups": [
+    "Great job observing how heat moves! This principle of heat flowing from hot to cold is super important.",
+    "Remember, heat is a form of energy, and it always seeks to spread out from where it's concentrated to where it's less concentrated."
+  ],
+  "summary": "Heat always travels from a hotter object to a colder object until they reach the same temperature."
+}

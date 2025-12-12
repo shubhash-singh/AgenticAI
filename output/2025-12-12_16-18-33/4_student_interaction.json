@@ -1,0 +1,46 @@
+{
+  "intro": "Let's explore how heat moves! Imagine two objects with different temperatures. What do you think happens to the heat energy between them?",
+  "questions": [
+    {
+      "question": "You have Object A at 80\u00b0C and Object B at 20\u00b0C. In which direction will heat flow?",
+      "type": "prediction",
+      "options": [
+        "Heat will flow from Object A to Object B.",
+        "Heat will flow from Object B to Object A.",
+        "Heat will not flow because they are different objects.",
+        "Heat will flow equally in both directions."
+      ],
+      "hint": "Remember, heat likes to spread out from where it's more concentrated to where it's less concentrated.",
+      "correct_index": 0
+    },
+    {
+      "question": "If you touch a hot frying pan, which object is hotter?",
+      "type": "mcq",
+      "options": [
+        "Your hand",
+        "The frying pan",
+        "They are the same temperature",
+        "It depends on the day"
+      ],
+      "hint": "Think about how your hand feels when you touch something very hot.",
+      "correct_index": 1
+    },
+    {
+      "question": "What happens to the temperature of Object A (initially 80\u00b0C) if it's placed next to Object B (initially 20\u00b0C)?",
+      "type": "prediction",
+      "options": [
+        "Object A's temperature will increase.",
+        "Object A's temperature will decrease.",
+        "Object A's temperature will stay the same.",
+        "Object A's temperature will fluctuate wildly."
+      ],
+      "hint": "Heat flows from hotter to colder objects. What effect does losing heat have on an object's temperature?",
+      "correct_index": 1
+    }
+  ],
+  "followups": [
+    "As heat flows from Object A to Object B, their temperatures move closer together.",
+    "This process continues until both objects reach the same temperature, a state called thermal equilibrium."
+  ],
+  "summary": "Heat always flows from a hotter object to a colder object, working to even out temperatures."
+}

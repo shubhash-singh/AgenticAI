@@ -1,0 +1,8 @@
+{
+  "type": "slider",
+  "variable": "temperature_object_A",
+  "label": "Temperature of Object A (°C)",
+  "min": 0,
+  "max": 100,
+  "initial_value": 80
+}

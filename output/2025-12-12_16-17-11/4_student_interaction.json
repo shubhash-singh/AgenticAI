@@ -1,0 +1,46 @@
+{
+  "intro": "Let's explore how heat moves! Heat is energy that always travels from warmer things to cooler things. Think of it like a busy crowd moving to a less crowded spot.",
+  "questions": [
+    {
+      "question": "Imagine you touch a hot pan. What direction does the heat energy travel?",
+      "type": "prediction",
+      "options": [
+        "From the pan to your hand",
+        "From your hand to the pan",
+        "Heat doesn't move",
+        "Heat moves randomly"
+      ],
+      "hint": "Remember, heat always goes from where there's more of it to where there's less.",
+      "correct_index": 0
+    },
+    {
+      "question": "When you drink hot chocolate on a cold day, what is happening to the heat?",
+      "type": "prediction",
+      "options": [
+        "Heat flows from the hot chocolate to your hands.",
+        "Heat flows from your hands to the hot chocolate.",
+        "Heat flows from the air to the hot chocolate.",
+        "No heat flows."
+      ],
+      "hint": "Think about which item is hotter and which is colder.",
+      "correct_index": 0
+    },
+    {
+      "question": "Temperature is a way to measure how ____ an object is.",
+      "type": "mcq",
+      "options": [
+        "heavy",
+        "hot or cold",
+        "big",
+        "fast"
+      ],
+      "hint": "What does a thermometer tell us?",
+      "correct_index": 1
+    }
+  ],
+  "followups": [
+    "See how heat moves from the hot object (Object 1) to the cooler object (Object 2) in the simulation!",
+    "You can change the temperature of Object 1 and see how that affects the flow of heat."
+  ],
+  "summary": "Heat is energy that flows from hotter objects to colder objects until they reach a similar temperature."
+}

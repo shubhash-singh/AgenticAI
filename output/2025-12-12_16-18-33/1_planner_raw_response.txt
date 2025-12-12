@@ -1,0 +1,150 @@
+```json
+{
+  "learning_objectives": [
+    "Understand that heat is a form of energy that flows from hotter to colder objects.",
+    "Differentiate between heat and temperature.",
+    "Identify everyday examples of heat flow.",
+    "Explain the basic principle of thermal equilibrium."
+  ],
+  "key_concepts": [
+    "Flow of heat",
+    "Hot and cold objects",
+    "Temperature",
+    "Heat transfer (introduction)",
+    "Thermal equilibrium"
+  ],
+  "variables_to_simulate": [
+    "temperature_object_A",
+    "temperature_object_B",
+    "heat_flow_rate",
+    "time"
+  ],
+  "user_interactions": [
+    {
+      "type": "slider",
+      "variable": "temperature_object_A",
+      "label": "Temperature of Object A (°C)",
+      "min": 0,
+      "max": 100,
+      "initial_value": 80
+    },
+    {
+      "type": "slider",
+      "variable": "temperature_object_B",
+      "label": "Temperature of Object B (°C)",
+      "min": 0,
+      "max": 100,
+      "initial_value": 20
+    },
+    {
+      "type": "button",
+      "label": "Start Simulation",
+      "action": "start_simulation"
+    },
+    {
+      "type": "button",
+      "label": "Reset",
+      "action": "reset_simulation"
+    }
+  ],
+  "simulation_logic": [
+    "Initialize 'time' to 0.",
+    "Set initial values for 'temperature_object_A' and 'temperature_object_B' based on user input or defaults.",
+    "When 'Start Simulation' is clicked:",
+    "  Calculate 'heat_flow_rate': If temperature_object_A > temperature_object_B, heat_flow_rate = some_positive_value (e.g., proportional to difference); else if temperature_object_B > temperature_object_A, heat_flow_rate = some_negative_value (heat flows from B to A); else heat_flow_rate = 0.",
+    "  In a loop (e.g., every 0.5 seconds):",
+    "    If heat_flow_rate is not 0:",
+    "      Decrease temperature_object_A by a small amount proportional to heat_flow_rate and time increment.",
+    "      Increase temperature_object_B by a small amount proportional to heat_flow_rate and time increment (if A is hotter).",
+    "      If B is hotter than A, do the opposite.",
+    "      Update 'time'.",
+    "      Visually represent the temperature change and the direction of heat flow (e.g., with arrows).",
+    "      Display current temperatures.",
+    "      If temperatures become equal (thermal equilibrium), stop the loop and display 'Thermal Equilibrium Reached'.",
+    "    If heat_flow_rate is 0, display 'No heat flow'.",
+    "When 'Reset' is clicked:",
+    "  Reset 'temperature_object_A', 'temperature_object_B', and 'time' to their initial values.",
+    "  Clear any visual indicators of heat flow."
+  ],
+  "mobile_ui_plan": {
+    "layout": "vertical",
+    "elements": [
+      {
+        "type": "text",
+        "content": "<h1>Understanding Heat Flow</h1>",
+        "style": "header"
+      },
+      {
+        "type": "text",
+        "content": "Slide the temperatures for Object A and Object B. Then press 'Start Simulation' to see how heat flows!",
+        "style": "instructions"
+      },
+      {
+        "type": "slider",
+        "variable": "temperature_object_A",
+        "label": "Temperature of Object A (°C)",
+        "min": 0,
+        "max": 100,
+        "initial_value": 80
+      },
+      {
+        "type": "slider",
+        "variable": "temperature_object_B",
+        "label": "Temperature of Object B (°C)",
+        "min": 0,
+        "max": 100,
+        "initial_value": 20
+      },
+      {
+        "type": "button",
+        "label": "Start Simulation",
+        "action": "start_simulation",
+        "style": "primary"
+      },
+      {
+        "type": "button",
+        "label": "Reset",
+        "action": "reset_simulation",
+        "style": "secondary"
+      },
+      {
+        "type": "visualization",
+        "description": "A visual area showing two objects (e.g., circles) with their temperatures displayed, and arrows indicating heat flow.",
+        "id": "simulation_area"
+      },
+      {
+        "type": "text",
+        "content": "Current Temperatures: Object A: <span id='temp_A'></span>°C, Object B: <span id='temp_B'></span>°C",
+        "id": "temperature_display"
+      },
+      {
+        "type": "text",
+        "content": "<strong>What's happening?</strong>",
+        "style": "subheader"
+      },
+      {
+        "type": "text",
+        "content": "Heat always moves from a hotter object to a colder object. This continues until both objects reach the same temperature, called thermal equilibrium.",
+        "id": "explanation_text"
+      },
+      {
+        "type": "text",
+        "content": "<strong>Key Takeaway:</strong> Heat flows from High Temperature to Low Temperature.",
+        "style": "important"
+      }
+    ]
+  },
+  "misconceptions_to_address": [
+    "Heat flows from cold to hot.",
+    "Heat and temperature are the same thing.",
+    "Heat only flows when objects are touching."
+  ],
+  "text_instructions_for_students": "Hello! Let's learn about how heat moves. Heat is a form of energy. It always travels from something hot to something cold. Think of it like water flowing downhill. The simulation below will help you see this in action! Slide the temperatures of Object A and Object B, then click 'Start Simulation'. Watch the arrows to see which way heat is flowing. Keep an eye on the temperatures – they will change until both objects become the same temperature, which is called thermal equilibrium. Remember: Heat always flows from HOT to COLD!",
+  "file_target": "single_file_html",
+  "safety_constraints": [
+    "Ensure all temperature values remain within reasonable physical limits (e.g., not below absolute zero in practical scenarios for this level).",
+    "Prevent infinite loops by ensuring the simulation converges towards thermal equilibrium or has a maximum time limit.",
+    "Avoid displaying negative temperatures that might confuse students unless specifically illustrating a concept that requires it (which is unlikely for Class 7 'Flow of Heat')."
+  ]
+}
+```

@@ -1,0 +1,153 @@
+```json
+{
+  "learning_objectives": [
+    "Understand that heat is a form of energy that flows.",
+    "Identify the direction of heat flow based on temperature differences.",
+    "Differentiate between heat and temperature.",
+    "Recognize real-world examples of heat flow."
+  ],
+  "key_concepts": [
+    "Flow of heat",
+    "Hot and cold objects",
+    "Temperature",
+    "Thermal equilibrium",
+    "Conduction, Convection, Radiation (as future topics)"
+  ],
+  "variables_to_simulate": [
+    {
+      "name": "object1_temperature",
+      "description": "Temperature of the first object",
+      "initial_value": 50,
+      "min": 0,
+      "max": 100,
+      "unit": "°C"
+    },
+    {
+      "name": "object2_temperature",
+      "description": "Temperature of the second object",
+      "initial_value": 20,
+      "min": 0,
+      "max": 100,
+      "unit": "°C"
+    },
+    {
+      "name": "heat_flow_rate",
+      "description": "Rate at which heat energy is transferred",
+      "initial_value": 0,
+      "min": 0,
+      "max": 10,
+      "unit": "units/sec"
+    }
+  ],
+  "user_interactions": [
+    {
+      "type": "slider",
+      "variable_name": "object1_temperature",
+      "label": "Object 1 Temperature (°C)"
+    },
+    {
+      "type": "slider",
+      "variable_name": "object2_temperature",
+      "label": "Object 2 Temperature (°C)"
+    },
+    {
+      "type": "button",
+      "action": "reset",
+      "label": "Reset Temperatures"
+    }
+  ],
+  "simulation_logic": [
+    "Initialize two objects with initial temperatures (object1_temperature, object2_temperature).",
+    "Continuously compare object1_temperature and object2_temperature.",
+    "If object1_temperature > object2_temperature:",
+    "  Calculate heat_flow_rate: heat_flow_rate = (object1_temperature - object2_temperature) * K (where K is a constant representing conductivity/transfer efficiency).",
+    "  Update object1_temperature: object1_temperature -= heat_flow_rate * time_step",
+    "  Update object2_temperature: object2_temperature += heat_flow_rate * time_step",
+    "  Display an arrow or text indicating heat flows from Object 1 to Object 2.",
+    "If object2_temperature > object1_temperature:",
+    "  Calculate heat_flow_rate: heat_flow_rate = (object2_temperature - object1_temperature) * K",
+    "  Update object2_temperature: object2_temperature -= heat_flow_rate * time_step",
+    "  Update object1_temperature: object1_temperature += heat_flow_rate * time_step",
+    "  Display an arrow or text indicating heat flows from Object 2 to Object 1.",
+    "If object1_temperature == object2_temperature:",
+    "  heat_flow_rate = 0",
+    "  Display text indicating thermal equilibrium.",
+    "Update the display of temperatures and heat flow direction."
+  ],
+  "mobile_ui_plan": {
+    "layout": "vertical",
+    "elements": [
+      {
+        "type": "text",
+        "content": "Explore the Flow of Heat",
+        "style": "header"
+      },
+      {
+        "type": "text",
+        "content": "Adjust the temperatures of the two objects below. Observe how heat flows!"
+      },
+      {
+        "type": "slider",
+        "variable_name": "object1_temperature",
+        "label": "Object 1 Temp:"
+      },
+      {
+        "type": "text",
+        "variable_name": "object1_temperature",
+        "style": "value_display"
+      },
+      {
+        "type": "slider",
+        "variable_name": "object2_temperature",
+        "label": "Object 2 Temp:"
+      },
+      {
+        "type": "text",
+        "variable_name": "object2_temperature",
+        "style": "value_display"
+      },
+      {
+        "type": "animation",
+        "description": "Visual representation of objects and arrows indicating heat flow direction."
+      },
+      {
+        "type": "text",
+        "variable_name": "heat_flow_status",
+        "content": ""
+      },
+      {
+        "type": "button",
+        "action": "reset",
+        "label": "Reset"
+      },
+      {
+        "type": "link",
+        "url": "https://www.youtube.com/watch?v=bJsWGPXjYuc",
+        "label": "Watch a Video Explanation"
+      }
+    ]
+  },
+  "misconceptions_to_address": [
+    "Heat flows from cold to hot.",
+    "Heat and temperature are the same thing.",
+    "Heat only flows when objects are in direct contact."
+  ],
+  "text_instructions_for_students": [
+    "Welcome to the Heat Flow simulation!",
+    "You will see two objects with different temperatures.",
+    "Use the sliders to change the temperature of each object.",
+    "Watch the arrows! They show which way heat is flowing.",
+    "When the temperatures are the same, heat stops flowing.",
+    "Remember: Heat always moves from a HOTTER object to a COLDER object.",
+    "Try to make both objects reach the same temperature. What happens to the heat flow?",
+    "Press 'Reset' to start again."
+  ],
+  "file_target": "single_file_html",
+  "safety_constraints": [
+    "Ensure simulation values remain within reasonable bounds (0-100°C).",
+    "Prevent division by zero errors in calculations.",
+    "Provide clear visual feedback for all states (heat flowing, equilibrium).",
+    "All external links must be verified and appropriate for the age group."
+  ]
+}
+```

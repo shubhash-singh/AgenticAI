@@ -1,0 +1,46 @@
+{
+  "intro": "Hey there, young scientists! Let's explore how heat loves to travel. Think of it like a busy path where energy always moves from a warm place to a cooler one. Ready to see this in action?",
+  "questions": [
+    {
+      "question": "Imagine you have a hot cup of cocoa (object1) and a cold glass of water (object2). If you put them next to each other, which way will the heat energy flow?",
+      "type": "prediction",
+      "options": [
+        "Heat will flow from the cocoa to the water.",
+        "Heat will flow from the water to the cocoa.",
+        "Heat will not flow at all.",
+        "Heat will flow equally in both directions."
+      ],
+      "hint": "Remember, heat likes to spread out from where it's more concentrated (hotter) to where it's less concentrated (colder).",
+      "correct_index": 0
+    },
+    {
+      "question": "If object1 is at 70\u00b0C and object2 is at 20\u00b0C, what will happen to their temperatures over time if they are in contact?",
+      "type": "mcq",
+      "options": [
+        "Object1's temperature will increase and object2's temperature will decrease.",
+        "Object1's temperature will decrease and object2's temperature will increase.",
+        "Both temperatures will stay the same.",
+        "Both temperatures will decrease."
+      ],
+      "hint": "Heat moves from the hotter object to the colder object. What effect does this have on their temperatures?",
+      "correct_index": 1
+    },
+    {
+      "question": "When heat flows from object1 to object2 until they are the same temperature, what is this state called?",
+      "type": "mcq",
+      "options": [
+        "Thermal Equilibrium",
+        "Heat Transfer",
+        "Temperature Difference",
+        "Energy Flow"
+      ],
+      "hint": "Think about when things become balanced or stable.",
+      "correct_index": 0
+    }
+  ],
+  "followups": [
+    "Great job exploring heat flow! You saw how heat naturally moves from hotter to colder things, like our warm cocoa cooling down and the water warming up.",
+    "This movement of heat is super important in so many things around us, from cooking our food to how our planet stays warm!"
+  ],
+  "summary": "Heat energy always flows from a hotter object to a colder object until they reach thermal equilibrium, meaning they are the same temperature."
+}

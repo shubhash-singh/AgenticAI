@@ -1,0 +1,145 @@
+```json
+{
+  "learning_objectives": [
+    "Students will be able to define heat flow and explain its direction.",
+    "Students will be able to differentiate between heat and temperature.",
+    "Students will be able to identify real-life examples of heat flow.",
+    "Students will be able to understand the intuition behind heat flow using analogies."
+  ],
+  "key_concepts": [
+    "Flow of Heat",
+    "Hot and Cold Objects",
+    "Temperature",
+    "Heat Transfer",
+    "Thermal Equilibrium"
+  ],
+  "variables_to_simulate": [
+    "Temperature_Object_A",
+    "Temperature_Object_B",
+    "Heat_Flow_Rate",
+    "Time"
+  ],
+  "user_interactions": [
+    "Slider: Adjust Temperature of Object A",
+    "Slider: Adjust Temperature of Object B",
+    "Button: Start/Stop Simulation"
+  ],
+  "simulation_logic": [
+    "1. Initialize: Set initial temperatures for Object A and Object B based on user input or default values.",
+    "2. Check for Temperature Difference: If Temperature_Object_A is greater than Temperature_Object_B, heat flows from A to B. If Temperature_Object_B is greater than Temperature_Object_A, heat flows from B to A. If temperatures are equal, no net heat flow.",
+    "3. Calculate Heat Flow Rate: Heat_Flow_Rate is proportional to the temperature difference (e.g., Rate = k * |Temp_A - Temp_B|, where k is a constant).",
+    "4. Update Temperatures: In each time step, decrease the temperature of the hotter object and increase the temperature of the colder object by Heat_Flow_Rate * deltaTime.",
+    "5. Check for Thermal Equilibrium: If Temperature_Object_A is approximately equal to Temperature_Object_B, stop the simulation and indicate thermal equilibrium.",
+    "6. Display Updates: Visually represent the temperatures of Object A and Object B, and an indicator for the direction and intensity of heat flow."
+  ],
+  "mobile_ui_plan": {
+    "layout": "vertical",
+    "elements": [
+      {
+        "type": "header",
+        "text": "Flow of Heat Simulation"
+      },
+      {
+        "type": "text",
+        "text": "Drag the sliders to set the temperatures of the two objects. Press 'Start' to see how heat flows!"
+      },
+      {
+        "type": "section",
+        "title": "Object A",
+        "elements": [
+          {
+            "type": "slider",
+            "id": "temp_A_slider",
+            "label": "Temperature (°C): ",
+            "min": 0,
+            "max": 100,
+            "initial_value": 80
+          },
+          {
+            "type": "text",
+            "id": "temp_A_display",
+            "text": "Temperature: 80°C"
+          }
+        ]
+      },
+      {
+        "type": "section",
+        "title": "Object B",
+        "elements": [
+          {
+            "type": "slider",
+            "id": "temp_B_slider",
+            "label": "Temperature (°C): ",
+            "min": 0,
+            "max": 100,
+            "initial_value": 20
+          },
+          {
+            "type": "text",
+            "id": "temp_B_display",
+            "text": "Temperature: 20°C"
+          }
+        ]
+      },
+      {
+        "type": "visual_representation",
+        "id": "heat_flow_indicator",
+        "description": "Visual indicator showing heat flow direction and intensity (e.g., arrows, color gradients)."
+      },
+      {
+        "type": "button",
+        "id": "start_button",
+        "text": "Start Simulation"
+      },
+      {
+        "type": "text",
+        "id": "status_message",
+        "text": ""
+      },
+      {
+        "type": "section",
+        "title": "Key Takeaways",
+        "elements": [
+          {
+            "type": "text",
+            "text": "Heat always flows from a **hotter** object to a **colder** object."
+          },
+          {
+            "type": "text",
+            "text": "When temperatures are equal, heat flow stops (thermal equilibrium)."
+          }
+        ]
+      },
+      {
+        "type": "link",
+        "text": "Learn More (Modes of Heat Transfer)",
+        "url": "placeholder_for_next_concept"
+      }
+    ]
+  },
+  "misconceptions_to_address": [
+    "Heat flows from cold to hot.",
+    "Heat and temperature are the same thing.",
+    "Heat flow only happens when objects are touching."
+  ],
+  "text_instructions_for_students": [
+    "Welcome to the Heat Flow Simulator!",
+    "Your goal is to understand how heat moves.",
+    "Look at the two objects, Object A and Object B.",
+    "Use the sliders to change their temperatures. Try making one very hot and the other very cold.",
+    "Press the 'Start Simulation' button to see heat flow.",
+    "Watch the arrows! They show you which way the heat is going.",
+    "Notice how the hotter object gets cooler and the colder object gets warmer.",
+    "Can you make the objects reach the same temperature? When they do, heat stops flowing, and we call this 'thermal equilibrium'.",
+    "Remember: Heat always flows from the hotter object to the colder object. It's like water flowing downhill!",
+    "Keep experimenting to see what happens with different temperatures. Have fun learning!"
+  ],
+  "file_target": "single_file_html",
+  "safety_constraints": [
+    "Ensure all user inputs are within reasonable temperature ranges (e.g., 0-100°C for this simulation).",
+    "Prevent infinite loops in the simulation logic.",
+    "The simulation should gracefully handle cases where temperatures are already equal.",
+    "All visual elements must be clear and understandable on a mobile screen."
+  ]
+}
+```

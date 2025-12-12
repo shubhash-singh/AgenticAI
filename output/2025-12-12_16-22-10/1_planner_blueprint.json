@@ -1,0 +1,8 @@
+{
+  "name": "temperature_object1",
+  "label": "Temperature of Object 1 (°C)",
+  "min": 0,
+  "max": 100,
+  "default": 80,
+  "step": 1
+}

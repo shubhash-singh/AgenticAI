@@ -1,0 +1,138 @@
+```json
+{
+  "learning_objectives": [
+    "Define the flow of heat and its direction.",
+    "Explain the relationship between hot/cold objects, temperature, and heat flow.",
+    "Identify real-life examples of heat flow.",
+    "Distinguish between heat and temperature."
+  ],
+  "key_concepts": [
+    "Flow of heat",
+    "Hot and Cold objects",
+    "Temperature",
+    "Thermal Equilibrium",
+    "Heat Transfer (introduction)"
+  ],
+  "variables_to_simulate": [
+    "temperature_object_A",
+    "temperature_object_B",
+    "heat_flow_rate"
+  ],
+  "user_interactions": [
+    {
+      "type": "slider",
+      "id": "tempA_slider",
+      "label": "Temperature of Object A (°C):",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "initial_value": 80
+    },
+    {
+      "type": "slider",
+      "id": "tempB_slider",
+      "label": "Temperature of Object B (°C):",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "initial_value": 20
+    },
+    {
+      "type": "button",
+      "id": "simulate_button",
+      "label": "Start Simulation"
+    }
+  ],
+  "simulation_logic": [
+    "On 'Start Simulation' button click:",
+    "1. Read current values from tempA_slider and tempB_slider.",
+    "2. Compare tempA and tempB.",
+    "3. If tempA > tempB:",
+    "   - Set heat_flow_rate based on the difference (e.g., (tempA - tempB) * constant).",
+    "   - Display text: 'Heat flows from Object A ( hotter ) to Object B ( colder ).'",
+    "   - Update visual representation to show arrows from A to B.",
+    "   - Show cooling of A and warming of B over time until equilibrium is approached (simplified).",
+    "4. If tempB > tempA:",
+    "   - Set heat_flow_rate based on the difference (e.g., (tempB - tempA) * constant).",
+    "   - Display text: 'Heat flows from Object B ( hotter ) to Object A ( colder ).'",
+    "   - Update visual representation to show arrows from B to A.",
+    "   - Show cooling of B and warming of A over time until equilibrium is approached (simplified).",
+    "5. If tempA == tempB:",
+    "   - Set heat_flow_rate to 0.",
+    "   - Display text: 'Objects A and B are at the same temperature. No net heat flow. (Thermal Equilibrium)'",
+    "   - Update visual representation to show no arrows or equal bidirectional arrows (subtle).",
+    "6. Optionally, display 'Current Heat Flow Rate:' with the calculated rate."
+  ],
+  "mobile_ui_plan": {
+    "layout": "vertical",
+    "elements": [
+      {
+        "type": "header",
+        "text": "Flow of Heat Simulation"
+      },
+      {
+        "type": "text",
+        "id": "simulation_description",
+        "text": "Adjust the temperatures of Object A and Object B. Press 'Start Simulation' to see how heat flows."
+      },
+      {
+        "type": "slider",
+        "id": "tempA_slider",
+        "label": "Temperature of Object A (°C):",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "initial_value": 80
+      },
+      {
+        "type": "slider",
+        "id": "tempB_slider",
+        "label": "Temperature of Object B (°C):",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "initial_value": 20
+      },
+      {
+        "type": "button",
+        "id": "simulate_button",
+        "label": "Start Simulation"
+      },
+      {
+        "type": "visual",
+        "id": "heat_flow_visual",
+        "description": "Visual representation of two objects (A and B) with arrows indicating heat flow direction."
+      },
+      {
+        "type": "text",
+        "id": "output_message",
+        "text": ""
+      },
+      {
+        "type": "text",
+        "id": "heat_flow_rate_display",
+        "text": ""
+      },
+      {
+        "type": "link",
+        "text": "Learn More: What is Heat Flow?",
+        "url": "https://www.youtube.com/watch?v=bJsWGPXjYuc"
+      }
+    ]
+  },
+  "misconceptions_to_address": [
+    "Heat flows from cold to hot.",
+    "Heat is the same as temperature.",
+    "Heat stops flowing only when an object is touched.",
+    "Heat is a property that an object 'has' (like mass), rather than energy in transit."
+  ],
+  "text_instructions_for_students": "Welcome! This simulation helps you understand how heat moves. \n\n1.  Use the sliders to set the temperature for Object A and Object B. Higher numbers mean hotter.\n2.  Click 'Start Simulation' to see where heat flows.\n3.  Observe the arrows: they show the direction of heat flow.\n4.  Remember: Heat always flows from the hotter object to the colder object.\n5.  If both objects have the same temperature, heat doesn't flow between them (this is called thermal equilibrium).",
+  "file_target": "single_file_html",
+  "safety_constraints": [
+    "No external API calls for data beyond pre-defined links.",
+    "No user data collection or storage.",
+    "Simulation parameters are within reasonable scientific bounds (e.g., temperature ranges appropriate for Class 7).",
+    "Content is age-appropriate and aligned with CBSE curriculum."
+  ]
+}
+```

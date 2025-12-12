@@ -1,0 +1,46 @@
+{
+  "intro": "Let's explore how heat moves! Imagine two objects with different temperatures. What do you think happens to the heat energy between them?",
+  "questions": [
+    {
+      "question": "You have Object A at 80\u00b0C. If you bring it near Object B, which is at 20\u00b0C, what will happen to the heat energy?",
+      "type": "prediction",
+      "options": [
+        "Heat will flow from Object A to Object B.",
+        "Heat will flow from Object B to Object A.",
+        "No heat will flow because Object B is colder.",
+        "Heat will flow equally in both directions."
+      ],
+      "hint": "Think about which object has more 'heat energy' concentrated in it.",
+      "correct_index": 0
+    },
+    {
+      "question": "After some time, if Object A is at 50\u00b0C and Object B is also at 50\u00b0C, what is happening to the heat flow?",
+      "type": "mcq",
+      "options": [
+        "Heat is still flowing from A to B.",
+        "Heat is still flowing from B to A.",
+        "Heat has stopped flowing.",
+        "Heat is flowing from B to A."
+      ],
+      "hint": "Remember the concept of thermal equilibrium.",
+      "correct_index": 2
+    },
+    {
+      "question": "If Object A was at 20\u00b0C and Object B was at 80\u00b0C, in which direction would heat flow initially?",
+      "type": "mcq",
+      "options": [
+        "From A to B",
+        "From B to A",
+        "No flow",
+        "Both directions"
+      ],
+      "hint": "Heat always seeks to move from a warmer place to a cooler place.",
+      "correct_index": 1
+    }
+  ],
+  "followups": [
+    "See how heat always moves from hotter to colder? This is why your hot chocolate cools down!",
+    "This movement of heat is the first step to understanding conduction, convection, and radiation."
+  ],
+  "summary": "Heat energy always flows from a hotter object to a colder object until they reach the same temperature."
+}

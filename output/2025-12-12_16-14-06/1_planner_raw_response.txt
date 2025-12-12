@@ -1,0 +1,75 @@
+```json
+{
+  "learning_objectives": [
+    "Understand that heat flows from hotter to colder objects.",
+    "Identify objects that are hotter or colder in everyday scenarios.",
+    "Explain the relationship between temperature and heat flow.",
+    "Recognize that heat transfer is a fundamental natural process."
+  ],
+  "key_concepts": [
+    "Flow of Heat",
+    "Hot and Cold Objects",
+    "Temperature",
+    "Heat Transfer (Introduction)"
+  ],
+  "variables_to_simulate": [
+    {"name": "object1_temp", "description": "Temperature of the first object", "unit": "°C", "min": 0, "max": 100, "initial": 80},
+    {"name": "object2_temp", "description": "Temperature of the second object", "unit": "°C", "min": 0, "max": 100, "initial": 20},
+    {"name": "heat_flow_rate", "description": "Rate of heat transfer between objects", "unit": "J/s", "min": 0, "max": 10, "initial": 0}
+  ],
+  "user_interactions": [
+    {"type": "slider", "variable": "object1_temp", "label": "Object 1 Temperature (°C)"},
+    {"type": "slider", "variable": "object2_temp", "label": "Object 2 Temperature (°C)"},
+    {"type": "button", "action": "reset", "label": "Reset Simulation"},
+    {"type": "button", "action": "explain_logic", "label": "Explain Logic"}
+  ],
+  "simulation_logic": [
+    "When the simulation starts, display two representations of objects (e.g., colored circles or simple icons) with their initial temperatures shown.",
+    "Continuously monitor the 'object1_temp' and 'object2_temp' values from the sliders.",
+    "Calculate the temperature difference: 'temp_diff' = 'object1_temp' - 'object2_temp'.",
+    "If 'temp_diff' > 0 (Object 1 is hotter), then heat flows from Object 1 to Object 2.",
+    "If 'temp_diff' < 0 (Object 2 is hotter), then heat flows from Object 2 to Object 1.",
+    "If 'temp_diff' == 0, then there is no net heat flow.",
+    "The 'heat_flow_rate' is proportional to the absolute value of 'temp_diff'. (e.g., 'heat_flow_rate' = 0.1 * abs(temp_diff)).",
+    "Visually represent heat flow: if heat is flowing, show an animated arrow or particles moving from the hotter object to the colder object. The speed/thickness of the arrow can represent 'heat_flow_rate'.",
+    "Update the displayed temperatures slightly over time based on the heat flow and a thermal conductivity factor (e.g., 'object1_temp' decreases, 'object2_temp' increases, or vice-versa).",
+    "When 'explain_logic' button is clicked, display a pop-up or a dedicated text area explaining: 'Heat always flows from the object with higher temperature to the object with lower temperature. The greater the temperature difference, the faster the heat flows.'"
+  ],
+  "mobile_ui_plan": {
+    "layout": "vertical",
+    "elements": [
+      {"type": "text", "content": "Flow of Heat Simulation"},
+      {"type": "display", "variable": "object1_temp", "label": "Object 1 Temp"},
+      {"type": "slider", "variable": "object1_temp", "label": "Adjust Object 1 Temp"},
+      {"type": "display", "variable": "object2_temp", "label": "Object 2 Temp"},
+      {"type": "slider", "variable": "object2_temp", "label": "Adjust Object 2 Temp"},
+      {"type": "animation_area", "description": "Visual representation of heat flow (arrows between objects)"},
+      {"type": "display", "variable": "heat_flow_rate", "label": "Heat Flow Rate"},
+      {"type": "button", "action": "explain_logic", "label": "Why Heat Flows"},
+      {"type": "button", "action": "reset", "label": "Reset"}
+    ]
+  },
+  "misconceptions_to_address": [
+    "Heat flows from cold to hot.",
+    "Heat and temperature are the same thing.",
+    "Heat only flows when objects are touching.",
+    "Heat doesn't flow if the objects are of the same material."
+  ],
+  "text_instructions_for_students": [
+    "Welcome to the Heat Flow Simulation!",
+    "You will see two objects. Use the sliders to change their temperatures.",
+    "Observe how the arrow between them changes direction and speed.",
+    "What do you notice about where the heat always flows FROM?",
+    "Press 'Why Heat Flows' to understand the rule.",
+    "Try making both temperatures the same. What happens to the heat flow?"
+  ],
+  "file_target": "single_file_html",
+  "safety_constraints": [
+    "The simulation should not allow temperatures to go into physically impossible ranges (e.g., absolute zero is not directly controllable here, but ensure sensible limits).",
+    "All user interactions should be responsive and not cause crashes.",
+    "Visualizations should be clear and not overwhelming.",
+    "No external data fetching or modification from the user's system.",
+    "Adhere to standard web safety practices for any embedded resources (if any were to be added)."
+  ]
+}
+```

@@ -1,0 +1,46 @@
+{
+  "intro": "Hey there, future scientists! \ud83d\udc4b Let's dive into the fascinating world of heat. Remember, heat is energy that loves to travel!",
+  "questions": [
+    {
+      "question": "Imagine you have a super hot mug of cocoa (80\u00b0C) and a cold glass of water (20\u00b0C). Which way will the heat energy flow?",
+      "type": "prediction",
+      "options": [
+        "Heat will flow from the cocoa to the water.",
+        "Heat will flow from the water to the cocoa.",
+        "Heat won't flow because they are different liquids.",
+        "Heat will flow equally in both directions."
+      ],
+      "hint": "Think about what happens when you touch something hot. Does the heat come to you, or do you give heat away?",
+      "correct_index": 0
+    },
+    {
+      "question": "What is the main reason heat flows from one object to another?",
+      "type": "mcq",
+      "options": [
+        "Because one object is bigger than the other.",
+        "Because they are made of different materials.",
+        "Because there is a difference in their temperature.",
+        "Because one object is wet and the other is dry."
+      ],
+      "hint": "Heat is all about energy transfer due to a difference. What kind of difference drives this energy transfer?",
+      "correct_index": 2
+    },
+    {
+      "question": "When heat flows from a hotter object to a colder object, what happens to the temperature of the hotter object?",
+      "type": "prediction",
+      "options": [
+        "Its temperature increases.",
+        "Its temperature decreases.",
+        "Its temperature stays the same.",
+        "Its temperature becomes zero."
+      ],
+      "hint": "If a hot object is giving away energy, what happens to its 'hotness' level?",
+      "correct_index": 1
+    }
+  ],
+  "followups": [
+    "Great job exploring heat flow! Remember, this movement of heat is what helps us understand so many things, from cooking to staying warm.",
+    "Keep observing the world around you for examples of heat in action \u2013 you'll be surprised how often it appears!"
+  ],
+  "summary": "Heat is a form of energy that always moves from a hotter object to a colder object, driven by temperature differences."
+}

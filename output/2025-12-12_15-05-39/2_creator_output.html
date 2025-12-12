@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flow of Heat</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .concept {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            margin-bottom: 15px;
+        }
+        .detail-item {
+            margin-bottom: 10px;
+        }
+        .example {
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .question-block {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px dashed #aaa;
+            border-radius: 5px;
+        }
+        .question-block p {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .options label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .real-life-app {
+            margin-bottom: 10px;
+        }
+        .label {
+            font-weight: bold;
+        }
+        .slider-container {
+            margin-top: 15px;
+            text-align: center;
+        }
+        .slider-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="range"] {
+            width: 70%;
+            cursor: pointer;
+            height: 8px;
+            vertical-align: middle;
+        }
+        .value-display {
+            display: inline-block;
+            min-width: 30px;
+            text-align: right;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .image-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .image-container p {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>The Flow of Heat</h1>
+        <p class="concept">Heat is a kind of energy that always moves from a warmer thing to a cooler thing. It's like water flowing downhill; heat naturally goes from where it's more packed (hotter) to where it's less packed (colder). This movement is called the "flow of heat.".</p>
+
+        <h2>Key Ideas:</h2>
+        <ul>
+            <li class="detail-item"><strong>Hot and Cold Things:</strong> We say something is "hot" or "cold" based on how it feels. This feeling tells us about heat moving to or from our hand.</li>
+            <li class="detail-item"><strong>Temperature:</strong> Temperature tells us how hot or cold something is. It shows how much the tiny parts inside something are moving. We use a thermometer to measure it.</li>
+            <li class="detail-item"><strong>Heat Transfer:</strong> Heat doesn't stay put; it moves. This movement from one place to another is the main idea of heat flow. It happens because things are at different temperatures.</li>
+        </ul>
+
+        <h2>How It Works:</h2>
+        <p>Heat moves from a place with a <strong>higher temperature</strong> to a place with a <strong>lower temperature</strong>. This keeps happening until both places are the same temperature. This is called reaching 'thermal equilibrium'.</p>
+        <div class="example">
+            <p><strong>Example:</strong> If you hold a hot cup of tea, heat moves from the hot tea to your cooler hand. Your hand gets warmer, and the tea gets a little cooler. This continues until your hand and the tea are closer in temperature.</p>
+        </div>
+
+        <div class="slider-container">
+            <label for="tempA_slider">Temperature of Object A (°C):</label>
+            <input type="range" id="tempA_slider" name="tempA_slider" min="0" max="100" step="1" value="80">
+            <span id="tempA_value" class="value-display">80</span>
+        </div>
+        <p style="text-align: center; margin-top: 10px;">Imagine Object A is currently set to 80°C. If you place it next to a colder object, heat will flow from Object A to the colder object.</p>
+
+        <h2>Think About It:</h2>
+        <p>If you put a metal spoon in a cup of hot soup, one end of the spoon gets hot. Soon, the other end you're holding also feels warm. Which part of the spoon was hotter first? How did the heat travel to the end you're holding?</p>
+
+        <h2>Questions to Check Your Understanding:</h2>
+        <div class="question-block">
+            <p>1. Which sentence best explains how heat moves?</p>
+            <div class="options">
+                <label><input type="radio" name="q1" value="a"> a) Heat moves from cooler things to hotter things.</label>
+                <label><input type="radio" name="q1" value="b"> b) Heat moves from hotter things to cooler things.</label>
+                <label><input type="radio" name="q1" value="c"> c) Heat doesn't move; it stays put.</label>
+                <label><input type="radio" name="q1" value="d"> d) Heat only moves when you touch something.</label>
+            </div>
+            <p>Correct Answer: b) Heat moves from hotter things to cooler things.</p>
+        </div>
+
+        <div class="question-block">
+            <p>2. When you hold an ice cube, your hand feels cold. What is happening with heat energy?</p>
+            <div class="options">
+                <label><input type="radio" name="q2" value="a"> a) Heat is moving from your hand to the ice cube.</label>
+                <label><input type="radio" name="q2" value="b"> b) Heat is moving from the ice cube to your hand.</label>
+                <label><input type="radio" name="q2" value="c"> c) No heat is moving.</label>
+                <label><input type="radio" name="q2" value="d"> d) New heat is being made.</label>
+            </div>
+            <p>Correct Answer: a) Heat is moving from your hand to the ice cube.</p>
+        </div>
+
+        <div class="question-block">
+            <p>3. Temperature is a way to measure:</p>
+            <div class="options">
+                <label><input type="radio" name="q3" value="a"> a) How much water is in something.</label>
+                <label><input type="radio" name="q3" value="b"> b) How much heat is stored in something.</label>
+                <label><input type="radio" name="q3" value="c"> c) How much the tiny parts inside something are moving.</label>
+                <label><input type="radio" name="q3" value="d"> d) How heavy something is.</label>
+            </div>
+            <p>Correct Answer: c) How much the tiny parts inside something are moving.</p>
+        </div>
+
+        <h2>In Real Life:</h2>
+        <ul>
+            <li class="real-life-app"><strong>Cooking:</strong> When you heat food in a pan, heat moves from the stove to the pan and then to the food.</li>
+            <li class="real-life-app"><strong>Wearing Warm Clothes:</strong> Clothes like wool keep us warm because they don't let our body heat escape easily into the cold air.</li>
+            <li class="real-life-app"><strong>Cooling a Drink:</strong> Putting a cold spoon in a hot drink makes heat move from the drink to the spoon, cooling the drink.</li>
+        </ul>
+
+        <h2>Connecting Ideas:</h2>
+        <p>The "flow of heat" is the main idea. It tells us *why* and *how* heat moves. "Hot and cold things" describe when heat flow happens, and "temperature" measures the difference that causes it. The different ways heat can move (like conduction, convection, radiation) explain the details of this flow.</p>
+
+        <h2>Important Points:</h2>
+        <p><strong>Remember this:</strong> Heat flows from hot to cold. This is the basic rule for all heat-related ideas.</p>
+        <p><strong>Common Mistakes:</strong> Don't mix up heat and temperature. Temperature is a measurement; heat is the energy that moves because of that measurement difference.</p>
+        <p><strong>Exam Tip:</strong> When answering questions about heat flow, always say that heat moves from the hotter place to the colder place.</p>
+
+        <div class="image-container">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/System_boundary.svg/250px-System_boundary.svg.png" alt="Diagram of a system">
+            <p>This image shows a system boundary, which is useful for thinking about where heat is going.</p>
+        </div>
+
+    </div>
+
+    <script>
+        // Basic JavaScript to update the slider value display
+        const slider = document.getElementById('tempA_slider');
+        const valueDisplay = document.getElementById('tempA_value');
+
+        slider.addEventListener('input', function() {
+            valueDisplay.textContent = this.value;
+        });
+    </script>
+</body>
+</html>

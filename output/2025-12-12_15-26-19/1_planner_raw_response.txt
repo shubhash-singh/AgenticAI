@@ -1,0 +1,163 @@
+```json
+{
+  "learning_objectives": [
+    "Students will be able to explain that heat flows from hotter objects to colder objects.",
+    "Students will be able to differentiate between heat and temperature.",
+    "Students will be able to identify everyday examples of heat flow.",
+    "Students will be able to understand the basic principle of thermal equilibrium."
+  ],
+  "key_concepts": [
+    "Heat",
+    "Temperature",
+    "Heat Flow",
+    "Hot objects",
+    "Cold objects",
+    "Thermal Equilibrium"
+  ],
+  "variables_to_simulate": [
+    "Temperature of Object A",
+    "Temperature of Object B",
+    "Heat Transfer Rate"
+  ],
+  "user_interactions": [
+    {
+      "type": "slider",
+      "variable": "Temperature of Object A",
+      "label": "Temperature of Object A (°C)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "initial_value": 70
+    },
+    {
+      "type": "slider",
+      "variable": "Temperature of Object B",
+      "label": "Temperature of Object B (°C)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "initial_value": 20
+    },
+    {
+      "type": "button",
+      "action": "start_simulation",
+      "label": "Start Heat Flow"
+    },
+    {
+      "type": "button",
+      "action": "reset_simulation",
+      "label": "Reset"
+    }
+  ],
+  "simulation_logic": [
+    "1. When the 'Start Heat Flow' button is pressed, compare the 'Temperature of Object A' and 'Temperature of Object B'.",
+    "2. If Temperature of Object A > Temperature of Object B:",
+    "   - Object A is hotter, Object B is colder.",
+    "   - Heat will flow from A to B.",
+    "   - Simulate a gradual decrease in 'Temperature of Object A' and a gradual increase in 'Temperature of Object B'.",
+    "   - The rate of heat transfer will be proportional to the temperature difference (initially).",
+    "   - Update the displayed temperatures in real-time.",
+    "   - Display a message: 'Heat is flowing from Object A (hotter) to Object B (colder).'",
+    "3. If Temperature of Object B > Temperature of Object A:",
+    "   - Object B is hotter, Object A is colder.",
+    "   - Heat will flow from B to A.",
+    "   - Simulate a gradual decrease in 'Temperature of Object B' and a gradual increase in 'Temperature of Object A'.",
+    "   - The rate of heat transfer will be proportional to the temperature difference (initially).",
+    "   - Update the displayed temperatures in real-time.",
+    "   - Display a message: 'Heat is flowing from Object B (hotter) to Object A (colder).'",
+    "4. If Temperature of Object A == Temperature of Object B:",
+    "   - Display a message: 'Objects are in thermal equilibrium. No net heat flow.'",
+    "   - The simulation stops automatically or pauses.",
+    "5. The simulation continues until the temperatures become equal or the user resets it.",
+    "6. The 'Reset' button will revert the temperatures to their initial slider values and clear any messages."
+  ],
+  "mobile_ui_plan": {
+    "layout": "vertical",
+    "elements": [
+      {
+        "type": "text_display",
+        "id": "simulation_title",
+        "content": "Heat Flow Simulation"
+      },
+      {
+        "type": "text_display",
+        "id": "description",
+        "content": "Adjust the temperatures of two objects and see how heat flows between them."
+      },
+      {
+        "type": "slider",
+        "variable": "Temperature of Object A",
+        "label": "Temperature of Object A (°C)",
+        "min": 0,
+        "max": 100,
+        "step": 1
+      },
+      {
+        "type": "slider",
+        "variable": "Temperature of Object B",
+        "label": "Temperature of Object B (°C)",
+        "min": 0,
+        "max": 100,
+        "step": 1
+      },
+      {
+        "type": "button",
+        "action": "start_simulation",
+        "label": "Start Heat Flow"
+      },
+      {
+        "type": "button",
+        "action": "reset_simulation",
+        "label": "Reset"
+      },
+      {
+        "type": "text_display",
+        "id": "object_a_display",
+        "content": "Object A: [Current Temp A] °C"
+      },
+      {
+        "type": "text_display",
+        "id": "object_b_display",
+        "content": "Object B: [Current Temp B] °C"
+      },
+      {
+        "type": "text_display",
+        "id": "status_message",
+        "content": ""
+      },
+      {
+        "type": "image",
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/System_boundary.svg/250px-System_boundary.svg.png",
+        "alt_text": "Diagram of two objects with temperatures",
+        "caption": "Imagine two objects exchanging heat."
+      },
+      {
+        "type": "text_display",
+        "id": "intuition_tip",
+        "content": "Intuition: Heat is like a crowded room. It moves from where there are many people (hotter) to where there are few (colder)."
+      }
+    ]
+  },
+  "misconceptions_to_address": [
+    "Heat flows from cold to hot.",
+    "Heat and temperature are the same thing.",
+    "Heat stops flowing only when objects touch."
+  ],
+  "text_instructions_for_students": [
+    "Welcome to the Heat Flow Simulation!",
+    "1. Use the sliders to set the temperatures for Object A and Object B. Remember, Celsius is used here.",
+    "2. When you're ready, click 'Start Heat Flow'.",
+    "3. Watch how the temperatures change. You'll see heat moving from the hotter object to the colder one.",
+    "4. The simulation will stop when both objects reach the same temperature (thermal equilibrium).",
+    "5. Click 'Reset' to try again with different temperatures.",
+    "Think: Why does the temperature of one object go up while the other goes down?"
+  ],
+  "file_target": "single_file_html",
+  "safety_constraints": [
+    "Ensure simulation temperatures do not exceed realistic bounds (e.g., boiling/freezing points of water are good reference, though the simulation itself can go up to 100°C).",
+    "Prevent infinite loops in simulation logic.",
+    "Ensure all interactive elements are clearly labeled and accessible.",
+    "The simulation should not require external libraries not typically available in a basic HTML environment."
+  ]
+}
+```

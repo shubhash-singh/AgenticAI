@@ -1,0 +1,7 @@
+{
+  "name": "object1_temp",
+  "description": "Temperature of the first object (e.g., a cup of tea)",
+  "initial_value": 80,
+  "min_value": 0,
+  "max_value": 100
+}

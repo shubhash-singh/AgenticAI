@@ -1,0 +1,46 @@
+{
+  "intro": "Hey there, budding scientists! Let's explore how heat likes to travel. Think of it like energy going on a journey from warmer places to cooler places. Ready to see it in action?",
+  "questions": [
+    {
+      "question": "Imagine you have a hot cup of cocoa and a cold glass of juice. Which way will heat prefer to move?",
+      "type": "prediction",
+      "options": [
+        "Heat will move from the cocoa to the juice.",
+        "Heat will move from the juice to the cocoa.",
+        "Heat won't move because they are both liquids.",
+        "Heat will move equally in both directions."
+      ],
+      "hint": "Think about what feels hotter and what feels colder. Heat naturally goes from where there's more of it to where there's less of it.",
+      "correct_index": 0
+    },
+    {
+      "question": "When you touch a hot stove, what is happening to the heat energy?",
+      "type": "prediction",
+      "options": [
+        "Heat is flowing from the stove to your hand.",
+        "Heat is flowing from your hand to the stove.",
+        "No heat is flowing because your hand isn't that hot.",
+        "Heat is being created by your touch."
+      ],
+      "hint": "Remember the rule: heat always travels from a hotter object to a colder object. Which one is hotter in this case?",
+      "correct_index": 0
+    },
+    {
+      "question": "If you put a cold metal spoon into a hot bowl of soup, what will happen to the spoon?",
+      "type": "prediction",
+      "options": [
+        "The spoon will get colder.",
+        "The spoon will get warmer.",
+        "The spoon will stay the same temperature.",
+        "The soup will get colder and the spoon will get hotter."
+      ],
+      "hint": "Think about the direction heat travels when there's a temperature difference. The soup is hotter than the spoon.",
+      "correct_index": 3
+    }
+  ],
+  "followups": [
+    "Great job understanding how heat moves! It's all about that journey from hot to cold.",
+    "Remember, this 'flow of heat' is a super important idea in science!"
+  ],
+  "summary": "Heat always flows from hotter objects to colder objects, a journey driven by temperature differences!"
+}
