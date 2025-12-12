@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Light and Shadows</title>
+    <style>
+        :root {
+            --bg: #f8f9fa;
+            --panel: #ffffff;
+            --text: #212529;
+            --muted: #6c757d;
+            --primary: #0d6efd;
+            --success: #198754;
+            --danger: #dc3545;
+            --warning: #ffc107;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.4;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 12px;
+        }
+        .banner {
+            background: var(--panel);
+            border-radius: 12px;
+            padding: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 12px;
+        }
+        .banner h1 {
+            margin: 0 0 6px 0;
+            font-size: 20px;
+        }
+        .banner p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+        .canvas-wrap {
+            background: var(--panel);
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 12px;
+        }
+        .canvas {
+            width: 100%;
+            height: 320px;
+            position: relative;
+            background: linear-gradient(180deg, #eef2ff 0%, #ffffff 100%);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #e9ecef;
+        }
+        .legend {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 8px;
+        }
+        .legend .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        .dot.light { background: #ffd54f; }
+        .dot.shadow { background: #212529; }
+        .dot.faint { background: #8b94a3; }
+        .controls {
+            background: var(--panel);
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 12px;
+        }
+        .control-group {
+            margin-bottom: 12px;
+        }
+        .control-group h3 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            color: var(--text);
+        }
+        .row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .slider {
+            width: 100%;
+            padding: 8px;
+        }
+        .slider input[type="range"] {
+            width: 100%;
+            height: 32px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+        }
+        .slider input[type="range"]::-webkit-slider-runnable-track {
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 999px;
+        }
+        .slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            margin-top: -7px;
+            background: var(--primary);
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(13,110,253,0.4);
+        }
+        .slider input[type="range"]::-moz-range-track {
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 999px;
+        }
+        .slider input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border: 2px solid white;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(13,110,253,0.4);
+        }
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            flex: 1;
+            min-width: 90px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            background: #f8f9fa;
+            color: var(--text);
+            font-size: 14px;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+            touch-action: manipulation;
+        }
+        .btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .btn.toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .toggle-switch {
+            width: 44px;
+            height: 24px;
+            background: #e9ecef;
+            border-radius: 999px;
+            position: relative;
+            transition: background 0.2s;
+        }
+        .toggle-switch .knob {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: left 0.2s;
+        }
+        .toggle.on .toggle-switch {
+            background: #b6d7ff;
+        }
+        .toggle.on .toggle-switch .knob {
+            left: 22px;
+        }
+        .reset {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            background: #f8f9fa;
+            color: var(--text);
+            font-size: 14px;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        .hint {
+            background: var(--panel);
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 12px;
+        }
+        .hint h3 {
+            margin: 0 0 6px 0;
+            font-size: 14px;
+        }
+        .hint ul {
+            margin: 0;
+            padding-left: 16px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+        .hint li {
+            margin-bottom: 4px;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: var(--muted);
+            padding: 8px;
+        }
+        .label {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+        .value {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+        .mode-toggle {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .mode-btn {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            background: #f8f9fa;
+            color: var(--text);
+            font-size: 14px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .mode-btn.active {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        .pinhole-box {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 260px;
+            height: 160px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
+        }
+        .pinhole-hole {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(255,255,255,0.6);
+        }
+        .pinhole-screen {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: #ffffff;
+        }
+        .pinhole-label {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            font-size: 11px;
+            color: #6c757d;
+        }
+        .ray {
+            position: absolute;
+            height: 2px;
+            background: #ffd54f;
+            border-radius: 2px;
+            box-shadow: 0 0 6px rgba(255,213,79,0.6);
+            transform-origin: left center;
+            opacity: 0.9;
+        }
+        .shadow {
+            position: absolute;
+            background: rgba(33,37,41,0.9);
+            border-radius: 6px;
+            box-shadow: inset 0 0 12px rgba(0,0,0,0.6);
+        }
+        .shadow.faint {
+            background: rgba(139,148,163,0.6);
+        }
+        .object {
+            position: absolute;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .object.square {
+            border-radius: 8px;
+        }
+        .object.hand {
+            border-radius: 10px;
+        }
+        .light-source {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            background: #ffd54f;
+            border-radius: 50%;
+            box-shadow: 0 0 12px rgba(255,213,79,0.8);
+        }
+        .screen-line {
+            position: absolute;
+            right: 12px;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: #e9ecef;
+        }
+        .screen-label {
+            position: absolute;
+            right: 18px;
+            top: 8px;
+            font-size: 11px;
+            color: #6c757d;
+        }
+        .pinhole-info {
+            position: absolute;
+            left: 8px;
+            bottom: 8px;
+            font-size: 11px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="banner">
+            <h1>Light and Shadows</h1>
+            <p>Welcome to the Light and Shadows simulation! Use the sliders and buttons to explore how light behaves. Try these steps: 1) Make the object opaque and move the light to see shadow changes. 2) Switch to transparent and notice no shadow forms. 3) Try translucent for a faint shadow. 4) Explore the pin-hole camera and see how images form. Have fun experimenting!</p>
+        </div>
+        <div class="canvas-wrap">
+            <div class="canvas" id="canvas">
+                <div class="light-source" id="lightSource"></div>
+                <div class="object" id="object"></div>
+                <div class="shadow" id="shadow"></div>
+                <div class="screen-line"></div>
+                <div class="screen-label">Screen</div>
+                <div class="pinhole-box" id="pinholeBox" style="display:none;">
+                    <div class="pinhole-hole"></div>
+                    <div class="pinhole-screen" id="pinholeScreen"></div>
+                    <div class="pinhole-label" id="pinholeLabel">Screen</div>
+                    <div class="pinhole-info" id="pinholeInfo">Distance: 60px</div>
+                </div>
+                <div class="legend">
+                    <span><span class="dot light"></span>Light rays</span>
+                    <span><span class="dot shadow"></span>Shadow (opaque)</span>
+                    <span><span class="dot faint"></span>Shadow (translucent)</span>
+                </div>
+            </div>
+        </div>
+        <div class="controls">
+            <div class="mode-toggle">
+                <div class="mode-btn active" id="modeShadow">Shadow Mode</div>
+                <div class="mode-btn" id="modePinhole">Pin-Hole Camera</div>
+            </div>
+            <div class="control-group">
+                <h3>Light Source Angle</h3>
+                <div class="slider">
+                    <input type="range" id="lightAngle" min="0" max="180" value="90">
+                    <div class="value">Angle: 90°</div>
+                </div>
+            </div>
+            <div class="control-group">
+                <h3>Light Source Distance</h3>
+                <div class="slider">
+                    <input type="range" id="lightDistance" min="10" max="200" value="100">
+                    <div class="value">Distance: 100px</div>
+                </div>
+            </div>
+            <div class="control-group">
+                <h3>Object Type</h3>
+                <div class="btn-group">
+                    <div class="btn active" data-type="opaque">Opaque</div>
+                    <div class="btn" data-type="transparent">Transparent</div>
+                    <div class="btn" data-type="translucent">Translucent</div>
+                </div>
+            </div>
+            <div class="control-group">
+                <h3>Object Shape</h3>
+                <div class="btn-group">
+                    <div class="btn active" data-shape="circle">Circle</div>
+                    <div class="btn" data-shape="square">Square</div>
+                    <div class="btn" data-shape="hand">Hand (Shadow Puppet)</div>
+                </div>
+            </div>
+            <div class="control-group" id="pinholeControls" style="display:none;">
+                <h3>Screen Distance (Pin-Hole Camera)</h3>
+                <div class="slider">
+                    <input type="range" id="screenDistance" min="20" max="150" value="60">
+                    <div class="value">Distance: 60px</div>
+                </div>
+            </div>
+            <div class="control-group">
+                <h3>Show Light Rays</h3>
+                <div class="btn toggle" id="toggleRays">
+                    <div class="toggle-switch"><div class="knob"></div></div>
+                    <span>Light rays</span>
+                </div>
+            </div>
+            <div class="reset" id="resetBtn">Reset to Default</div>
+        </div>
+        <div class="hint">
+            <h3>Key Takeaways</h3>
+            <ul>
+                <li>Light travels in straight lines.</li>
+                <li>Opaque objects block light completely, forming clear shadows.</li>
+                <li>Transparent objects allow light to pass through completely; translucent objects scatter light.</li>
+                <li>A pin-hole camera forms an inverted image due to straight-line light travel.</li>
+            </ul>
+        </div>
+        <div class="footer">Interactive Lab • Grade 7 Science</div>
+    </div>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const lightSource = document.getElementById('lightSource');
+        const object = document.getElementById('object');
+        const shadow = document.getElementById('shadow');
+        const pinholeBox = document.getElementById('pinholeBox');
+        const pinholeScreen = document.getElementById('pinholeScreen');
+        const pinholeLabel = document.getElementById('pinholeLabel');
+        const pinholeInfo = document.getElementById('pinholeInfo');
+        const lightAngle = document.getElementById('lightAngle');
+        const lightDistance = document.getElementById('lightDistance');
+        const screenDistance = document.getElementById('screenDistance');
+        const toggleRays = document.getElementById('toggleRays');
+        const resetBtn = document.getElementById('resetBtn');
+        const modeShadow = document.getElementById('modeShadow');
+        const modePinhole = document.getElementById('modePinhole');
+        const pinholeControls = document.getElementById('pinholeControls');
+        const raysContainer = canvas;
+        let rays = [];
+        let showRays = true;
+        let mode = 'shadow';
+        let objectState = {
+            type: 'opaque',
+            shape: 'circle',
+            size: 60
+        };
+        function clearRays() {
+            rays.forEach(r => r.remove());
+            rays = [];
+        }
+        function createRay(x1, y1, x2, y2) {
+            const ray = document.createElement('div');
+            ray.className = 'ray';
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const length = Math.sqrt(dx*dx + dy*dy);
+            ray.style.width = length + 'px';
+            ray.style.left = x1 + 'px';
+            ray.style.top = (y1 - 1) + 'px';
+            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+            ray.style.transform = `rotate(${angle}deg)`;
+            raysContainer.appendChild(ray);
+            rays.push(ray);
+            return ray;
+        }
+        function updateCanvas() {
+            const canvasRect = canvas.getBoundingClientRect();
+            const canvasW = canvasRect.width;
+            const canvasH = canvasRect.height;
+            const angle = parseFloat(lightAngle.value);
+            const distance = parseFloat(lightDistance.value);
+            const screenDist = parseFloat(screenDistance.value);
+            const objectX = canvasW / 2;
+            const objectY = canvasH / 2;
+            const lightX = 12 + distance;
+            const lightY = canvasH / 2;
+            lightSource.style.left = lightX + 'px';
+            lightSource.style.top = lightY + 'px';
+            object.style.left = (objectX - objectState.size/2) + 'px';
+            object.style.top = (objectY - objectState.size/2) + 'px';
+            object.style.width = objectState.size + 'px';
+            object.style.height = objectState.size + 'px';
+            object.className = 'object ' + objectState.shape;
+            if (objectState.type === 'transparent') {
+                object.style.background = 'rgba(255,255,255,0.1)';
+                object.style.boxShadow = '0 0 0 rgba(0,0,0,0)';
+            } else if (objectState.type === 'translucent') {
+                object.style.background = 'rgba(200,200,200,0.6)';
+                object.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+            } else {
+                object.style.background = '#343a40';
+                object.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+            }
+            clearRays();
+            if (!showRays) return;
+            if (mode === 'shadow') {
+                const rayCount = 12;
+                for (let i = 0; i < rayCount; i++) {
+                    const spread = (i - rayCount/2) * 6;
+                    const rayAngle = angle + spread;
+                    const rayLen = canvasW;
+                    const x1 = lightX;
+                    const y1 = lightY;
+                    const x2 = x1 + Math.cos(rayAngle * Math.PI/180) * rayLen;
+                    const y2 = y1 + Math.sin(rayAngle * Math.PI/180) * rayLen;
+                    if (objectState.type === 'opaque') {
+                        const hit = rayIntersectsObject(x1, y1, x2, y2, objectX, objectY, objectState.size);
+                        if (hit) {
+                            createRay(x1, y1, hit.x, hit.y);
+                        } else {
+                            createRay(x1, y1, x2, y2);
+                        }
+                    } else {
+                        createRay(x1, y1, x2, y2);
+                    }
+                }
+                updateShadow();
+            } else if (mode === 'pinhole') {
+                const boxW = 260;
+                const boxH = 160;
+                const holeX = 20;
+                const holeY = boxH/2;
+                const screenX = boxW - 2;
+                const screenY = boxH/2;
+                const objW = 60;
+                const objH = 60;
+                const objX = holeX - 80;
+                const objY = boxH/2;
+                const rayCount = 10;
+                for (let i = 0; i < rayCount; i++) {
+                    const y = objY - objH/2 + (i * objH / (rayCount-1));
+                    const x = objX;
+                    const ray = createRay(x, y, holeX, holeY);
+                    ray.style.left = (parseFloat(ray.style.left) + 50) + 'px';
+                    ray.style.top = (parseFloat(ray.style.top) + (canvasH/2 - boxH/2)) + 'px';
+                    const screenY2 = holeY - (y - objY) * (screenDist / 80);
+                    const ray2 = createRay(holeX + 50, screenY2 + (canvasH/2 - boxH/2), screenX + 50, screenY2 + (canvasH/2 - boxH/2));
+                    ray2.style.left = (parseFloat(ray2.style.left) - 2) + 'px';
+                    ray2.style.width = '2px';
+                    ray2.style.height = '2px';
+                    ray2.style.background = '#ffd54f';
+                    ray2.style.boxShadow = '0 0 6px rgba(255,213,79,0.6)';
+                }
+                updatePinholeImage();
+            }
+        }
+        function rayIntersectsObject(x1, y1, x2, y2, cx, cy, size) {
+            const r = size/2;
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const fx = x1 - cx;
+            const fy = y1 - cy;
+            const a = dx*dx + dy*dy;
+            const b = 2*(fx*dx + fy*dy);
+            const c = fx*fx + fy*fy - r*r;
+            const discriminant = b*b - 4*a*c;
+            if (discriminant < 0) return null;
+            const t1 = (-b - Math.sqrt(discriminant)) / (2*a);
+            const t2 = (-b + Math.sqrt(discriminant)) / (2*a);
+            let t = t1;
+            if (t < 0) t = t2;
+            if (t < 0 || t > 1) return null;
+            return {
+                x: x1 + t*dx,
+                y: y1 + t*dy
+            };
+        }
+        function updateShadow() {
+            const canvasRect = canvas.getBoundingClientRect();
+            const canvasW = canvasRect.width;
+            const canvasH = canvasRect.height;
+            const angle = parseFloat(lightAngle.value);
+            const distance = parseFloat(lightDistance.value);
+            const objectX = canvasW / 2;
+            const objectY = canvasH / 2;
+            const lightX = 12 + distance;
+            const lightY = canvasH / 2;
+            const size = objectState.size;
+            const shadowX = objectX + (objectX - lightX) * (canvasW - objectX) / (objectX - lightX);
+            const shadowY = objectY + (objectY - lightY) * (canvasW - objectX) / (objectX - lightX);
+            const shadowW = size * (canvasW - objectX) / (objectX - lightX);
+            const shadowH = size * (canvasW - objectX) / (objectX - lightX);
+            shadow.style.left = (shadowX - shadowW/2) + 'px';
+            shadow.style.top = (shadowY - shadowH/2) + 'px';
+            shadow.style.width = shadowW + 'px';
+            shadow.style.height = shadowH + 'px';
+            shadow.style.borderRadius = objectState.shape === 'circle' ? '50%' : '6px';
+            shadow.style.display = objectState.type === 'opaque' || objectState.type === 'translucent' ? 'block' : 'none';
+            shadow.className = 'shadow ' + (objectState.type === 'translucent' ? 'faint' : '');
+        }
+        function updatePinholeImage() {
+            const screenDist = parseFloat(screenDistance.value);
+            const boxW = 260;
+            const boxH = 160;
+            const holeX = 20;
+            const holeY = boxH/2;
+            const objW = 60;
+            const objH = 60;
+            const objX = holeX - 80;
+            const objY = boxH/2;
+            const imageW = objW * (screenDist / 80);
+            const imageH = objH * (screenDist / 80);
+            const imageX = boxW - 2 - imageW/2;
+            const imageY = holeY + imageH/2;
+            const image = document.getElementById('pinholeImage');
+            if (!image) {
+                const img = document.createElement('div');
+                img.id = 'pinholeImage';
+                img.style.position = 'absolute';
+                img.style.left = imageX + 'px';
+                img.style.top = (imageY - imageH) + 'px';
+                img.style.width = imageW + 'px';
+                img.style.height = imageH + 'px';
+                img.style.background = 'linear-gradient(180deg, #ffffff, #e0e0e0)';
+                img.style.borderRadius = '4px';
+                img.style.boxShadow = 'inset 0 0 12px rgba(0,0,0,0.3)';
+                pinholeBox.appendChild(img);
+            } else {
+                image.style.left = imageX + 'px';
+                image.style.top = (imageY - imageH) + 'px';
+                image.style.width = imageW + 'px';
+                image.style.height = imageH + 'px';
+            }
+            pinholeInfo.textContent = 'Distance: ' + screenDist + 'px';
+        }
+        function setMode(newMode) {
+            mode = newMode;
+            if (mode === 'shadow') {
+                pinholeBox.style.display = 'none';
+                shadow.style.display = objectState.type === 'opaque' || objectState.type === 'translucent' ? 'block' : 'none';
+                pinholeControls.style.display = 'none';
+                modeShadow.classList.add('active');
+                modePinhole.classList.remove('active');
+            } else {
+                pinholeBox.style.display = 'block';
+                shadow.style.display = 'none';
+                pinholeControls.style.display = 'block';
+                modeShadow.classList.remove('active');
+                modePinhole.classList.add('active');
+            }
+            updateCanvas();
+        }
+        lightAngle.addEventListener('input', () => {
+            document.querySelector('.value').textContent = 'Angle: ' + lightAngle.value + '°';
+            updateCanvas();
+        });
+        lightDistance.addEventListener('input', () => {
+            document.querySelectorAll('.value')[1].textContent = 'Distance: ' + lightDistance.value + 'px';
+            updateCanvas();
+        });
+        screenDistance.addEventListener('input', () => {
+            document.querySelectorAll('.value')[3].textContent = 'Distance: ' + screenDistance.value + 'px';
+            updateCanvas();
+        });
+        document.querySelectorAll('.btn[data-type]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.btn[data-type]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                objectState.type = btn.dataset.type;
+                updateCanvas();
+            });
+        });
+        document.querySelectorAll('.btn[data-shape]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.btn[data-shape]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                objectState.shape = btn.dataset.shape;
+                updateCanvas();
+            });
+        });
+        toggleRays.addEventListener('click', () => {
+            showRays = !showRays;
+            toggleRays.classList.toggle('on', showRays);
+            updateCanvas();
+        });
+        modeShadow.addEventListener('click', () => setMode('shadow'));
+        modePinhole.addEventListener('click', () => setMode('pinhole'));
+        resetBtn.addEventListener('click', () => {
+            lightAngle.value = 90;
+            lightDistance.value = 100;
+            screenDistance.value = 60;
+            objectState.type = 'opaque';
+            objectState.shape = 'circle';
+            showRays = true;
+            toggleRays.classList.add('on');
+            document.querySelectorAll('.btn[data-type]').forEach(b => b.classList.remove('active'));
+            document.querySelector('.btn[data-type="opaque"]').classList.add('active');
+            document.querySelectorAll('.btn[data-shape]').forEach(b => b.classList.remove('active'));
+            document.querySelector('.btn[data-shape="circle"]').classList.add('active');
+            document.querySelector('.value').textContent = 'Angle: 90°';
+            document.querySelectorAll('.value')[1].textContent = 'Distance: 100px';
+            document.querySelectorAll('.value')[3].textContent = 'Distance: 60px';
+            setMode('shadow');
+            updateCanvas();
+        });
+        window.addEventListener('resize', updateCanvas);
+        updateCanvas();
+    </script>
+</body>
+</html>

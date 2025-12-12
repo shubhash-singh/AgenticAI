@@ -1,0 +1,64 @@
+{
+  "learning_objectives": [
+    "Identify the parts of an electric cell (positive terminal, negative terminal, internal chemicals).",
+    "Explain that an electric cell converts chemical energy into electrical energy to produce an electric current.",
+    "Demonstrate how connecting a cell to a complete circuit allows a bulb to light up.",
+    "Understand the role of the positive and negative terminals in the flow of electric current."
+  ],
+  "key_concepts": [
+    "Electric cell as a source of electric current.",
+    "Positive and negative terminals of a cell.",
+    "Electric current as the flow of charges through a circuit.",
+    "Conversion of chemical energy to electrical energy."
+  ],
+  "variables_to_simulate": [
+    "Cell polarity (positive/negative terminal orientation)",
+    "Circuit completeness (open/closed circuit)",
+    "Number of cells in series (1 or 2 cells)",
+    "Bulb condition (working or burnt out)"
+  ],
+  "user_interactions": [
+    "Toggle switch to open/close the circuit",
+    "Button to flip the cell orientation (swap terminals)",
+    "Slider to add/remove a second cell (0 or 1 additional cell)",
+    "Button to replace bulb (working/burnt out)"
+  ],
+  "simulation_logic": [
+    "Initialize the simulation with a single electric cell, a bulb, and an open circuit.",
+    "Display a clear diagram of the cell showing the positive (+) and negative (-) terminals.",
+    "When the user closes the circuit (toggle switch), check the cell orientation and bulb condition.",
+    "If the circuit is closed and the cell is correctly oriented, the bulb lights up (simulating current flow).",
+    "If the user flips the cell orientation, the bulb remains off to show that current cannot flow without proper polarity.",
+    "If the user adds a second cell, the bulb glows brighter (increased voltage), but only if the circuit is closed and correctly oriented.",
+    "If the user selects a burnt-out bulb, the bulb remains off even if the circuit is closed and correctly oriented.",
+    "Provide visual feedback (e.g., arrows showing charge flow) when the circuit is complete and the bulb is working."
+  ],
+  "mobile_ui_plan": [
+    "Top section: Title and brief instruction text with an icon.",
+    "Middle section: Interactive simulation area with a large, clear diagram of the electric cell, wires, and bulb.",
+    "Below the diagram: Toggle switch for the circuit, button to flip cell orientation, slider for adding a second cell, and button to change bulb condition.",
+    "Bottom section: Multiple-choice questions with radio buttons and a 'Check Answer' button.",
+    "All elements are large and touch-friendly for mobile use."
+  ],
+  "misconceptions_to_address": [
+    "Electric cells and batteries are the same thing.",
+    "Current flows without a complete circuit.",
+    "The orientation of the cell does not matter.",
+    "More cells always make the bulb brighter regardless of connection."
+  ],
+  "text_instructions_for_students": [
+    "Welcome! In this simulation, you will learn how an electric cell works.",
+    "Look at the diagram of the electric cell. Notice the positive (+) and negative (-) terminals.",
+    "Use the toggle switch to close the circuit and see what happens to the bulb.",
+    "Try flipping the cell orientation and observe the effect.",
+    "Add a second cell and see how it changes the brightness of the bulb.",
+    "Replace the bulb with a burnt-out one and see what happens.",
+    "Answer the questions to check your understanding."
+  ],
+  "file_target": "single_file_html",
+  "safety_constraints": [
+    "No high-voltage simulations or dangerous scenarios.",
+    "All interactions are virtual and safe for students.",
+    "Content is age-appropriate and aligns with CBSE Class 7 curriculum."
+  ]
+}

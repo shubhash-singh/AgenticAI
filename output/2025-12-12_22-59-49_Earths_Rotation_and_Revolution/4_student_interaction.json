@@ -1,0 +1,58 @@
+{
+  "intro": "Great job exploring Earth's rotation and revolution! Let's test your understanding with some fun questions.",
+  "questions": [
+    {
+      "question": "What causes day and night on Earth?",
+      "type": "mcq",
+      "options": [
+        "A) Earth moving around the Sun",
+        "B) Earth spinning on its axis",
+        "C) The Sun moving around Earth",
+        "D) The Moon blocking sunlight"
+      ],
+      "hint": "Think about what happens when a spinning top turns - different sides face outward!",
+      "correct_index": 1
+    },
+    {
+      "question": "Why do we have different seasons?",
+      "type": "mcq",
+      "options": [
+        "A) Earth gets closer and farther from the Sun",
+        "B) Earth's tilted axis points toward or away from the Sun",
+        "C) The Sun changes its temperature throughout the year",
+        "D) Clouds block the Sun more in winter"
+      ],
+      "hint": "Remember the dancer leaning while walking around a spotlight!",
+      "correct_index": 1
+    },
+    {
+      "question": "If it's summer in the Northern Hemisphere, what season is it in the Southern Hemisphere?",
+      "type": "mcq",
+      "options": [
+        "A) Summer",
+        "B) Winter",
+        "C) Spring",
+        "D) Autumn"
+      ],
+      "hint": "When one hemisphere tilts toward the Sun, what happens to the other hemisphere?",
+      "correct_index": 1
+    },
+    {
+      "question": "How long does it take for Earth to complete one full rotation?",
+      "type": "mcq",
+      "options": [
+        "A) 365 days",
+        "B) 24 hours",
+        "C) 30 days",
+        "D) 12 hours"
+      ],
+      "hint": "Think about how many hours are in one complete day and night cycle!",
+      "correct_index": 1
+    }
+  ],
+  "followups": [
+    "Try creating a simple model at home using a flashlight as the Sun and a ball as Earth to see these concepts in action!",
+    "Explore how different planets in our solar system have different rotation periods and seasons."
+  ],
+  "summary": "Earth spins on its axis every 24 hours, creating day and night. Earth also orbits the Sun once every year. Earth's axis is tilted at 23.5 degrees, which causes seasons - when one hemisphere tilts toward the Sun, it experiences summer while the opposite hemisphere has winter."
+}

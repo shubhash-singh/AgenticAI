@@ -1,0 +1,70 @@
+{
+  "intro": "Let's explore how electric cells work! In this simulation, you can learn about the parts of a cell and how it makes a bulb light up.",
+  "questions": [
+    {
+      "question": "An electric cell has two terminals. What are they called?",
+      "type": "mcq",
+      "options": [
+        "A) Hot and cold",
+        "B) Positive and negative",
+        "C) North and south",
+        "D) On and off"
+      ],
+      "hint": "One terminal is marked with a plus sign (+) and the other with a minus sign (-).",
+      "correct_index": 1
+    },
+    {
+      "question": "What happens to the bulb when you close the circuit with a working cell?",
+      "type": "mcq",
+      "options": [
+        "A) It turns off",
+        "B) It lights up",
+        "C) It gets hotter",
+        "D) It changes color"
+      ],
+      "hint": "Closing the circuit completes the path for the electric current to flow.",
+      "correct_index": 1
+    },
+    {
+      "question": "If you flip the cell so the terminals are swapped, what happens to the bulb?",
+      "type": "mcq",
+      "options": [
+        "A) It gets brighter",
+        "B) It gets dimmer",
+        "C) It stays off",
+        "D) It still lights up"
+      ],
+      "hint": "Think about the direction of current flow and how the cell's terminals must be connected.",
+      "correct_index": 2
+    },
+    {
+      "question": "When you add a second cell to the circuit, what happens to the bulb's brightness?",
+      "type": "mcq",
+      "options": [
+        "A) It gets brighter",
+        "B) It gets dimmer",
+        "C) It turns off",
+        "D) It stays the same"
+      ],
+      "hint": "More cells can provide more electrical energy, but only if the circuit is complete.",
+      "correct_index": 0
+    },
+    {
+      "question": "What happens if you use a burnt-out bulb in a complete circuit?",
+      "type": "mcq",
+      "options": [
+        "A) It lights up normally",
+        "B) It lights up but is dimmer",
+        "C) It stays off",
+        "D) It gets brighter"
+      ],
+      "hint": "A burnt-out bulb has a broken filament that stops the current from flowing.",
+      "correct_index": 2
+    }
+  ],
+  "followups": [
+    "Try changing the cell orientation and see if the bulb still lights up.",
+    "Experiment with adding a second cell to see how it affects the bulb's brightness."
+  ],
+  "summary": "An electric cell converts chemical energy into electrical energy. It has a positive and negative terminal. When connected in a complete circuit, it makes a bulb light up. The orientation of the cell matters, and adding more cells can make the bulb brighter."
+}

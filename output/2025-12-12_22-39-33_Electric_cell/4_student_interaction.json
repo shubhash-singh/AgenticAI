@@ -1,0 +1,70 @@
+{
+  "intro": "Welcome, young scientists! Let's explore how electric cells work together to power our world.",
+  "questions": [
+    {
+      "question": "What happens when you connect two electric cells in a line (in series) to make a circuit?",
+      "type": "mcq",
+      "options": [
+        "A) The bulb gets dimmer",
+        "B) The bulb gets brighter",
+        "C) Nothing changes",
+        "D) The bulb breaks"
+      ],
+      "hint": "Think about how more cells might affect the total push (voltage) in a circuit.",
+      "correct_index": 1
+    },
+    {
+      "question": "Which of these is the most important part of an electric cell?",
+      "type": "mcq",
+      "options": [
+        "A) The shiny metal case",
+        "B) The positive and negative terminals",
+        "C) The plastic cover",
+        "D) The label with writing"
+      ],
+      "hint": "Remember, the terminals are what allow electricity to flow out of the cell.",
+      "correct_index": 1
+    },
+    {
+      "question": "If you accidentally put a battery in a toy backwards, what will happen to the toy?",
+      "type": "mcq",
+      "options": [
+        "A) It won't work at all",
+        "B) It will work but backwards",
+        "C) It will still work normally",
+        "D) It will break immediately"
+      ],
+      "hint": "Consider whether the direction of current matters for simple devices like bulbs.",
+      "correct_index": 2
+    },
+    {
+      "question": "Why do we say an electric cell 'converts' energy instead of 'stores' electricity?",
+      "type": "mcq",
+      "options": [
+        "A) Because it creates new energy from nothing",
+        "B) Because it changes chemical energy into electrical energy",
+        "C) Because it stores light energy",
+        "D) Because it absorbs electricity from the air"
+      ],
+      "hint": "Think about what happens inside the cell - does it make electricity or change something else into electricity?",
+      "correct_index": 1
+    },
+    {
+      "question": "What would happen if you tried to power a flashlight with a charged balloon instead of batteries?",
+      "type": "mcq",
+      "options": [
+        "A) The flashlight would work normally",
+        "B) The flashlight would work but be very dim",
+        "C) The flashlight would not light up at all",
+        "D) The flashlight would explode"
+      ],
+      "hint": "Remember the difference between static electricity (like from a balloon) and current electricity.",
+      "correct_index": 2
+    }
+  ],
+  "followups": [
+    "Try building a simple circuit at home with a battery, wire, and small bulb to see these concepts in action!",
+    "Draw a picture of an electric cell showing its positive and negative terminals, then explain to a friend how it works."
+  ],
+  "summary": "Electric cells are amazing little power packs that convert chemical energy into electrical energy. They have positive and negative terminals that allow current to flow through circuits, making our devices work. Whether it's a torch, remote, or toy, electric cells provide the energy we need in our daily lives."
+}

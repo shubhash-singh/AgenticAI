@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electric Cell Simulation - Class 7 Science</title>
+    <style>
+        :root {
+            --bg: #f8f9fa;
+            --card: #ffffff;
+            --text: #2c3e50;
+            --accent: #3498db;
+            --accent-dark: #2980b9;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --border: #e9ecef;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card);
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            padding: 24px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 24px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 20px 0 12px;
+            color: #2c3e50;
+        }
+        
+        .simulation-area {
+            background: #f0f5ff;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .diagram-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 320px;
+            position: relative;
+        }
+        
+        .circuit-board {
+            width: 100%;
+            max-width: 700px;
+            height: 280px;
+            background: linear-gradient(180deg, #ffffff, #f8f9fa);
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cell {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 200px;
+            background: linear-gradient(180deg, #f0f0f0, #e0e0e0);
+            border-radius: 10px;
+            border: 2px solid #bdc3c7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .cell-top {
+            width: 80px;
+            height: 25px;
+            background: #c0392b;
+            border-radius: 12px;
+            border: 2px solid #922b21;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .cell-bottom {
+            width: 80px;
+            height: 25px;
+            background: #2c3e50;
+            border-radius: 12px;
+            border: 2px solid #1a252f;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .cell-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 8px;
+        }
+        
+        .wire {
+            position: absolute;
+            background: #7f8c8d;
+            border-radius: 3px;
+        }
+        
+        .wire-horizontal {
+            height: 6px;
+        }
+        
+        .wire-vertical {
+            width: 6px;
+        }
+        
+        .wire-positive {
+            background: #c0392b;
+        }
+        
+        .wire-negative {
+            background: #2c3e50;
+        }
+        
+        .switch {
+            position: absolute;
+            width: 60px;
+            height: 30px;
+            background: #ecf0f1;
+            border-radius: 15px;
+            border: 2px solid #bdc3c7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .switch-knob {
+            width: 24px;
+            height: 24px;
+            background: #34495e;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+        
+        .switch.open .switch-knob {
+            transform: translateX(-15px);
+        }
+        
+        .switch.closed .switch-knob {
+            transform: translateX(15px);
+            background: #27ae60;
+        }
+        
+        .bulb {
+            position: absolute;
+            width: 80px;
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .bulb-glass {
+            width: 60px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 3px solid #7f8c8d;
+            border-radius: 50% 50% 40% 40%;
+            position: relative;
+            transition: all 0.5s ease;
+        }
+        
+        .bulb-glass.on {
+            background: rgba(255, 223, 0, 0.9);
+            border-color: #f1c40f;
+            box-shadow: 0 0 30px rgba(241, 196, 15, 0.6), 0 0 60px rgba(241, 196, 15, 0.3) inset;
+        }
+        
+        .bulb-glass.burnt {
+            background: rgba(200, 200, 200, 0.8);
+            border-color: #95a5a6;
+        }
+        
+        .filament {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 20px;
+            transform: translate(-50%, -50%);
+        }
+        
+        .filament-path {
+            fill: none;
+            stroke: #7f8c8d;
+            stroke-width: 3;
+            transition: all 0.5s ease;
+        }
+        
+        .filament-path.on {
+            stroke: #f1c40f;
+            filter: drop-shadow(0 0 8px rgba(241, 196, 15, 0.8));
+        }
+        
+        .filament-path.burnt {
+            stroke: #95a5a6;
+        }
+        
+        .bulb-base {
+            width: 50px;
+            height: 25px;
+            background: #95a5a6;
+            border-radius: 5px;
+            margin-top: 8px;
+        }
+        
+        .charge-flow {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #e67e22;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .charge-flow.active {
+            opacity: 1;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-top: 20px;
+        }
+        
+        .control-group {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+        }
+        
+        .control-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 140px;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-dark);
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #ecf0f1;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #95a5a6;
+        }
+        
+        .status-dot.on {
+            background: var(--success);
+        }
+        
+        .status-dot.off {
+            background: var(--danger);
+        }
+        
+        .status-dot.correct {
+            background: var(--success);
+        }
+        
+        .status-dot.wrong {
+            background: var(--danger);
+        }
+        
+        .questions {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+        }
+        
+        .question {
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        .question:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .option:hover {
+            border-color: #bdc3c7;
+            background: #f8f9fa;
+        }
+        
+        .option.correct {
+            border-color: var(--success);
+            background: rgba(39, 174, 96, 0.1);
+        }
+        
+        .option.wrong {
+            border-color: var(--danger);
+            background: rgba(231, 76, 60, 0.1);
+        }
+        
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .feedback.show {
+            display: block;
+        }
+        
+        .feedback.correct {
+            background: rgba(39, 174, 96, 0.15);
+            border: 2px solid var(--success);
+            color: #1e5b34;
+        }
+        
+        .feedback.wrong {
+            background: rgba(231, 76, 60, 0.15);
+            border: 2px solid var(--danger);
+            color: #7b241c;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 6px;
+            border-radius: 3px;
+        }
+        
+        .legend-color.positive {
+            background: #c0392b;
+        }
+        
+        .legend-color.negative {
+            background: #2c3e50;
+        }
+        
+        .legend-color.current {
+            background: #e67e22;
+        }
+        
+        @media (max-width: 600px) {
+            .btn {
+                min-width: 120px;
+                padding: 14px 12px;
+            }
+            
+            .circuit-board {
+                height: 320px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔋 Electric Cell Simulation</h1>
+            <p>Learn how electric cells work by exploring circuits, polarity, and current flow</p>
+        </div>
+        
+        <div class="content">
+            <div class="section-title">📝 Instructions</div>
+            <div class="control-group">
+                <p>1. Look at the diagram of the electric cell. Notice the positive (+) and negative (-) terminals.</p>
+                <p>2. Use the toggle switch to close the circuit and see what happens to the bulb.</p>
+                <p>3. Try flipping the cell orientation and observe the effect.</p>
+                <p>4. Add a second cell and see how it changes the brightness of the bulb.</p>
+                <p>5. Replace the bulb with a burnt-out one and see what happens.</p>
+                <p>6. Answer the questions to check your understanding.</p>
+            </div>
+            
+            <div class="section-title">⚡ Simulation</div>
+            <div class="simulation-area">
+                <div class="diagram-container">
+                    <div class="circuit-board">
+                        <!-- Electric Cell -->
+                        <div class="cell" id="cell">
+                            <div class="cell-top" id="cell-positive">+</div>
+                            <div class="cell-label">Positive Terminal</div>
+                            <div class="cell-bottom" id="cell-negative">-</div>
+                            <div class="cell-label">Negative Terminal</div>
+                        </div>
+                        
+                        <!-- Wires -->
+                        <div class="wire wire-horizontal wire-positive" id="wire-pos" style="width: 150px; left: 200px; top: 80px;"></div>
+                        <div class="wire wire-vertical" style="height: 60px; left: 350px; top: 80px;"></div>
+                        <div class="wire wire-horizontal" id="wire-switch" style="width: 80px; left: 350px; top: 140px;"></div>
+                        <div class="wire wire-vertical" style="height: 60px; left: 430px; top: 140px;"></div>
+                        <div class="wire wire-horizontal wire-negative" id="wire-neg" style="width: 150px; left: 430px; top: 200px;"></div>
+                        
+                        <!-- Switch -->
+                        <div class="switch open" id="switch" style="left: 380px; top: 125px;">
+                            <div class="switch-knob"></div>
+                        </div>
+                        
+                        <!-- Bulb -->
+                        <div class="bulb" style="right: 60px; top: 50%; transform: translateY(-50%);">
+                            <div class="bulb-glass" id="bulb-glass">
+                                <svg class="filament" viewBox="0 0 40 20">
+                                    <path class="filament-path" d="M 5 10 Q 10 5 15 10 T 25 10 T 35 10"></path>
+                                </svg>
+                            </div>
+                            <div class="bulb-base"></div>
+                        </div>
+                        
+                        <!-- Charge Flow Particles -->
+                        <div class="charge-flow" id="charge1"></div>
+                        <div class="charge-flow" id="charge2"></div>
+                        <div class="charge-flow" id="charge3"></div>
+                        <div class="charge-flow" id="charge4"></div>
+                        <div class="charge-flow" id="charge5"></div>
+                        
+                        <!-- Second Cell (hidden initially) -->
+                        <div class="cell" id="cell2" style="left: 200px; display: none;">
+                            <div class="cell-top">+</div>
+                            <div class="cell-label">Second Cell (+)</div>
+                            <div class="cell-bottom">-</div>
+                            <div class="cell-label">Second Cell (-)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color positive"></div>
+                        <span>Positive Wire</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color negative"></div>
+                        <span>Negative Wire</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color current"></div>
+                        <span>Current Flow</span>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <div class="control-title">🔌 Circuit Control</div>
+                        <div class="button-group">
+                            <button class="btn btn-primary" id="toggleSwitch">Toggle Switch (Open/Close)</button>
+                        </div>
+                        <div class="status-bar">
+                            <div class="status-item">
+                                <div class="status-dot" id="circuitStatus"></div>
+                                <span>Circuit: <strong id="circuitText">Open</strong></span>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-dot" id="bulbStatus"></div>
+                                <span>Bulb: <strong id="bulbText">Off</strong></span>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-dot" id="polarityStatus"></div>
+                                <span>Polarity: <strong id="polarityText">Correct</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="control-title">🔋 Cell Controls</div>
+                        <div class="button-group">
+                            <button class="btn btn-secondary" id="flipCell">Flip Cell Orientation</button>
+                            <button class="btn btn-secondary" id="replaceBulb">Replace Bulb</button>
+                        </div>
+                        <div class="slider-container">
+                            <label for="cellSlider">Number of Cells:</label>
+                            <input type="range" id="cellSlider" class="slider" min="1" max="2" value="1">
+                            <span id="cellCount">1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-title">❓ Check Your Understanding</div>
+            <div class="questions">
+                <div class="question">
+                    <div class="question-text">1. What happens when you flip the cell orientation?</div>
+                    <div class="options">
+                        <label class="option" data-question="1" data-answer="a">
+                            <input type="radio" name="q1"> The bulb gets brighter
+                        </label>
+                        <label class="option" data-question="1" data-answer="b">
+                            <input type="radio" name="q1"> The bulb gets dimmer
+                        </label>
+                        <label class="option" data-question="1" data-answer="c">
+                            <input type="radio" name="q1"> The bulb stays off
+                        </label>
+                        <label class="option" data-question="1" data-answer="d">
+                            <input type="radio" name="q1"> Nothing changes
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <div class="question-text">2. What is needed for current to flow?</div>
+                    <div class="options">
+                        <label class="option" data-question="2" data-answer="a">
+                            <input type="radio" name="q2"> Only a cell
+                        </label>
+                        <label class="option" data-question="2" data-answer="b">
+                            <input type="radio" name="q2"> Only a bulb
+                        </label>
+                        <label class="option" data-question="2" data-answer="c">
+                            <input type="radio" name="q2"> A complete circuit
+                        </label>
+                        <label class="option" data-question="2" data-answer="d">
+                            <input type="radio" name="q2"> Just wires
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <div class="question-text">3. What happens with a burnt-out bulb?</div>
+                    <div class="options">
+                        <label class="option" data-question="3" data-answer="a">
+                            <input type="radio" name="q3"> The bulb glows brighter
+                        </label>
+                        <label class="option" data-question="3" data-answer="b">
+                            <input type="radio" name="q3"> The bulb stays off
+                        </label>
+                        <label class="option" data-question="3" data-answer="c">
+                            <input type="radio" name="q3"> The cell stops working
+                        </label>
+                        <label class="option" data-question="3" data-answer="d">
+                            <input type="radio" name="q3"> Current flows faster
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-success" id="checkAnswers">Check Answers</button>
+                    <button class="btn btn-secondary" id="resetAnswers">Reset</button>
+                </div>
+                
+                <div class="feedback" id="feedback"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Simulation state
+        const state = {
+            circuitClosed: false,
+            cellFlipped: false,
+            numCells: 1,
+            bulbWorking: true,
+            bulbOn: false
+        };
+        
+        // DOM elements
+        const elements = {
+            switch: document.getElementById('switch'),
+            toggleSwitch: document.getElementById('toggleSwitch'),
+            flipCell: document.getElementById('flipCell'),
+            replaceBulb: document.getElementById('replaceBulb'),
+            cellSlider: document.getElementById('cellSlider'),
+            cellCount: document.getElementById('cellCount'),
+            cell: document.getElementById('cell'),
+            cell2: document.getElementById('cell2'),
+            bulbGlass: document.getElementById('bulb-glass'),
+            filamentPath: document.querySelector('.filament-path'),
+            circuitStatus: document.getElementById('circuitStatus'),
+            bulbStatus: document.getElementById('bulbStatus'),
+            polarityStatus: document.getElementById('polarityStatus'),
+            circuitText: document.getElementById('circuitText'),
+            bulbText: document.getElementById('bulbText'),
+            polarityText: document.getElementById('polarityText'),
+            charges: [
+                document.getElementById('charge1'),
+                document.getElementById('charge2'),
+                document.getElementById('charge3'),
+                document.getElementById('charge4'),
+                document.getElementById('charge5')
+            ],
+            feedback: document.getElementById('feedback'),
+            checkAnswers: document.getElementById('checkAnswers'),
+            resetAnswers: document.getElementById('resetAnswers')
+        };
+        
+        // Initialize simulation
+        function init() {
+            updateUI();
+            setupEventListeners();
+            startChargeAnimation();
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            elements.toggleSwitch.addEventListener('click', toggleCircuit);
+            elements.flipCell.addEventListener('click', flipCellOrientation);
+            elements.replaceBulb.addEventListener('click', replaceBulb);
+            elements.cellSlider.addEventListener('input', updateCellCount);
+            elements.checkAnswers.addEventListener('click', checkAllAnswers);
+            elements.resetAnswers.addEventListener('click', resetAnswers);
+            
+            // Click on switch to toggle
+            elements.switch.addEventListener('click', toggleCircuit);
+            
+            // Option selection
+            document.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', () => {
+                    const input = option.querySelector('input[type="radio"]');
+                    input.checked = true;
+                });
+            });
+        }
+        
+        // Toggle circuit
+        function toggleCircuit() {
+            state.circuitClosed = !state.circuitClosed;
+            elements.switch.classList.toggle('open', !state.circuitClosed);
+            elements.switch.classList.toggle('closed', state.circuitClosed);
+            updateBulbState();
+            updateUI();
+        }
+        
+        // Flip cell orientation
+        function flipCellOrientation() {
+            state.cellFlipped = !state.cellFlipped;
+            elements.cell.classList.toggle('flipped', state.cellFlipped);
+            
+            // Animate the flip
+            elements.cell.style.transition = 'transform 0.6s ease';
+            elements.cell.style.transform = state.cellFlipped ? 
+                'translate(-50%, -50%) rotate(180deg)' : 
+                'translate(-50%, -50%) rotate(0deg)';
+            
+            setTimeout(() => {
+                elements.cell.style.transition = 'none';
+            }, 600);
+            
+            updateBulbState();
+            updateUI();
+        }
+        
+        // Replace bulb
+        function replaceBulb() {
+            state.bulbWorking = !state.bulbWorking;
+            updateBulbState();
+            updateUI();
+        }
+        
+        // Update cell count
+        function updateCellCount() {
+            state.numCells = parseInt(elements.cellSlider.value);
+            elements.cellCount.textContent = state.numCells;
+            
+            if (state.numCells === 2) {
+                elements.cell2.style.display = 'flex';
+            } else {
+                elements.cell2.style.display = 'none';
+            }
+            
+            updateBulbState();
+            updateUI();
+        }
+        
+        // Update bulb state based on all conditions
+        function updateBulbState() {
+            const canLight = state.circuitClosed && 
+                           !state.cellFlipped && 
+                           state.bulbWorking;
+            
+            state.bulbOn = canLight;
+            
+            // Update bulb appearance
+            elements.bulbGlass.classList.toggle('on', state.bulbOn && state.bulbWorking);
+            elements.bulbGlass.classList.toggle('burnt', !state.bulbWorking);
+            elements.filamentPath.classList.toggle('on', state.bulbOn && state.bulbWorking);
+            elements.filamentPath.classList.toggle('burnt', !state.bulbWorking);
+            
+            // Update charge flow
+            elements.charges.forEach(charge => {
+                charge.classList.toggle('active', state.bulbOn);
+            });
+            
+            // Update brightness based on number of cells
+            if (state.bulbOn) {
+                const brightness = state.numCells === 2 ? '1.5' : '1';
+                elements.bulbGlass.style.filter = `brightness(${brightness})`;
+            }
+        }
+        
+        // Update UI elements
+        function updateUI() {
+            // Circuit status
+            elements.circuitStatus.classList.toggle('on', state.circuitClosed);
+            elements.circuitStatus.classList.toggle('off', !state.circuitClosed);
+            elements.circuitText.textContent = state.circuitClosed ? 'Closed' : 'Open';
+            
+            // Bulb status
+            elements.bulbStatus.classList.toggle('on', state.bulbOn);
+            elements.bulbStatus.classList.toggle('off', !state.bulbOn);
+            elements.bulbText.textContent = state.bulbOn ? 'On' : 'Off';
+            
+            // Polarity status
+            elements.polarityStatus.classList.toggle('correct', !state.cellFlipped);
+            elements.polarityStatus.classList.toggle('wrong', state.cellFlipped);
+            elements.polarityText.textContent = state.cellFlipped ? 'Reversed' : 'Correct';
+        }
+        
+        // Start charge flow animation
+        function startChargeAnimation() {
+            let positions = [0, 20, 40, 60, 80];
+            let direction = 1;
+            
+            setInterval(() => {
+                if (!state.bulbOn) return;
+                
+                positions = positions.map((pos, index) => {
+                    let newPos = pos + (direction * (5 + index * 2));
+                    if (newPos > 100) newPos = 0;
+                    if (newPos < 0) newPos = 100;
+                    return newPos;
+                });
+                
+                elements.charges.forEach((charge, index) => {
+                    charge.style.left = `${200 + positions[index]}px`;
+                    charge.style.top = `${80 + (index * 10)}px`;
+                });
+                
+                direction *= -1;
+            }, 200);
+        }
+        
+        // Check answers
+        function checkAllAnswers() {
+            const answers = {
+                1: 'c', // Cell flip makes bulb stay off
+                2: 'c', // Need complete circuit
+                3: 'b'  // Burnt bulb stays off
+            };
+            
+            let score = 0;
+            let total = Object.keys(answers).length;
+            
+            document.querySelectorAll('.option').forEach(option => {
+                option.classList.remove('correct', 'wrong');
+            });
+            
+            Object.keys(answers).forEach(question => {
+                const selected = document.querySelector(`input[name="q${question}"]:checked`);
+                const correctAnswer = answers[question];
+                
+                if (selected) {
+                    const selectedValue = selected.parentElement.getAttribute('data-answer');
+                    
+                    if (selectedValue === correctAnswer) {
+                        score++;
+                        document.querySelectorAll(`.option[data-question="${question}"]`).forEach(opt => {
+                            if (opt.getAttribute('data-answer') === correctAnswer) {
+                                opt.classList.add('correct');
+                            }
+                        });
+                    } else {
+                        document.querySelectorAll(`.option[data-question="${question}"]`).forEach(opt => {
+                            if (opt.getAttribute('data-answer') === correctAnswer) {
+                                opt.classList.add('correct');
+                            } else if (opt.getAttribute('data-answer') === selectedValue) {
+                                opt.classList.add('wrong');
+                            }
+                        });
+                    }
+                } else {
+                    document.querySelectorAll(`.option[data-question="${question}"]`).forEach(opt => {
+                        if (opt.getAttribute('data-answer') === correctAnswer) {
+                            opt.classList.add('correct');
+                        }
+                    });
+                }
+            });
+            
+            const percentage = Math.round((score / total) * 100);
+            elements.feedback.innerHTML = `
+                <strong>Results:</strong> You scored ${score}/${total} (${percentage}%)
+                <br><br>
+                ${percentage === 100 ? 
+                    'Excellent! You understand how electric cells work!' : 
+                    'Keep practicing! Review the simulation to understand the concepts better.'}
+            `;
+            elements.feedback.className = `feedback show ${percentage === 100 ? 'correct' : 'wrong'}`;
+        }
+        
+        // Reset answers
+        function resetAnswers() {
+            document.querySelectorAll('input[type="radio"]').forEach(input => {
+                input.checked = false;
+            });
+            document.querySelectorAll('.option').forEach(option => {
+                option.classList.remove('correct', 'wrong');
+            });
+            elements.feedback.className = 'feedback';
+            elements.feedback.innerHTML = '';
+        }
+        
+        // Initialize the simulation
+        init();
+    </script>
+</body>
+</html>

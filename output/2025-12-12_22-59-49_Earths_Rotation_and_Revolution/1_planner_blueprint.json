@@ -1,0 +1,54 @@
+{
+  "learning_objectives": [
+    "Understand and differentiate between Earth's rotation and revolution",
+    "Visualize how Earth's rotation causes the cycle of day and night",
+    "Explain how Earth's revolution and axial tilt cause the changing seasons",
+    "Recognize the relationship between the Earth's axis, orbit, and seasonal changes"
+  ],
+  "key_concepts": [
+    "Earth's rotation on its axis (24 hours)",
+    "Earth's revolution around the Sun (365.25 days)",
+    "Inclined axis (23.5 degrees tilt)",
+    "Day and night cycle",
+    "Seasonal changes due to revolution and tilt"
+  ],
+  "variables_to_simulate": [
+    "Rotation speed (time of day)",
+    "Revolution position (time of year)",
+    "Axial tilt angle",
+    "Sunlight intensity/direction"
+  ],
+  "user_interactions": [
+    "Slider to control Earth's rotation (day/night cycle)",
+    "Slider to control Earth's position in orbit (seasons)",
+    "Button to toggle axial tilt visualization",
+    "Button to start/stop animation"
+  ],
+  "simulation_logic": [
+    "Initialize Earth at a starting position in orbit with correct axial tilt",
+    "Update Earth's rotation based on the rotation slider, showing day/night transition on the globe",
+    "Update Earth's orbital position based on the revolution slider, changing the hemisphere tilted toward the Sun",
+    "Display current season labels for both hemispheres based on tilt direction",
+    "Animate the Sun's rays to show direct vs. oblique sunlight on different parts of Earth"
+  ],
+  "mobile_ui_plan": [
+    "Top section: Title and brief instructions",
+    "Middle section: Interactive simulation canvas (Earth orbit visualization)",
+    "Bottom section: Control panel with sliders and buttons stacked vertically",
+    "Footer: Key concept reminders and quiz button"
+  ],
+  "misconceptions_to_address": [
+    "Seasons are caused by Earth's distance from the Sun (not true - it's the tilt)",
+    "Day and night are caused by the Sun moving around Earth (not true - it's Earth's rotation)",
+    "The Earth's orbit is a perfect circle (it's elliptical but nearly circular)",
+    "Both hemispheres experience the same season simultaneously (they experience opposite seasons)"
+  ],
+  "text_instructions_for_students": "Welcome to the Earth's Rotation and Revolution simulation! Use the sliders to see how Earth spins on its axis (rotation) and moves around the Sun (revolution). Watch how these movements create day and night, and cause the seasons to change. Try the 'Toggle Tilt' button to see how Earth's tilted axis affects sunlight distribution.",
+  "file_target": "single_file_html",
+  "safety_constraints": [
+    "Ensure all images are from royalty-free sources",
+    "Keep simulation scientifically accurate",
+    "Use mobile-friendly controls with adequate touch target sizes",
+    "Avoid flashing animations that could trigger photosensitive reactions"
+  ]
+}

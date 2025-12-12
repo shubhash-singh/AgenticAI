@@ -1,0 +1,72 @@
+{
+  "learning_objectives": [
+    "Understand the difference between Earth's rotation and revolution",
+    "Visualize how Earth's rotation causes day and night",
+    "Explain how Earth's revolution and tilted axis cause seasons",
+    "Identify the Earth's axis and orbit in a visual model",
+    "Apply knowledge to predict seasonal changes in different hemispheres"
+  ],
+  "key_concepts": [
+    "Earth's rotation on its axis (24 hours)",
+    "Earth's revolution around the Sun (365.25 days)",
+    "Earth's tilted axis (23.5 degrees)",
+    "Day and night cycle",
+    "Seasonal changes due to axial tilt and revolution"
+  ],
+  "variables_to_simulate": [
+    "Earth rotation speed (0-2x normal speed)",
+    "Earth revolution position (0-360 degrees around Sun)",
+    "Earth axis tilt angle (0-45 degrees)",
+    "Time of day display (0-24 hours)"
+  ],
+  "user_interactions": [
+    "Slider to control Earth's rotation speed",
+    "Slider to position Earth in its orbit around Sun",
+    "Slider to adjust Earth's axis tilt angle",
+    "Button to toggle between day/night view and seasons view",
+    "Button to play/pause animation",
+    "Button to reset to default values"
+  ],
+  "simulation_logic": [
+    "Initialize Earth at default position with 23.5-degree tilt",
+    "Display Sun at center of screen with Earth in orbit",
+    "As rotation slider changes, update Earth's spin animation and day/night terminator line",
+    "As revolution slider changes, move Earth along elliptical orbit path",
+    "As tilt slider changes, rotate Earth's axis and update sunlight angle on surface",
+    "Toggle button switches between: 1) Day/night view showing rotation effects, 2) Seasons view showing hemisphere temperature changes",
+    "Play/pause animates Earth's natural rotation and revolution speeds",
+    "Reset button returns all controls to default values"
+  ],
+  "mobile_ui_plan": [
+    "Top section: Large circular view showing Sun and Earth's orbit",
+    "Middle section: Detailed Earth view with day/night shading and axis line",
+    "Bottom section: Control panel with sliders and buttons in vertical stack",
+    "Header: Clear title and brief instruction text",
+    "Footer: Key takeaway messages that update based on current settings"
+  ],
+  "misconceptions_to_address": [
+    "Earth is closer to Sun in summer (actually distance varies but isn't the main cause)",
+    "Rotation causes seasons (actually it's revolution + tilt)",
+    "Day and night are caused by the Sun moving around Earth",
+    "The Earth's orbit is a perfect circle",
+    "Both hemispheres experience the same season at the same time"
+  ],
+  "text_instructions_for_students": [
+    "Welcome! This simulation shows how Earth moves and why we have day/night and seasons.",
+    "Use the sliders to explore: 1) How Earth spins (rotation), 2) How Earth orbits the Sun (revolution), 3) How Earth's tilt affects seasons.",
+    "Try this: Set Earth to different positions around the Sun and see how the tilt changes which hemisphere gets more sunlight.",
+    "Notice: When one hemisphere has summer, the other has winter because of the tilt!",
+    "Experiment: Change the rotation speed to see how it affects day and night length.",
+    "Remember: Day and night happen because Earth spins, while seasons happen because Earth orbits the Sun AND is tilted!"
+  ],
+  "file_target": "single_file_html",
+  "safety_constraints": [
+    "All images must be from provided URLs or safe, educational sources",
+    "No external network requests allowed",
+    "Content must be age-appropriate for Class 7 students",
+    "Avoid any political, religious, or sensitive content",
+    "Ensure all scientific information is accurate and CBSE-aligned",
+    "Keep file size under 5MB for mobile performance",
+    "Use only HTML, CSS, and JavaScript - no external libraries"
+  ]
+}

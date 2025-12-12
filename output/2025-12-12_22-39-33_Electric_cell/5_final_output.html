@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electric Cell Simulation</title>
+    <style>
+        :root {
+            --bg: #f8f9fa;
+            --card: #ffffff;
+            --text: #212529;
+            --muted: #6c757d;
+            --primary: #0d6efd;
+            --success: #198754;
+            --danger: #dc3545;
+            --warning: #ffc107;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.4;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+        
+        .header {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 16px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--primary);
+        }
+        
+        .header p {
+            margin: 8px 0 0 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+        
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 16px;
+        }
+        
+        .circuit-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+            position: relative;
+        }
+        
+        .circuit-diagram {
+            width: 100%;
+            max-width: 600px;
+            height: 300px;
+            position: relative;
+        }
+        
+        .wire {
+            position: absolute;
+            background: #333;
+            height: 4px;
+            border-radius: 2px;
+        }
+        
+        .wire-horizontal {
+            height: 4px;
+        }
+        
+        .wire-vertical {
+            width: 4px;
+        }
+        
+        .cell {
+            position: absolute;
+            width: 80px;
+            height: 140px;
+            border-radius: 8px;
+            background: linear-gradient(180deg, #e8f0fe, #d6e4ff);
+            border: 2px solid #9cc0ff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .cell.reversed {
+            transform: rotate(180deg);
+        }
+        
+        .cell-positive {
+            position: absolute;
+            top: 10px;
+            width: 24px;
+            height: 24px;
+            background: #fff;
+            border: 3px solid #198754;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #198754;
+            font-size: 16px;
+        }
+        
+        .cell-negative {
+            position: absolute;
+            bottom: 10px;
+            width: 24px;
+            height: 24px;
+            background: #fff;
+            border: 3px solid #dc3545;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #dc3545;
+            font-size: 16px;
+        }
+        
+        .cell-label {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: var(--muted);
+            text-align: center;
+            padding: 0 8px;
+        }
+        
+        .bulb {
+            position: absolute;
+            width: 60px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .bulb-glass {
+            width: 100%;
+            height: 100%;
+            border-radius: 50% 50% 40% 40%;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #999;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .bulb-filament {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 20px;
+            transform: translate(-50%, -50%);
+            border-radius: 10px;
+            background: linear-gradient(90deg, #666, #999, #666);
+        }
+        
+        .bulb-led {
+            width: 100%;
+            height: 100%;
+            border-radius: 50% 50% 40% 40%;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #999;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .led-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background: #333;
+        }
+        
+        .bulb-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,215,0,0.8), rgba(255,215,0,0.2), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .bulb-glow.active {
+            opacity: 1;
+        }
+        
+        .switch {
+            position: absolute;
+            width: 60px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .switch-base {
+            width: 100%;
+            height: 20px;
+            background: #6c757d;
+            border-radius: 10px;
+            position: relative;
+        }
+        
+        .switch-handle {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #fff;
+            border: 2px solid #495057;
+            border-radius: 50%;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            transition: left 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .switch.open .switch-handle {
+            left: 30px;
+        }
+        
+        .switch.closed .switch-handle {
+            left: 0;
+        }
+        
+        .switch-label {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: var(--muted);
+        }
+        
+        .current-flow {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #ffd700;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ffd700;
+            opacity: 0;
+            animation: flow 2s linear infinite;
+        }
+        
+        .current-flow.active {
+            opacity: 1;
+        }
+        
+        @keyframes flow {
+            0% {
+                transform: translate(0, 0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translate(0, 0);
+                opacity: 0;
+            }
+        }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .control-group label {
+            font-size: 14px;
+            color: var(--muted);
+        }
+        
+        .slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #ddd;
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .select, .button {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .select:hover, .button:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+        }
+        
+        .button.primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .button.primary:hover {
+            background: #0b5ed7;
+            border-color: #0b5ed7;
+        }
+        
+        .button.secondary {
+            background: #6c757d;
+            color: white;
+            border-color: #6c757d;
+        }
+        
+        .button.secondary:hover {
+            background: #5a6268;
+            border-color: #5a6268;
+        }
+        
+        .instructions {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .misconception {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+        }
+        
+        .misconception h3 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+            color: #856404;
+        }
+        
+        .misconception p {
+            margin: 0;
+            font-size: 14px;
+            color: #856404;
+        }
+        
+        .status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #e7f3ff;
+            border: 1px solid #b8daff;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+        
+        .status-item {
+            font-size: 14px;
+            color: #055160;
+        }
+        
+        .status-item strong {
+            color: #084298;
+        }
+        
+        @media (min-width: 768px) {
+            .circuit-container {
+                min-height: 400px;
+            }
+            
+            .circuit-diagram {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Electric Cell Simulation</h1>
+            <p>Learn how electric cells work by building and testing simple circuits</p>
+        </div>
+        
+        <div class="card">
+            <div class="circuit-container">
+                <svg class="circuit-diagram" id="circuitDiagram" viewBox="0 0 600 300" preserveAspectRatio="xMidYMid meet">
+                    <!-- Wires -->
+                    <rect class="wire wire-horizontal" x="50" y="148" width="120" height="4" fill="#333"></rect>
+                    <rect class="wire wire-vertical" x="168" y="148" width="4" height="80" fill="#333"></rect>
+                    <rect class="wire wire-horizontal" x="170" y="228" width="260" height="4" fill="#333"></rect>
+                    <rect class="wire wire-vertical" x="428" y="148" width="4" height="80" fill="#333"></rect>
+                    <rect class="wire wire-horizontal" x="430" y="148" width="120" height="4" fill="#333"></rect>
+                    
+                    <!-- Cell -->
+                    <g id="cellGroup">
+                        <rect class="cell" id="cell" x="260" y="110" width="80" height="140" rx="8" ry="8" fill="url(#cellGradient)"></rect>
+                        <circle class="cell-positive" id="cellPositive" cx="300" cy="120" r="12" stroke="#198754" stroke-width="3" fill="#fff">
+                            <text x="300" y="125" text-anchor="middle" font-size="16" font-weight="bold" fill="#198754">+</text>
+                        </circle>
+                        <circle class="cell-negative" id="cellNegative" cx="300" cy="240" r="12" stroke="#dc3545" stroke-width="3" fill="#fff">
+                            <text x="300" y="245" text-anchor="middle" font-size="16" font-weight="bold" fill="#dc3545">-</text>
+                        </circle>
+                        <text class="cell-label" x="300" y="180" text-anchor="middle" font-size="12" fill="#6c757d">Electric Cell</text>
+                    </g>
+                    
+                    <!-- Bulb -->
+                    <g id="bulbGroup" class="bulb" transform="translate(300, 260)">
+                        <circle class="bulb-glass" id="bulbGlass" cx="0" cy="0" r="30" fill="rgba(255,255,255,0.9)" stroke="#999" stroke-width="2"></circle>
+                        <rect class="bulb-filament" id="bulbFilament" x="-20" y="-10" width="40" height="20" rx="10" ry="10" fill="url(#filamentGradient)"></rect>
+                        <circle class="bulb-glow" id="bulbGlow" cx="0" cy="0" r="40" fill="radial-gradient(circle, rgba(255,215,0,0.8), rgba(255,215,0,0.2), transparent)"></circle>
+                    </g>
+                    
+                    <!-- LED (hidden by default) -->
+                    <g id="ledGroup" class="bulb" transform="translate(300, 260)" style="display: none;">
+                        <circle class="bulb-led" cx="0" cy="0" r="30" fill="rgba(255,255,255,0.9)" stroke="#999" stroke-width="2"></circle>
+                        <circle class="led-dot" cx="0" cy="0" r="10" fill="#333"></circle>
+                        <circle class="bulb-glow" id="ledGlow" cx="0" cy="0" r="40" fill="radial-gradient(circle, rgba(0,255,0,0.8), rgba(0,255,0,0.2), transparent)"></circle>
+                    </g>
+                    
+                    <!-- Switch -->
+                    <g id="switchGroup" class="switch" transform="translate(300, 150)">
+                        <rect class="switch-base" x="-30" y="-10" width="60" height="20" rx="10" ry="10" fill="#6c757d"></rect>
+                        <circle class="switch-handle" cx="-15" cy="0" r="15" fill="#fff" stroke="#495057" stroke-width="2" style="box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></circle>
+                        <text class="switch-label" x="0" y="20" text-anchor="middle" font-size="12" fill="#6c757d">Switch</text>
+                    </g>
+                    
+                    <!-- Current flow particles -->
+                    <circle class="current-flow" id="current1" cx="60" cy="150"></circle>
+                    <circle class="current-flow" id="current2" cx="60" cy="150"></circle>
+                    <circle class="current-flow" id="current3" cx="60" cy="150"></circle>
+                    
+                    <!-- Gradients -->
+                    <defs>
+                        <linearGradient id="cellGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#e8f0fe"/>
+                            <stop offset="100%" stop-color="#d6e4ff"/>
+                        </linearGradient>
+                        <linearGradient id="filamentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#666"/>
+                            <stop offset="50%" stop-color="#999"/>
+                            <stop offset="100%" stop-color="#666"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            
+            <div class="status">
+                <div class="status-item"><strong>Circuit:</strong> <span id="circuitStatus">Open</span></div>
+                <div class="status-item"><strong>Voltage:</strong> <span id="voltageStatus">Low</span></div>
+                <div class="status-item"><strong>Bulb:</strong> <span id="bulbStatus">Filament</span></div>
+                <div class="status-item"><strong>Cell:</strong> <span id="cellStatus">Normal</span></div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="controls">
+                <div class="control-group">
+                    <label for="switch">Circuit Switch</label>
+                    <button class="button secondary" id="switchBtn" onclick="toggleSwitch()">Open Circuit</button>
+                </div>
+                
+                <div class="control-group">
+                    <label for="voltage">Cell Voltage</label>
+                    <input type="range" id="voltage" class="slider" min="1" max="3" value="1" oninput="updateVoltage()">
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--muted);">
+                        <span>Low</span>
+                        <span>Medium</span>
+                        <span>High</span>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label for="bulbType">Bulb Type</label>
+                    <select id="bulbType" class="select" onchange="updateBulbType()">
+                        <option value="filament">Filament Bulb</option>
+                        <option value="led">LED Bulb</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label>Cell Orientation</label>
+                    <button class="button" id="orientationBtn" onclick="toggleOrientation()">Flip Cell: Normal</button>
+                </div>
+                
+                <div class="control-group">
+                    <button class="button primary" id="resetBtn" onclick="resetSimulation()">Reset Simulation</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="instructions">
+                <h3>How to Use This Simulation</h3>
+                <ol>
+                    <li><strong>Complete the Circuit:</strong> Click the switch to close the circuit and complete the path for electricity.</li>
+                    <li><strong>Adjust Voltage:</strong> Use the slider to change the cell's voltage from low to high.</li>
+                    <li><strong>Try Different Bulbs:</strong> Switch between a filament bulb and an LED to see how they respond to different voltages.</li>
+                    <li><strong>Flip the Cell:</strong> Click the orientation button to see what happens when you reverse the cell.</li>
+                    <li><strong>Watch the Current:</strong> When the circuit is closed, you'll see animated particles flowing from the negative (-) to positive (+) terminal.</li>
+                </ol>
+                
+                <div class="misconception">
+                    <h3>Common Misconceptions</h3>
+                    <p><strong>Myth:</strong> Electric cells store electricity.<br>
+                    <strong>Fact:</strong> Cells convert chemical energy into electrical energy.</p>
+                    <p><strong>Myth:</strong> Current flows from positive to negative.<br>
+                    <strong>Fact:</strong> Current flows from negative to positive terminals.</p>
+                    <p><strong>Myth:</strong> Reversing the cell stops the bulb from lighting.<br>
+                    <strong>Fact:</strong> For simple bulbs, orientation doesn't matter.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Simulation state
+        let state = {
+            circuitClosed: false,
+            voltage: 1, // 1=low, 2=medium, 3=high
+            bulbType: 'filament',
+            cellReversed: false,
+            currentFlowing: false
+        };
+        
+        // DOM elements
+        const circuitDiagram = document.getElementById('circuitDiagram');
+        const cell = document.getElementById('cell');
+        const cellPositive = document.getElementById('cellPositive');
+        const cellNegative = document.getElementById('cellNegative');
+        const bulbGroup = document.getElementById('bulbGroup');
+        const ledGroup = document.getElementById('ledGroup');
+        const bulbGlow = document.getElementById('bulbGlow');
+        const ledGlow = document.getElementById('ledGlow');
+        const switchGroup = document.getElementById('switchGroup');
+        const currentFlows = [
+            document.getElementById('current1'),
+            document.getElementById('current2'),
+            document.getElementById('current3')
+        ];
+        
+        // Initialize simulation
+        function init() {
+            updateCircuitVisuals();
+            animateCurrentFlow();
+        }
+        
+        // Toggle switch
+        function toggleSwitch() {
+            state.circuitClosed = !state.circuitClosed;
+            document.getElementById('switchBtn').textContent = 
+                state.circuitClosed ? 'Close Circuit' : 'Open Circuit';
+            switchGroup.classList.toggle('open', !state.circuitClosed);
+            switchGroup.classList.toggle('closed', state.circuitClosed);
+            updateCircuitVisuals();
+        }
+        
+        // Update voltage
+        function updateVoltage() {
+            state.voltage = parseInt(document.getElementById('voltage').value);
+            updateCircuitVisuals();
+        }
+        
+        // Update bulb type
+        function updateBulbType() {
+            state.bulbType = document.getElementById('bulbType').value;
+            updateCircuitVisuals();
+        }
+        
+        // Toggle cell orientation
+        function toggleOrientation() {
+            state.cellReversed = !state.cellReversed;
+            cell.classList.toggle('reversed', state.cellReversed);
+            document.getElementById('orientationBtn').textContent = 
+                state.cellReversed ? 'Flip Cell: Reversed' : 'Flip Cell: Normal';
+            updateCircuitVisuals();
+        }
+        
+        // Update circuit visuals based on state
+        function updateCircuitVisuals() {
+            // Update status displays
+            document.getElementById('circuitStatus').textContent = 
+                state.circuitClosed ? 'Closed' : 'Open';
+            document.getElementById('voltageStatus').textContent = 
+                state.voltage === 1 ? 'Low' : state.voltage === 2 ? 'Medium' : 'High';
+            document.getElementById('bulbStatus').textContent = 
+                state.bulbType === 'filament' ? 'Filament' : 'LED';
+            document.getElementById('cellStatus').textContent = 
+                state.cellReversed ? 'Reversed' : 'Normal';
+            
+            // Determine if bulb should light
+            const shouldLight = shouldBulbLight();
+            
+            // Update bulb visibility
+            if (state.bulbType === 'filament') {
+                bulbGroup.style.display = 'block';
+                ledGroup.style.display = 'none';
+                if (shouldLight) {
+                    bulbGlow.classList.add('active');
+                    // Adjust brightness based on voltage
+                    const brightness = state.voltage === 1 ? 0.3 : state.voltage === 2 ? 0.6 : 1.0;
+                    bulbGlow.style.opacity = brightness.toString();
+                } else {
+                    bulbGlow.classList.remove('active');
+                }
+            } else {
+                bulbGroup.style.display = 'none';
+                ledGroup.style.display = 'block';
+                if (shouldLight) {
+                    ledGlow.classList.add('active');
+                    // LEDs are more efficient, so they light up brighter at lower voltages
+                    const brightness = state.voltage === 1 ? 0.5 : state.voltage === 2 ? 0.8 : 1.0;
+                    ledGlow.style.opacity = brightness.toString();
+                } else {
+                    ledGlow.classList.remove('active');
+                }
+            }
+            
+            // Update current flow
+            state.currentFlowing = shouldLight;
+            updateCurrentFlowVisuals();
+        }
+        
+        // Determine if bulb should light
+        function shouldBulbLight() {
+            if (!state.circuitClosed) return false;
+            
+            if (state.bulbType === 'filament') {
+                // Filament bulbs need higher voltage to light
+                return state.voltage >= 2;
+            } else {
+                // LEDs can light at lower voltages
+                return state.voltage >= 1;
+            }
+        }
+        
+        // Update current flow visuals
+        function updateCurrentFlowVisuals() {
+            currentFlows.forEach(flow => {
+                flow.classList.toggle('active', state.currentFlowing);
+            });
+        }
+        
+        // Animate current flow
+        function animateCurrentFlow() {
+            setInterval(() => {
+                if (state.currentFlowing) {
+                    // Animate particles flowing from negative to positive
+                    currentFlows.forEach((flow, index) => {
+                        const delay = index * 0.5;
+                        flow.style.animationDelay = `-${delay}s`;
+                        flow.style.animationDuration = '2s';
+                    });
+                }
+            }, 100);
+        }
+        
+        // Reset simulation
+        function resetSimulation() {
+            state = {
+                circuitClosed: false,
+                voltage: 1,
+                bulbType: 'filament',
+                cellReversed: false,
+                currentFlowing: false
+            };
+            
+            // Reset UI
+            document.getElementById('switchBtn').textContent = 'Open Circuit';
+            document.getElementById('voltage').value = '1';
+            document.getElementById('bulbType').value = 'filament';
+            document.getElementById('orientationBtn').textContent = 'Flip Cell: Normal';
+            
+            // Reset visuals
+            switchGroup.classList.remove('closed');
+            switchGroup.classList.add('open');
+            cell.classList.remove('reversed');
+            
+            updateCircuitVisuals();
+        }
+        
+        // Initialize on load
+        window.onload = init;
+    </script>
+</body>
+</html>

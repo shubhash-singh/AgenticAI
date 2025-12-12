@@ -1,0 +1,70 @@
+{
+  "intro": "Great job exploring light and shadows! Let's see what you've learned and discover more together.",
+  "questions": [
+    {
+      "question": "You're playing with a flashlight and your hand. When you move your hand closer to the flashlight, what happens to your shadow on the wall?",
+      "type": "mcq",
+      "options": [
+        "A) The shadow gets smaller and sharper",
+        "B) The shadow gets bigger and fuzzier",
+        "C) The shadow disappears completely",
+        "D) The shadow stays the same size"
+      ],
+      "hint": "Think about how the distance between the object and light source affects the shadow. Try moving your hand closer and farther in your mind!",
+      "correct_index": 1
+    },
+    {
+      "question": "You have three objects: a clear glass jar, a plastic bag, and a wooden block. Which one will create the clearest shadow when you shine a light on it?",
+      "type": "mcq",
+      "options": [
+        "A) Clear glass jar",
+        "B) Plastic bag",
+        "C) Wooden block",
+        "D) All three will create the same shadow"
+      ],
+      "hint": "Remember which type of object blocks light completely. Think about whether you can see through each object clearly.",
+      "correct_index": 2
+    },
+    {
+      "question": "In a pin-hole camera, the image you see is:",
+      "type": "mcq",
+      "options": [
+        "A) Right-side up and the same size as the object",
+        "B) Upside-down and the same size as the object",
+        "C) Upside-down and can be bigger or smaller",
+        "D) Right-side up but always smaller"
+      ],
+      "hint": "Light travels in straight lines through the tiny hole. Think about how rays from the top of an object reach the bottom of the screen.",
+      "correct_index": 2
+    },
+    {
+      "question": "You're standing in the park and your shadow is very long. What time of day is it most likely?",
+      "type": "mcq",
+      "options": [
+        "A) Noon (when the sun is highest)",
+        "B) Morning or evening (when the sun is low)",
+        "C) Midnight",
+        "D) Anytime during the day"
+      ],
+      "hint": "Think about the angle of the sun's rays. When are they hitting you more from the side than from above?",
+      "correct_index": 1
+    },
+    {
+      "question": "You want to make a shadow puppet show. Which material would be best for making a puppet that creates a clear shadow on the screen?",
+      "type": "mcq",
+      "options": [
+        "A) Thin white tissue paper",
+        "B) Thick cardboard",
+        "C) Clear plastic wrap",
+        "D) Frosted glass"
+      ],
+      "hint": "For a clear shadow, you need a material that doesn't let light pass through it. Which of these would be the most solid?",
+      "correct_index": 1
+    }
+  ],
+  "followups": [
+    "Want to explore more? Try making your own shadow puppets at home using cardboard and a flashlight!",
+    "Curious about how cameras work? Ask a grown-up if you can look at old photos and notice how everything is upside-down in some pin-hole camera pictures."
+  ],
+  "summary": "Light travels in straight lines and helps us see the world! When light hits opaque objects (like wood or cardboard), it creates shadows because the light can't pass through. Transparent objects (like clear glass) let all light through, so no shadow forms. Translucent objects (like frosted glass) let some light through, making fuzzy shadows. Pin-hole cameras work because light from each point on an object travels straight through a tiny hole and makes an upside-down image. The position of light and objects changes shadow size and shape - this is why your shadow is long in the morning and short at noon!"
+}

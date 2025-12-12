@@ -112,14 +112,21 @@ Output only JSON.
 
     creation_prompt = """
 You are the HTML Simulation Generator Agent.
+Trying to generate a HTML simulation based on the provided blueprint.
 
 Input blueprint:
 {plan}
 
 Instructions:
-- Follow everything from the blueprint and don't skip any part of it
+- Use animations for the interactions.
+- Follow everything from the blueprint and don't skip any part of it.
+- Use light theme
+- Make sure all the element of the simulation are visible, accessible and are in correct position.
+- Keep the design minimal and clean
+- Keep the simulation design mobile friendly
 - Output should be mainly focused on visuals 
-- Leave no room for improvement
+- Use less text and more visuals and animations.
+- The simulation should be complete and self sufficient
 - Make it engaging and interactive and attractive
 - The simulation spuld feel like a experimantal lab and sjow experimental results
 - The simulation should be completely self-contained and should not require any external resources
@@ -162,6 +169,7 @@ You MUST output in this EXACT format with NO extra text:
 
 CRITICAL: 
 - Output ONLY the JSON object shown above
+- no special character like new line etc
 - NO markdown code blocks (no ```)
 - NO extra commentary
 - The entire HTML must be inside the "index.html" property as a string

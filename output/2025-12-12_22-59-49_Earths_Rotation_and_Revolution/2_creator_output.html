@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earth's Rotation & Revolution</title>
+    <style>
+        :root {
+            --bg: #f8f9fa;
+            --text: #2c3e50;
+            --accent: #3498db;
+            --accent2: #e74c3c;
+            --panel: #ffffff;
+            --border: #e9ecef;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.4;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+        
+        .header {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 8px;
+        }
+        
+        .instructions {
+            font-size: 14px;
+            background: #e8f4fd;
+            border-left: 4px solid var(--accent);
+            padding: 12px;
+            border-radius: 8px;
+        }
+        
+        .simulation {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .canvas-container {
+            width: 100%;
+            height: 400px;
+            position: relative;
+            background: radial-gradient(ellipse at center, #1e3c72 0%, #0b1020 60%, #050812 100%);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        
+        .sun {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #fff59d 0%, #ffd54f 50%, #ff8f00 100%);
+            box-shadow: 0 0 40px rgba(255, 193, 7, 0.8), 0 0 80px rgba(255, 193, 7, 0.4);
+            animation: sunGlow 4s ease-in-out infinite;
+        }
+        
+        @keyframes sunGlow {
+            0%, 100% { box-shadow: 0 0 40px rgba(255, 193, 7, 0.8), 0 0 80px rgba(255, 193, 7, 0.4); }
+            50% { box-shadow: 0 0 60px rgba(255, 193, 7, 0.9), 0 0 120px rgba(255, 193, 7, 0.6); }
+        }
+        
+        .orbit {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 320px;
+            height: 320px;
+            transform: translate(-50%, -50%);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+        }
+        
+        .earth-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: transform 0.3s ease;
+        }
+        
+        .earth {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #a0e7ff 0%, #4da3ff 40%, #1e6dff 100%);
+            position: relative;
+            box-shadow: inset -10px -10px 30px rgba(0,0,0,0.3), 0 0 20px rgba(77,163,255,0.3);
+        }
+        
+        .earth::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 60% 40%, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%),
+                        radial-gradient(circle at 40% 60%, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 40%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        .day-night-line {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 60px;
+            height: 60px;
+            transform-origin: center;
+            border-radius: 50%;
+            background: linear-gradient(90deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 50%);
+            mix-blend-mode: multiply;
+            pointer-events: none;
+        }
+        
+        .tilt-line {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 80px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.6);
+            transform-origin: center;
+            transform: translate(-50%, -50%) rotate(23.5deg);
+            display: none;
+            pointer-events: none;
+        }
+        
+        .season-label {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .sun-rays {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 400px;
+            height: 400px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+        
+        .sun-rays::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            border: 2px solid rgba(255, 193, 7, 0.3);
+            border-radius: 50%;
+            animation: raysPulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes raysPulse {
+            0%, 100% { transform: scale(0.95); opacity: 0.3; }
+            50% { transform: scale(1.05); opacity: 0.6; }
+        }
+        
+        .controls {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .control-group {
+            margin-bottom: 16px;
+        }
+        
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        .control-label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 999px;
+            outline: none;
+            transition: 0.15s ease;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+        }
+        
+        .value-display {
+            font-size: 12px;
+            color: #6c757d;
+            min-width: 80px;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #f8f9fa;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            touch-action: manipulation;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: var(--accent2);
+            border-color: var(--accent2);
+            color: white;
+        }
+        
+        .footer {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .key-concepts {
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+        
+        .quiz-btn {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            touch-action: manipulation;
+        }
+        
+        .quiz-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .misconception {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 8px;
+            padding: 8px;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+        }
+        
+        @media (max-width: 480px) {
+            .canvas-container {
+                height: 320px;
+            }
+            
+            .orbit {
+                width: 260px;
+                height: 260px;
+            }
+            
+            .earth {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .day-night-line {
+                width: 50px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">Earth's Rotation & Revolution</div>
+            <div class="subtitle">Interactive Simulation</div>
+            <div class="instructions">
+                Welcome to the Earth's Rotation and Revolution simulation! Use the sliders to see how Earth spins on its axis (rotation) and moves around the Sun (revolution). Watch how these movements create day and night, and cause the seasons to change. Try the 'Toggle Tilt' button to see how Earth's tilted axis affects sunlight distribution.
+            </div>
+        </div>
+        
+        <div class="simulation">
+            <div class="canvas-container">
+                <div class="sun"></div>
+                <div class="sun-rays"></div>
+                <div class="orbit"></div>
+                <div class="earth-container" id="earthContainer">
+                    <div class="earth" id="earth"></div>
+                    <div class="day-night-line" id="dayNightLine"></div>
+                    <div class="tilt-line" id="tiltLine"></div>
+                </div>
+                <div class="season-label" id="seasonLabel">Season: Not Set</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <div class="control-label">Rotation (Day/Night Cycle)</div>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="rotationSlider" min="0" max="360" value="0">
+                    <div class="value-display" id="rotationValue">0°</div>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">Revolution (Seasons)</div>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="revolutionSlider" min="0" max="360" value="0">
+                    <div class="value-display" id="revolutionValue">0°</div>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">Axial Tilt</div>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="tiltSlider" min="0" max="45" value="23.5">
+                    <div class="value-display" id="tiltValue">23.5°</div>
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <button class="btn btn-primary" id="toggleTiltBtn">Toggle Tilt</button>
+                <button class="btn btn-secondary" id="toggleAnimationBtn">Start Animation</button>
+                <button class="btn" id="resetBtn">Reset</button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div class="key-concepts">
+                <strong>Key Concepts:</strong>
+                <ul>
+                    <li>Earth rotates on its axis every 24 hours (day/night)</li>
+                    <li>Earth revolves around the Sun every 365.25 days (seasons)</li>
+                    <li>Earth's axis is tilted at 23.5 degrees</li>
+                    <li>Seasons are caused by the tilt, not distance from Sun</li>
+                </ul>
+            </div>
+            <button class="quiz-btn" id="quizBtn">Take Quiz</button>
+            <div class="misconception">
+                <strong>Misconception:</strong> Seasons are caused by Earth's distance from the Sun. <strong>Truth:</strong> Seasons are caused by Earth's tilted axis pointing toward or away from the Sun.
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Elements
+        const earthContainer = document.getElementById('earthContainer');
+        const earth = document.getElementById('earth');
+        const dayNightLine = document.getElementById('dayNightLine');
+        const tiltLine = document.getElementById('tiltLine');
+        const seasonLabel = document.getElementById('seasonLabel');
+        
+        const rotationSlider = document.getElementById('rotationSlider');
+        const revolutionSlider = document.getElementById('revolutionSlider');
+        const tiltSlider = document.getElementById('tiltSlider');
+        
+        const rotationValue = document.getElementById('rotationValue');
+        const revolutionValue = document.getElementById('revolutionValue');
+        const tiltValue = document.getElementById('tiltValue');
+        
+        const toggleTiltBtn = document.getElementById('toggleTiltBtn');
+        const toggleAnimationBtn = document.getElementById('toggleAnimationBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const quizBtn = document.getElementById('quizBtn');
+        
+        // State
+        let isAnimating = false;
+        let animationId = null;
+        let tiltVisible = false;
+        let lastTime = 0;
+        
+        // Initial positions
+        let rotationAngle = 0;
+        let revolutionAngle = 0;
+        let axialTilt = 23.5;
+        
+        // Update functions
+        function updateRotation() {
+            rotationAngle = parseFloat(rotationSlider.value);
+            earth.style.transform = `rotate(${rotationAngle}deg)`;
+            dayNightLine.style.transform = `translate(-50%, -50%) rotate(${rotationAngle}deg)`;
+            rotationValue.textContent = `${rotationAngle}°`;
+        }
+        
+        function updateRevolution() {
+            revolutionAngle = parseFloat(revolutionSlider.value);
+            const orbitRadius = 160;
+            const x = Math.cos(revolutionAngle * Math.PI / 180) * orbitRadius;
+            const y = Math.sin(revolutionAngle * Math.PI / 180) * orbitRadius;
+            earthContainer.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) rotate(${revolutionAngle}deg)`;
+            
+            // Update tilt line
+            tiltLine.style.transform = `translate(-50%, -50%) rotate(${revolutionAngle + axialTilt}deg)`;
+            
+            // Update season label
+            updateSeasonLabel();
+            
+            revolutionValue.textContent = `${revolutionAngle}°`;
+        }
+        
+        function updateTilt() {
+            axialTilt = parseFloat(tiltSlider.value);
+            tiltLine.style.transform = `translate(-50%, -50%) rotate(${revolutionAngle + axialTilt}deg)`;
+            tiltValue.textContent = `${axialTilt}°`;
+            updateSeasonLabel();
+        }
+        
+        function updateSeasonLabel() {
+            const angle = revolutionAngle;
+            let season = '';
+            
+            if (angle >= 337.5 || angle < 22.5) {
+                season = 'Northern Hemisphere: Winter | Southern Hemisphere: Summer';
+            } else if (angle >= 22.5 && angle < 67.5) {
+                season = 'Northern Hemisphere: Spring | Southern Hemisphere: Autumn';
+            } else if (angle >= 67.5 && angle < 112.5) {
+                season = 'Northern Hemisphere: Summer | Southern Hemisphere: Winter';
+            } else if (angle >= 112.5 && angle < 157.5) {
+                season = 'Northern Hemisphere: Summer | Southern Hemisphere: Winter';
+            } else if (angle >= 157.5 && angle < 202.5) {
+                season = 'Northern Hemisphere: Autumn | Southern Hemisphere: Spring';
+            } else if (angle >= 202.5 && angle < 247.5) {
+                season = 'Northern Hemisphere: Autumn | Southern Hemisphere: Spring';
+            } else if (angle >= 247.5 && angle < 292.5) {
+                season = 'Northern Hemisphere: Winter | Southern Hemisphere: Summer';
+            } else {
+                season = 'Northern Hemisphere: Winter | Southern Hemisphere: Summer';
+            }
+            
+            seasonLabel.textContent = `Season: ${season}`;
+        }
+        
+        function toggleTilt() {
+            tiltVisible = !tiltVisible;
+            tiltLine.style.display = tiltVisible ? 'block' : 'none';
+            toggleTiltBtn.textContent = tiltVisible ? 'Hide Tilt' : 'Show Tilt';
+        }
+        
+        function toggleAnimation() {
+            isAnimating = !isAnimating;
+            toggleAnimationBtn.textContent = isAnimating ? 'Stop Animation' : 'Start Animation';
+            
+            if (isAnimating) {
+                lastTime = performance.now();
+                animate();
+            } else {
+                cancelAnimationFrame(animationId);
+            }
+        }
+        
+        function animate(timestamp) {
+            if (!lastTime) lastTime = timestamp;
+            const deltaTime = timestamp - lastTime;
+            lastTime = timestamp;
+            
+            // Update rotation (day/night)
+            rotationAngle = (rotationAngle + deltaTime * 0.05) % 360;
+            rotationSlider.value = rotationAngle;
+            updateRotation();
+            
+            // Update revolution (seasons)
+            revolutionAngle = (revolutionAngle + deltaTime * 0.02) % 360;
+            revolutionSlider.value = revolutionAngle;
+            updateRevolution();
+            
+            if (isAnimating) {
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+        
+        function reset() {
+            rotationSlider.value = 0;
+            revolutionSlider.value = 0;
+            tiltSlider.value = 23.5;
+            
+            rotationAngle = 0;
+            revolutionAngle = 0;
+            axialTilt = 23.5;
+            
+            updateRotation();
+            updateRevolution();
+            updateTilt();
+            
+            if (tiltVisible) toggleTilt();
+            if (isAnimating) toggleAnimation();
+        }
+        
+        function takeQuiz() {
+            const questions = [
+                {
+                    question: "What causes day and night?",
+                    options: ["Earth's revolution around the Sun", "Earth's rotation on its axis", "The Sun moving around Earth", "The Moon blocking the Sun"],
+                    answer: 1
+                },
+                {
+                    question: "What causes seasons to change?",
+                    options: ["Earth's distance from the Sun", "Earth's tilted axis", "Changes in the Sun's brightness", "The Moon's gravitational pull"],
+                    answer: 1
+                },
+                {
+                    question: "How long does Earth take to rotate once on its axis?",
+                    options: ["24 hours", "365 days", "30 days", "12 hours"],
+                    answer: 0
+                },
+                {
+                    question: "How long does Earth take to revolve around the Sun?",
+                    options: ["24 hours", "365.25 days", "30 days", "12 hours"],
+                    answer: 1
+                },
+                {
+                    question: "What is the angle of Earth's axial tilt?",
+                    options: ["15 degrees", "30 degrees", "23.5 degrees", "45 degrees"],
+                    answer: 2
+                }
+            ];
+            
+            let score = 0;
+            let quizHTML = '<div style="font-family: inherit; padding: 16px;">';
+            
+            questions.forEach((q, index) => {
+                quizHTML += `<div style="margin-bottom: 16px;"><strong>Q${index + 1}:</strong> ${q.question}</div>`;
+                q.options.forEach((option, i) => {
+                    quizHTML += `
+                        <label style="display: block; margin: 4px 0;">
+                            <input type="radio" name="q${index}" value="${i}" style="margin-right: 8px;">
+                            ${option}
+                        </label>
+                    `;
+                });
+                quizHTML += '<hr style="margin: 12px 0; border-color: #e9ecef;">';
+            });
+            
+            quizHTML += `
+                <button onclick="checkAnswers()" style="padding: 12px 24px; background: var(--accent); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                    Check Answers
+                </button>
+                <div id="result" style="margin-top: 16px; font-weight: bold;"></div>
+            `;
+            
+            quizHTML += '</div>';
+            
+            const quizWindow = window.open('', 'Quiz', 'width=500,height=600');
+            quizWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Earth's Rotation & Revolution Quiz</title>
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <style>
+                        :root { --accent: #3498db; }
+                        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; }
+                        label { display: block; margin: 4px 0; }
+                        hr { margin: 12px 0; border-color: #e9ecef; }
+                    </style>
+                </head>
+                <body>
+                    ${quizHTML}
+                    <script>
+                        function checkAnswers() {
+                            const questions = [
+                                {answer: 1}, {answer: 1}, {answer: 0}, {answer: 1}, {answer: 2}
+                            ];
+                            let score = 0;
+                            
+                            questions.forEach((q, index) => {
+                                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                                if (selected && parseInt(selected.value) === q.answer) {
+                                    score++;
+                                }
+                            });
+                            
+                            const result = document.getElementById('result');
+                            result.innerHTML = `You scored ${score}/${questions.length}!`;
+                            result.style.color = score >= 4 ? 'green' : 'red';
+                        }
+                    </script>
+                </body>
+                </html>
+            `);
+        }
+        
+        // Event listeners
+        rotationSlider.addEventListener('input', updateRotation);
+        revolutionSlider.addEventListener('input', updateRevolution);
+        tiltSlider.addEventListener('input', updateTilt);
+        toggleTiltBtn.addEventListener('click', toggleTilt);
+        toggleAnimationBtn.addEventListener('click', toggleAnimation);
+        resetBtn.addEventListener('click', reset);
+        quizBtn.addEventListener('click', takeQuiz);
+        
+        // Initialize
+        updateRotation();
+        updateRevolution();
+        updateTilt();
+    </script>
+</body>
+</html>

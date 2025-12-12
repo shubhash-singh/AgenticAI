@@ -1,0 +1,58 @@
+{
+  "intro": "Great job exploring light and shadows! Let's test your understanding with some fun questions.",
+  "questions": [
+    {
+      "question": "You shine a flashlight at a wall. When you hold your hand between the flashlight and the wall, a shadow appears. What is the BEST reason this shadow forms?",
+      "type": "mcq",
+      "options": [
+        "A) The hand makes the flashlight glow brighter",
+        "B) The hand blocks the light from reaching the wall",
+        "C) The hand turns the flashlight off for a moment",
+        "D) The light bounces off the hand and hits the ceiling"
+      ],
+      "hint": "Think about what happens when something gets in the way of light traveling in a straight line.",
+      "correct_index": 1
+    },
+    {
+      "question": "When you use a magnifying glass to look at tiny things, which type of object is the glass?",
+      "type": "mcq",
+      "options": [
+        "A) Opaque",
+        "B) Transparent",
+        "C) Translucent",
+        "D) Reflective"
+      ],
+      "hint": "Remember that you can see clearly through this kind of material.",
+      "correct_index": 1
+    },
+    {
+      "question": "You put a piece of oiled paper in front of a torch. What do you expect to see on the wall behind it?",
+      "type": "mcq",
+      "options": [
+        "A) A clear, sharp shadow",
+        "B) No shadow at all",
+        "C) A faint, blurry shadow",
+        "D) A rainbow-colored shadow"
+      ],
+      "hint": "Oiled paper lets some light through but scatters it.",
+      "correct_index": 2
+    },
+    {
+      "question": "Which of these is the BEST example of how shadows are used in real life?",
+      "type": "mcq",
+      "options": [
+        "A) Making a cake",
+        "B) Telling time with a sundial",
+        "C) Flying a kite",
+        "D) Riding a bicycle"
+      ],
+      "hint": "Think about how shadows help us with everyday activities.",
+      "correct_index": 1
+    }
+  ],
+  "followups": [
+    "Try making shadow puppets with your hands using a flashlight!",
+    "Experiment with different objects at home - see which ones make clear shadows and which don't."
+  ],
+  "summary": "Light travels in straight lines. When it hits an opaque object, it creates a shadow because the object blocks the light. Transparent objects let all light through, while translucent objects let some light through but scatter it. This is why we can see through glass but not through wood, and why shadows help us tell time with sundials!"
+}

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Light and Shadows</title>
+    <style>
+        :root {
+            --bg: #f8f9fa;
+            --panel: #ffffff;
+            --text: #212529;
+            --accent: #007bff;
+            --accent-2: #28a745;
+            --muted: #6c757d;
+            --shadow: rgba(0,0,0,0.1);
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.4;
+        }
+        header {
+            background: var(--panel);
+            border-bottom: 1px solid var(--shadow);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        header .icon {
+            width: 32px; height: 32px; border-radius: 8px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            display: inline-flex; align-items: center; justify-content: center;
+            color: white; font-weight: bold;
+        }
+        header h1 { margin: 0; font-size: 18px; }
+        .container {
+            padding: 16px;
+        }
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--shadow);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+        .section-title {
+            font-size: 16px; font-weight: 600; margin: 0 0 12px 0;
+        }
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        .control {
+            display: flex; flex-direction: column; gap: 6px;
+        }
+        .control label {
+            font-size: 14px; color: var(--muted);
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 36px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+        }
+        input[type="range"]::-webkit-slider-runnable-track {
+            height: 6px; background: #e9ecef; border-radius: 999px;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px; height: 22px; border-radius: 50%;
+            background: var(--accent);
+            margin-top: -8px;
+        }
+        select, button {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid #ced4da;
+            background: white;
+            font-size: 14px;
+            color: var(--text);
+        }
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            font-weight: 600;
+            padding: 12px 16px;
+        }
+        .tooltip {
+            font-size: 12px; color: var(--muted);
+        }
+        .scene {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            background: #eef2ff;
+            border: 1px solid var(--shadow);
+            border-radius: 12px;
+            padding: 12px;
+        }
+        svg {
+            width: 100%; height: auto; display: block;
+        }
+        .ray {
+            stroke: #ffd54f;
+            stroke-width: 2;
+            stroke-linecap: round;
+            opacity: 0.9;
+        }
+        .ray.dim {
+            stroke: #cfd8dc;
+            opacity: 0.6;
+        }
+        .shadow {
+            fill: rgba(0,0,0,0.7);
+        }
+        .shadow.translucent {
+            fill: rgba(0,0,0,0.3);
+        }
+        .object {
+            fill: #6c757d;
+        }
+        .object.transparent {
+            fill: rgba(0,0,0,0);
+            stroke: #007bff;
+            stroke-width: 2;
+        }
+        .object.translucent {
+            fill: rgba(0,0,0,0.2);
+        }
+        .screen {
+            fill: #f8f9fa;
+            stroke: #dee2e6;
+            stroke-width: 1;
+        }
+        .pinhole {
+            fill: #212529;
+        }
+        .image {
+            fill: #ff5722;
+        }
+        .legend {
+            font-size: 12px; color: var(--muted);
+        }
+        .instructions {
+            font-size: 14px; color: var(--text);
+        }
+        .miscon {
+            font-size: 13px; color: var(--muted);
+        }
+        @media (min-width: 768px) {
+            .controls {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="icon">L</div>
+        <h1>Light and Shadows</h1>
+    </header>
+    <div class="container">
+        <div class="panel">
+            <div class="instructions">
+                Welcome! In this simulation, you will explore how light and shadows work.
+                Use the sliders to move the light and change the object size. Watch how the shadow changes.
+                Choose different object types to see how light passes through or is blocked.
+                Try the pin-hole camera to see how it creates an upside-down image.
+                Remember: Light travels in straight lines. This is why shadows form and how pin-hole cameras work.
+                Experiment with all the controls and see what you discover!
+            </div>
+        </div>
+        <div class="panel">
+            <h2 class="section-title">Shadow Simulation</h2>
+            <div class="controls">
+                <div class="control">
+                    <label for="lightPos">Light Source Position</label>
+                    <input type="range" id="lightPos" min="0" max="100" step="1" value="30">
+                    <div class="tooltip">Move the light source to see how the shadow changes.</div>
+                </div>
+                <div class="control">
+                    <label for="objType">Object Type</label>
+                    <select id="objType">
+                        <option value="opaque">Opaque</option>
+                        <option value="transparent">Transparent</option>
+                        <select value="translucent">Translucent</option>
+                    </select>
+                    <div class="tooltip">Choose object type to see how light passes through or is blocked.</div>
+                </div>
+                <div class="control">
+                    <label for="objSize">Object Size</label>
+                    <input type="range" id="objSize" min="20" max="100" step="5" value="50">
+                    <div class="tooltip">Change the size of the object to observe shadow size changes.</div>
+                </div>
+                <div class="control">
+                    <button id="resetBtn">Reset</button>
+                    <div class="tooltip">Reset all settings to default values.</div>
+                </div>
+            </div>
+            <div class="scene">
+                <svg id="shadowSvg" viewBox="0 0 900 200" aria-label="Shadow simulation">
+                    <defs>
+                        <linearGradient id="sky" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stop-color="#e3f2fd"/>
+                            <stop offset="100%" stop-color="#bbdefb"/>
+                        </linearGradient>
+                    </defs>
+                    <rect x="0" y="0" width="900" height="200" fill="url(#sky)"/>
+                    <g id="raysLayer"></g>
+                    <rect x="20" y="20" width="860" height="160" class="screen" rx="8"/>
+                    <g id="objectLayer"></g>
+                    <g id="shadowLayer"></g>
+                    <circle id="lightSource" cx="100" cy="100" r="12" fill="#ffeb3b" stroke="#fbc02d" stroke-width="2"/>
+                </svg>
+            </div>
+        </div>
+        <div class="panel">
+            <h2 class="section-title">Pin-Hole Camera</h2>
+            <div class="controls">
+                <div class="control">
+                    <label for="pinDist">Pin-Hole Distance</label>
+                    <input type="range" id="pinDist" min="10" max="80" step="2" value="40">
+                    <div class="tooltip">Adjust the distance to see how the image in the pin-hole camera changes.</div>
+                </div>
+                <div class="control">
+                    <button id="resetPinBtn">Reset</button>
+                    <div class="tooltip">Reset pin-hole settings to default values.</div>
+                </div>
+            </div>
+            <div class="scene">
+                <svg id="pinholeSvg" viewBox="0 0 900 200" aria-label="Pin-hole camera simulation">
+                    <defs>
+                        <linearGradient id="sky2" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stop-color="#e8f5e9"/>
+                            <stop offset="100%" stop-color="#c8e6c9"/>
+                        </linearGradient>
+                    </defs>
+                    <rect x="0" y="0" width="900" height="200" fill="url(#sky2)"/>
+                    <g id="pinRaysLayer"></g>
+                    <rect x="20" y="20" width="860" height="160" class="screen" rx="8"/>
+                    <g id="objectPinLayer"></g>
+                    <g id="imageLayer"></g>
+                    <rect id="cameraBox" x="200" y="20" width="500" height="160" fill="none" stroke="#495057" stroke-width="2" rx="8"/>
+                    <circle id="pinhole" class="pinhole" cx="450" cy="100" r="3"/>
+                </svg>
+            </div>
+            <div class="legend">
+                Tip: In a pin-hole camera, light from the top of the object goes through the hole and hits the bottom of the screen, creating an upside-down image.
+            </div>
+        </div>
+        <div class="panel">
+            <h2 class="section-title">Common Misconceptions</h2>
+            <ul class="miscon">
+                <li>Shadows are always black: Show that translucent objects create gray, fuzzy shadows.</li>
+                <li>Transparent objects can form clear shadows: Demonstrate that no shadow forms with transparent materials.</li>
+                <li>Light bends around objects to form shadows: Emphasize that shadows form because light travels in straight lines and is blocked.</li>
+                <li>Pin-hole cameras work by magnifying light: Clarify that they work due to straight-line travel of light, not magnification.</li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        // Shadow simulation logic
+        const shadowSvg = document.getElementById('shadowSvg');
+        const raysLayer = document.getElementById('raysLayer');
+        const objectLayer = document.getElementById('objectLayer');
+        const shadowLayer = document.getElementById('shadowLayer');
+        const lightSource = document.getElementById('lightSource');
+        const lightPosInput = document.getElementById('lightPos');
+        const objTypeInput = document.getElementById('objType');
+        const objSizeInput = document.getElementById('objSize');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // Pin-hole camera logic
+        const pinholeSvg = document.getElementById('pinholeSvg');
+        const pinRaysLayer = document.getElementById('pinRaysLayer');
+        const objectPinLayer = document.getElementById('objectPinLayer');
+        const imageLayer = document.getElementById('imageLayer');
+        const pinhole = document.getElementById('pinhole');
+        const pinDistInput = document.getElementById('pinDist');
+        const resetPinBtn = document.getElementById('resetPinBtn');
+
+        // Scene constants
+        const SCREEN_X = 20;
+        const SCREEN_Y = 20;
+        const SCREEN_W = 860;
+        const SCREEN_H = 160;
+        const OBJECT_X = 400;
+        const OBJECT_Y_TOP = 60;
+        const OBJECT_Y_BOTTOM = 140;
+        const LIGHT_Y = 100;
+        const LIGHT_MIN_X = 40;
+        const LIGHT_MAX_X = 860;
+
+        // Pin-hole constants
+        const PIN_X = 450;
+        const PIN_Y = 100;
+        const OBJ_PIN_X = 300;
+        const OBJ_PIN_TOP_Y = 70;
+        const OBJ_PIN_BOTTOM_Y = 130;
+        const SCREEN_PIN_X = 650;
+        const SCREEN_PIN_TOP_Y = 60;
+        const SCREEN_PIN_BOTTOM_Y = 140;
+        const PIN_DIST_MIN = 10;
+        const PIN_DIST_MAX = 80;
+
+        function clearLayer(layer) {
+            while (layer.firstChild) {
+                layer.removeChild(layer.firstChild);
+            }
+        }
+
+        function updateShadow() {
+            const lightX = LIGHT_MIN_X + (LIGHT_MAX_X - LIGHT_MIN_X) * (parseInt(lightPosInput.value) / 100);
+            const objSize = parseInt(objSizeInput.value);
+            const objType = objTypeInput.value;
+
+            lightSource.setAttribute('cx', lightX);
+            lightSource.setAttribute('cy', LIGHT_Y);
+
+            clearLayer(raysLayer);
+            clearLayer(objectLayer);
+            clearLayer(shadowLayer);
+
+            // Draw rays
+            const rayCount = 12;
+            for (let i = 0; i < rayCount; i++) {
+                const yStart = LIGHT_Y - 40 + (80 * i / (rayCount - 1));
+                const ray = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                ray.setAttribute('x1', lightX);
+                ray.setAttribute('y1', yStart);
+                ray.setAttribute('x2', SCREEN_X + SCREEN_W);
+                ray.setAttribute('y2', yStart);
+                ray.setAttribute('class', 'ray');
+                if (objType === 'transparent') {
+                    ray.classList.add('dim');
+                }
+                raysLayer.appendChild(ray);
+            }
+
+            // Draw object
+            const objTopY = OBJECT_Y_TOP;
+            const objBottomY = OBJECT_Y_BOTTOM;
+            const objWidth = objSize;
+            const objLeftX = OBJECT_X;
+            const objRightX = OBJECT_X + objWidth;
+            const objHeight = objBottomY - objTopY;
+            const objRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            objRect.setAttribute('x', objLeftX);
+            objRect.setAttribute('y', objTopY);
+            objRect.setAttribute('width', objWidth);
+            objRect.setAttribute('height', objHeight);
+            objRect.setAttribute('class', 'object');
+            if (objType === 'transparent') {
+                objRect.classList.add('transparent');
+            } else if (objType === 'translucent') {
+                objRect.classList.add('translucent');
+            }
+            objectLayer.appendChild(objRect);
+
+            // Draw shadow
+            if (objType === 'opaque' || objType === 'translucent') {
+                const shadow = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                const shadowLeftX = objRightX;
+                const shadowWidth = SCREEN_X + SCREEN_W - shadowLeftX;
+                const shadowTopY = objTopY;
+                const shadowHeight = objHeight;
+                shadow.setAttribute('x', shadowLeftX);
+                shadow.setAttribute('y', shadowTopY);
+                shadow.setAttribute('width', shadowWidth);
+                shadow.setAttribute('height', shadowHeight);
+                shadow.setAttribute('class', 'shadow');
+                if (objType === 'translucent') {
+                    shadow.classList.add('translucent');
+                }
+                shadowLayer.appendChild(shadow);
+            }
+        }
+
+        function updatePinhole() {
+            const dist = parseInt(pinDistInput.value);
+            const scale = 1 + (dist - PIN_DIST_MIN) / (PIN_DIST_MAX - PIN_DIST_MIN);
+
+            clearLayer(pinRaysLayer);
+            clearLayer(objectPinLayer);
+            clearLayer(imageLayer);
+
+            // Draw object
+            const objRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            objRect.setAttribute('x', OBJ_PIN_X);
+            objRect.setAttribute('y', OBJ_PIN_TOP_Y);
+            objRect.setAttribute('width', 40);
+            objRect.setAttribute('height', OBJ_PIN_BOTTOM_Y - OBJ_PIN_TOP_Y);
+            objRect.setAttribute('class', 'object');
+            objectPinLayer.appendChild(objRect);
+
+            // Draw rays through pinhole
+            const topRay = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            topRay.setAttribute('x1', OBJ_PIN_X + 20);
+            topRay.setAttribute('y1', OBJ_PIN_TOP_Y);
+            topRay.setAttribute('x2', PIN_X);
+            topRay.setAttribute('y2', PIN_Y);
+            topRay.setAttribute('class', 'ray');
+            pinRaysLayer.appendChild(topRay);
+
+            const bottomRay = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            bottomRay.setAttribute('x1', OBJ_PIN_X + 20);
+            bottomRay.setAttribute('y1', OBJ_PIN_BOTTOM_Y);
+            bottomRay.setAttribute('x2', PIN_X);
+            bottomRay.setAttribute('y2', PIN_Y);
+            bottomRay.setAttribute('class', 'ray');
+            pinRaysLayer.appendChild(bottomRay);
+
+            // Draw image
+            const imageTopY = SCREEN_PIN_BOTTOM_Y - (SCREEN_PIN_BOTTOM_Y - SCREEN_PIN_TOP_Y) * scale;
+            const imageBottomY = SCREEN_PIN_BOTTOM_Y;
+            const imageRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            imageRect.setAttribute('x', SCREEN_PIN_X);
+            imageRect.setAttribute('y', imageTopY);
+            imageRect.setAttribute('width', 40);
+            imageRect.setAttribute('height', imageBottomY - imageTopY);
+            imageRect.setAttribute('class', 'image');
+            imageLayer.appendChild(imageRect);
+
+            // Update pinhole position based on distance
+            const pinholeX = OBJ_PIN_X + 150 + (dist - PIN_DIST_MIN) / (PIN_DIST_MAX - PIN_DIST_MIN) * 100;
+            pinhole.setAttribute('cx', pinholeX);
+            pinhole.setAttribute('cy', PIN_Y);
+        }
+
+        // Event listeners
+        lightPosInput.addEventListener('input', updateShadow);
+        objTypeInput.addEventListener('change', updateShadow);
+        objSizeInput.addEventListener('input', updateShadow);
+        resetBtn.addEventListener('click', () => {
+            lightPosInput.value = 30;
+            objTypeInput.value = 'opaque';
+            objSizeInput.value = 50;
+            updateShadow();
+        });
+
+        pinDistInput.addEventListener('input', updatePinhole);
+        resetPinBtn.addEventListener('click', () => {
+            pinDistInput.value = 40;
+            updatePinhole();
+        });
+
+        // Initialize
+        updateShadow();
+        updatePinhole();
+    </script>
+</body>
+</html>

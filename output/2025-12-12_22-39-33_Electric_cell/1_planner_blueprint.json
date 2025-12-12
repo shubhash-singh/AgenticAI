@@ -1,0 +1,52 @@
+{
+  "learning_objectives": [
+    "Identify the electric cell as a source of electric current and understand its role in a circuit.",
+    "Recognize the positive and negative terminals of an electric cell and their importance in current flow.",
+    "Explain the basic working principle of an electric cell using the concept of chemical energy conversion.",
+    "Distinguish between the function of a single electric cell and a battery."
+  ],
+  "key_concepts": [
+    "Electric cell as a source of electric current",
+    "Positive and negative terminals",
+    "Chemical energy to electrical energy conversion",
+    "Simple circuit completion"
+  ],
+  "variables_to_simulate": [
+    "Cell voltage (low, medium, high)",
+    "Circuit connection (open/closed)",
+    "Bulb type (LED, filament)",
+    "Cell orientation (correct/reverse)"
+  ],
+  "user_interactions": [
+    "Toggle switch to open/close the circuit",
+    "Slider to select cell voltage",
+    "Dropdown to choose bulb type",
+    "Button to flip cell orientation"
+  ],
+  "simulation_logic": [
+    "Initialize the simulation with a simple circuit diagram showing a cell, wires, and a bulb.",
+    "Display the cell with clear positive (+) and negative (-) terminal labels.",
+    "When the circuit is open, the bulb remains off.",
+    "When the circuit is closed, the bulb lights up based on the selected voltage and bulb type.",
+    "If the cell orientation is reversed, the bulb behavior remains the same (for simplicity at this level).",
+    "If the voltage is set to low, the bulb glows dimly; at high voltage, it glows brightly.",
+    "If the bulb type is LED, it lights up with lower voltage compared to a filament bulb.",
+    "Include a visual animation showing the flow of current from the negative to the positive terminal."
+  ],
+  "mobile_ui_plan": [
+    "Vertical layout with a header showing the title 'Electric Cell Simulation'.",
+    "Top section: Visual diagram of the circuit with animated current flow.",
+    "Middle section: Interactive controls (toggle switch, voltage slider, bulb type dropdown, orientation button) stacked vertically.",
+    "Bottom section: Text instructions and a 'Reset' button.",
+    "All elements sized for touch interaction with large, easy-to-tap buttons and sliders."
+  ],
+  "misconceptions_to_address": [
+    "Electric cells store electricity rather than convert chemical energy to electrical energy.",
+    "Current flows from positive to negative terminal.",
+    "A single cell is the same as a battery.",
+    "Reversing the cell orientation will stop the bulb from lighting."
+  ],
+  "text_instructions_for_students": "Welcome to the Electric Cell Simulation! Here, you can learn how a small power pack called an electric cell works. Use the switch to complete the circuit and see the bulb light up. Try changing the voltage and bulb type to see how it affects the brightness. Remember, the cell has a positive (+) and negative (-) end, and it converts stored chemical energy into the electricity that powers the bulb. Have fun exploring!",
+  "file_target": "single_file_html",
+  "safety_constraints": "Ensure all visual content is age-appropriate and free from flashing animations that could trigger seizures. Use simple, clear graphics without any misleading or harmful representations."
+}

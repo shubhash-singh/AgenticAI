@@ -1,0 +1,122 @@
+{
+  "learning_objectives": [
+    "Identify and classify objects as opaque, transparent, or translucent based on how light passes through them.",
+    "Explain how shadows are formed when light is blocked by an opaque object.",
+    "Describe the working principle of a pin-hole camera and how it creates an inverted image.",
+    "Predict how the size and shape of a shadow change with the position of the light source and the object.",
+    "Apply the concept of light traveling in straight lines to solve real-life problems involving shadows and imaging."
+  ],
+  "key_concepts": [
+    "Light travels in straight lines.",
+    "Opaque objects block light completely, forming clear shadows.",
+    "Transparent objects allow light to pass through completely; translucent objects scatter light.",
+    "Shadows form in the region where light is blocked by an opaque object.",
+    "A pin-hole camera works because light from a point on an object passes through a tiny hole and forms an inverted image on the opposite side."
+  ],
+  "variables_to_simulate": [
+    {
+      "name": "light_source_position",
+      "type": "slider",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "description": "Position of the light source (left to right). Affects shadow length and direction."
+    },
+    {
+      "name": "object_type",
+      "type": "dropdown",
+      "options": [
+        "opaque",
+        "transparent",
+        "translucent"
+      ],
+      "description": "Type of object placed in the path of light."
+    },
+    {
+      "name": "object_size",
+      "type": "slider",
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "description": "Size of the object blocking the light."
+    },
+    {
+      "name": "pinhole_distance",
+      "type": "slider",
+      "min": 10,
+      "max": 80,
+      "step": 2,
+      "description": "Distance between the pinhole and the screen in the pin-hole camera."
+    }
+  ],
+  "user_interactions": [
+    {
+      "type": "slider",
+      "label": "Light Source Position",
+      "variable": "light_source_position",
+      "description": "Move the light source to see how the shadow changes."
+    },
+    {
+      "type": "dropdown",
+      "label": "Object Type",
+      "variable": "object_type",
+      "description": "Choose object type to see how light passes through or is blocked."
+    },
+    {
+      "type": "slider",
+      "label": "Object Size",
+      "variable": "object_size",
+      "description": "Change the size of the object to observe shadow size changes."
+    },
+    {
+      "type": "slider",
+      "label": "Pin-Hole Distance",
+      "variable": "pinhole_distance",
+      "description": "Adjust the distance to see how the image in the pin-hole camera changes."
+    },
+    {
+      "type": "button",
+      "label": "Reset",
+      "action": "reset_simulation",
+      "description": "Reset all settings to default values."
+    }
+  ],
+  "simulation_logic": [
+    "1. Initialize the scene with a light source on the left, an object in the center, and a screen/wall on the right.",
+    "2. Based on 'object_type', visually show light rays: blocked for opaque, straight through for transparent, scattered for translucent.",
+    "3. For opaque objects, draw a shadow on the screen whose size and direction depend on 'light_source_position' and 'object_size'.",
+    "4. When 'object_type' is transparent, show no shadow; when translucent, show a faint, fuzzy shadow.",
+    "5. In pin-hole camera mode, show light rays from the top and bottom of an object passing through a tiny hole and forming an inverted image on the screen.",
+    "6. Adjust the image size in the pin-hole camera based on 'pinhole_distance': larger distance = larger image.",
+    "7. Update visuals in real-time as sliders and dropdown are changed."
+  ],
+  "mobile_ui_plan": [
+    "Header: 'Light and Shadows' with a simple icon.",
+    "Section 1: Interactive shadow simulation with controls stacked vertically.",
+    "Section 2: Pin-hole camera visualization with its controls below.",
+    "All controls use large, touch-friendly buttons and sliders.",
+    "Visuals are centered and scaled to fit mobile screens.",
+    "Instructions appear as short tooltips next to each control."
+  ],
+  "misconceptions_to_address": [
+    "Shadows are always black: Show that translucent objects create gray, fuzzy shadows.",
+    "Transparent objects can form clear shadows: Demonstrate that no shadow forms with transparent materials.",
+    "Light bends around objects to form shadows: Emphasize that shadows form because light travels in straight lines and is blocked.",
+    "Pin-hole cameras work by magnifying light: Clarify that they work due to straight-line travel of light, not magnification."
+  ],
+  "text_instructions_for_students": [
+    "Welcome! In this simulation, you will explore how light and shadows work.",
+    "Use the sliders to move the light and change the object size. Watch how the shadow changes.",
+    "Choose different object types to see how light passes through or is blocked.",
+    "Try the pin-hole camera to see how it creates an upside-down image.",
+    "Remember: Light travels in straight lines. This is why shadows form and how pin-hole cameras work.",
+    "Experiment with all the controls and see what you discover!"
+  ],
+  "file_target": "single_file_html",
+  "safety_constraints": [
+    "All visuals must be clear and not cause eye strain (avoid flashing or overly bright colors).",
+    "Text must be in simple English, readable on small screens.",
+    "Ensure all interactive elements are large enough for touch use on mobile devices.",
+    "No external links or data collection; simulation runs entirely in the browser."
+  ]
+}
