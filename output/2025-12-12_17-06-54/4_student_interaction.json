@@ -1,0 +1,58 @@
+{
+  "intro": "Hi there! Let's explore the fascinating concept of heat flow. It's all about how energy moves from one place to another. Ready to dive in?",
+  "questions": [
+    {
+      "question": "Imagine you're holding a warm mug of cocoa. Where does the heat energy naturally travel?",
+      "type": "mcq",
+      "options": [
+        "From your hands to the cocoa",
+        "From the cocoa to your hands",
+        "It stays within the cocoa",
+        "It doesn't move at all"
+      ],
+      "hint": "Think about what feels warmer and what feels cooler. Heat tends to move from the warmer thing to the cooler thing.",
+      "correct_index": 1
+    },
+    {
+      "question": "If you place a cold spoon into a bowl of hot soup, what happens to the heat?",
+      "type": "mcq",
+      "options": [
+        "Heat flows from the spoon to the soup.",
+        "Heat flows from the soup to the spoon.",
+        "Heat flows equally in both directions.",
+        "No heat is transferred."
+      ],
+      "hint": "Remember the natural direction of heat flow. It's like water flowing downhill!",
+      "correct_index": 1
+    },
+    {
+      "question": "Temperature is a way to measure:",
+      "type": "mcq",
+      "options": [
+        "How much heat an object has.",
+        "How fast heat is flowing.",
+        "How hot or cold an object is.",
+        "How heavy an object is."
+      ],
+      "hint": "Temperature tells us about the 'energy level' of the tiny particles inside an object. Higher temperature means more energy!",
+      "correct_index": 2
+    },
+    {
+      "question": "When two objects with different temperatures are in contact, heat will flow until:",
+      "type": "mcq",
+      "options": [
+        "The colder object becomes hotter than the first object.",
+        "The hotter object cools down completely.",
+        "Both objects reach the same temperature.",
+        "Heat stops flowing completely, even if temperatures are different."
+      ],
+      "hint": "Think about what happens when things are balanced. Heat flow seeks a balance.",
+      "correct_index": 2
+    }
+  ],
+  "followups": [
+    "Great job understanding the basics of heat flow! Now, let's explore the different ways heat can move: conduction, convection, and radiation.",
+    "Consider why wearing a sweater keeps you warm. How does that relate to the flow of heat?"
+  ],
+  "summary": "Heat is a form of energy that always flows from a hotter object or region to a colder one. This movement continues until thermal equilibrium is reached, meaning both reach the same temperature."
+}
