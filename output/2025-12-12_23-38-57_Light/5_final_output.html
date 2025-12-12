@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Light Exploration Lab</title>
+    <style>
+        :root {
+            --bg: #f8f9fa;
+            --panel: #ffffff;
+            --text: #2c3e50;
+            --accent: #3498db;
+            --accent2: #e74c3c;
+            --border: #e0e0e0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.4;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+        
+        .header {
+            background: var(--panel);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 16px;
+        }
+        
+        h1 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: var(--accent);
+        }
+        
+        .instructions {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        
+        .simulation-area {
+            background: var(--panel);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 16px;
+        }
+        
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 320px;
+            background: linear-gradient(180deg, #e8f4ff 0%, #ffffff 100%);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .light-source {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #fffde7 0%, #ffd54f 60%, #ffb300 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(255, 193, 7, 0.6);
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+        }
+        
+        .light-source::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+        }
+        
+        .object {
+            position: absolute;
+            top: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            background: #34495e;
+            border-radius: 8px;
+        }
+        
+        .object.circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+        }
+        
+        .object.square {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+        }
+        
+        .object.hand {
+            width: 100px;
+            height: 120px;
+            background: linear-gradient(180deg, #8d6e63 0%, #6d4c41 100%);
+            border-radius: 12px 12px 8px 8px;
+        }
+        
+        .object.hand::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 20px;
+            width: 20px;
+            height: 30px;
+            background: linear-gradient(180deg, #8d6e63 0%, #6d4c41 100%);
+            border-radius: 4px;
+            transform: rotate(-5deg);
+        }
+        
+        .object.hand::after {
+            content: '';
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            width: 20px;
+            height: 25px;
+            background: linear-gradient(180deg, #8d6e63 0%, #6d4c41 100%);
+            border-radius: 4px;
+            transform: rotate(5deg);
+        }
+        
+        .screen {
+            position: absolute;
+            width: 2px;
+            height: 280px;
+            background: #2c3e50;
+            top: 20px;
+            right: 40px;
+            z-index: 1;
+        }
+        
+        .screen-label {
+            position: absolute;
+            right: 10px;
+            top: 140px;
+            transform: rotate(90deg);
+            transform-origin: right top;
+            font-size: 12px;
+            color: #666;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .mirror {
+            position: absolute;
+            width: 2px;
+            height: 280px;
+            background: linear-gradient(180deg, #e3f2fd 0%, #90caf9 50%, #42a5f5 100%);
+            top: 20px;
+            right: 40px;
+            z-index: 1;
+            display: none;
+        }
+        
+        .mirror::after {
+            content: 'Mirror';
+            position: absolute;
+            right: 10px;
+            top: 140px;
+            transform: rotate(90deg);
+            transform-origin: right top;
+            font-size: 12px;
+            color: #1565c0;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .virtual-image {
+            position: absolute;
+            top: 120px;
+            right: 60px;
+            transform: scaleX(-1);
+            opacity: 0.7;
+            filter: brightness(0.9);
+            z-index: 1;
+            display: none;
+        }
+        
+        .virtual-image .object {
+            transform: none;
+        }
+        
+        .prism {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 60px solid transparent;
+            border-right: 60px solid transparent;
+            border-bottom: 104px solid #e8f1ff;
+            top: 100px;
+            left: 50%;
+            transform-origin: 50% 50%;
+            z-index: 2;
+            display: none;
+        }
+        
+        .prism::after {
+            content: '';
+            position: absolute;
+            top: -104px;
+            left: -60px;
+            width: 0;
+            height: 0;
+            border-left: 60px solid transparent;
+            border-right: 60px solid transparent;
+            border-top: 104px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .rainbow {
+            position: absolute;
+            top: 120px;
+            right: 120px;
+            height: 4px;
+            width: 120px;
+            background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+            border-radius: 4px;
+            transform-origin: left center;
+            display: none;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .light-rays {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+        
+        .ray {
+            position: absolute;
+            height: 2px;
+            background: rgba(255, 193, 7, 0.8);
+            transform-origin: 0 0;
+            box-shadow: 0 0 8px rgba(255, 193, 7, 0.6);
+        }
+        
+        .controls {
+            background: var(--panel);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .control-group {
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .control-group:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 32px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+        }
+        
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            background: #ddd;
+            border-radius: 4px;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 50%;
+            margin-top: -9px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        input[type="range"]::-moz-range-track {
+            width: 100%;
+            height: 6px;
+            background: #ddd;
+            border-radius: 4px;
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        select, button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        select:focus, button:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        button {
+            background: var(--accent);
+            color: white;
+            font-weight: 600;
+            border: none;
+            min-height: 44px;
+        }
+        
+        button.secondary {
+            background: #95a5a6;
+        }
+        
+        button.danger {
+            background: var(--accent2);
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        .button-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .misconceptions {
+            background: var(--panel);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 16px;
+        }
+        
+        .misconception {
+            background: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+        }
+        
+        .misconception h3 {
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: #e65100;
+        }
+        
+        .misconception p {
+            font-size: 13px;
+            color: #5d4037;
+        }
+        
+        @media (max-width: 480px) {
+            .canvas-container {
+                height: 280px;
+            }
+            
+            .object, .shadow {
+                transform: translateX(-50%) scale(0.8);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Light Exploration Lab</h1>
+            <div class="instructions">Welcome! In this activity, you will learn about light by playing with a light source, objects, and screens. Use the sliders to move the light and change the object. See how the shadow changes. Switch to mirror mode to see how mirrors reflect light. Try the prism to see colors appear. Have fun exploring!</div>
+        </div>
+        
+        <div class="misconceptions">
+            <div class="misconception">
+                <h3>Misconception: Light bends around objects</h3>
+                <p>Watch the straight light rays and sharp shadows. Light travels in straight lines!</p>
+            </div>
+            <div class="misconception">
+                <h3>Misconception: Shadows are the same size and shape as the object</h3>
+                <p>Move the light source to see how shadows change size and shape.</p>
+            </div>
+            <div class="misconception">
+                <h3>Misconception: Mirror images are real and exist behind the mirror</h3>
+                <p>The virtual image appears behind the mirror but isn't really there!</p>
+            </div>
+            <div class="misconception">
+                <h3>Misconception: White light is a single color</h3>
+                <p>Rotate the prism to see white light split into many colors.</p>
+            </div>
+        </div>
+        
+        <div class="simulation-area">
+            <div class="canvas-container" id="canvas">
+                <div class="light-source" id="lightSource"></div>
+                <div class="object circle" id="object"></div>
+                <div class="shadow circle" id="shadow"></div>
+                <div class="screen" id="screen"></div>
+                <div class="screen-label">Screen</div>
+                <div class="mirror" id="mirror"></div>
+                <div class="virtual-image circle" id="virtualImage">
+                    <div class="object circle"></div>
+                </div>
+                <div class="prism" id="prism"></div>
+                <div class="rainbow" id="rainbow"></div>
+                <div class="light-rays" id="lightRays"></div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="lightAngle">Light Source Angle</label>
+                <input type="range" id="lightAngle" min="-60" max="60" value="0">
+            </div>
+            
+            <div class="control-group">
+                <label for="lightDistance">Light Source Distance</label>
+                <input type="range" id="lightDistance" min="60" max="200" value="120">
+            </div>
+            
+            <div class="control-group">
+                <label for="objectShape">Object Shape</label>
+                <select id="objectShape">
+                    <option value="circle">Circle</option>
+                    <option value="square">Square</option>
+                    <option value="hand">Hand</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="objectSize">Object Size</label>
+                <input type="range" id="objectSize" min="60" max="140" value="80">
+            </div>
+            
+            <div class="control-group">
+                <label for="screenDistance">Screen Distance from Object</label>
+                <input type="range" id="screenDistance" min="80" max="200" value="120">
+            </div>
+            
+            <div class="control-group">
+                <label for="prismAngle">Prism Angle (for color splitting)</label>
+                <input type="range" id="prismAngle" min="0" max="60" value="0">
+            </div>
+            
+            <div class="control-group">
+                <label>Mode</label>
+                <div class="button-row">
+                    <button id="shadowModeBtn" class="secondary">Shadow Mode</button>
+                    <button id="mirrorModeBtn">Mirror Mode</button>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <button id="resetBtn" class="danger">Reset Simulation</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Elements
+        const lightSource = document.getElementById('lightSource');
+        const object = document.getElementById('object');
+        const shadow = document.getElementById('shadow');
+        const screen = document.getElementById('screen');
+        const mirror = document.getElementById('mirror');
+        const virtualImage = document.getElementById('virtualImage');
+        const prism = document.getElementById('prism');
+        const rainbow = document.getElementById('rainbow');
+        const lightRays = document.getElementById('lightRays');
+        const canvas = document.getElementById('canvas');
+        
+        // Controls
+        const lightAngleSlider = document.getElementById('lightAngle');
+        const lightDistanceSlider = document.getElementById('lightDistance');
+        const objectShapeSelect = document.getElementById('objectShape');
+        const objectSizeSlider = document.getElementById('objectSize');
+        const screenDistanceSlider = document.getElementById('screenDistance');
+        const prismAngleSlider = document.getElementById('prismAngle');
+        const shadowModeBtn = document.getElementById('shadowModeBtn');
+        const mirrorModeBtn = document.getElementById('mirrorModeBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        
+        // State
+        let currentMode = 'shadow';
+        let rayElements = [];
+        
+        // Initialize
+        function init() {
+            createLightRays();
+            updateSimulation();
+        }
+        
+        function createLightRays() {
+            // Create multiple light rays
+            lightRays.innerHTML = '';
+            rayElements = [];
+            for (let i = 0; i < 15; i++) {
+                const ray = document.createElement('div');
+                ray.className = 'ray';
+                ray.style.width = '120px';
+                ray.style.left = (i * 8 - 56) + 'px';
+                ray.style.top = '20px';
+                ray.style.transform = 'rotate(0deg)';
+                lightRays.appendChild(ray);
+                rayElements.push(ray);
+            }
+        }
+        
+        function updateSimulation() {
+            const lightAngle = parseInt(lightAngleSlider.value);
+            const lightDistance = parseInt(lightDistanceSlider.value);
+            const objectSize = parseInt(objectSizeSlider.value);
+            const screenDistance = parseInt(screenDistanceSlider.value);
+            const prismAngle = parseInt(prismAngleSlider.value);
+            const objectShape = objectShapeSelect.value;
+            
+            // Update light source position
+            lightSource.style.top = (20 + lightDistance) + 'px';
+            lightSource.style.transform = `translateX(-50%) rotate(${lightAngle}deg)`;
+            
+            // Update object
+            object.className = `object ${objectShape}`;
+            if (objectShape === 'circle' || objectShape === 'square') {
+                object.style.width = objectSize + 'px';
+                object.style.height = objectSize + 'px';
+            } else if (objectShape === 'hand') {
+                object.style.width = (objectSize + 20) + 'px';
+                object.style.height = (objectSize + 40) + 'px';
+            }
+            
+            // Update shadow
+            shadow.className = `shadow ${objectShape}`;
+            if (objectShape === 'circle' || objectShape === 'square') {
+                shadow.style.width = objectSize + 'px';
+                shadow.style.height = Math.max(20, Math.floor(objectSize * 0.5)) + 'px';
+            } else if (objectShape === 'hand') {
+                shadow.style.width = (objectSize + 20) + 'px';
+                shadow.style.height = Math.max(25, Math.floor((objectSize + 40) * 0.4)) + 'px';
+            }
+            
+            // Update screen position
+            screen.style.right = (40 + screenDistance) + 'px';
+            
+            // Update virtual image position
+            virtualImage.style.right = (60 + screenDistance) + 'px';
+            
+            // Update mirror and virtual image visibility
+            if (currentMode === 'mirror') {
+                screen.style.display = 'none';
+                mirror.style.display = 'block';
+                virtualImage.style.display = 'block';
+                virtualImage.className = `virtual-image ${objectShape}`;
+            } else {
+                screen.style.display = 'block';
+                mirror.style.display = 'none';
+                virtualImage.style.display = 'none';
+            }
+            
+            // Update prism and rainbow
+            if (prismAngle > 0) {
+                prism.style.display = 'block';
+                prism.style.transform = `translateX(-50%) rotate(${prismAngle}deg)`;
+                rainbow.style.display = 'block';
+                rainbow.style.transform = `translateX(${40 + screenDistance}px) rotate(${-prismAngle}deg)`;
+            } else {
+                prism.style.display = 'none';
+                rainbow.style.display = 'none';
+            }
+            
+            // Update light rays
+            updateLightRays(lightAngle, lightDistance);
+            
+            // Update shadow position based on light angle
+            updateShadowPosition(lightAngle, lightDistance, screenDistance);
+        }
+        
+        function updateLightRays(angle, distance) {
+            rayElements.forEach((ray, index) => {
+                const rayAngle = angle + (index - 7) * 2;
+                ray.style.transform = `rotate(${rayAngle}deg)`;
+                
+                // Change ray length based on angle
+                const baseLength = 120;
+                const angleFactor = Math.cos(rayAngle * Math.PI / 180);
+                ray.style.width = (baseLength * Math.abs(angleFactor)) + 'px';
+                
+                // Make rays more visible when pointing downward
+                ray.style.opacity = angle >= 0 ? 0.8 : 0.4;
+            });
+        }
+        
+        function updateShadowPosition(lightAngle, lightDistance, screenDistance) {
+            // Calculate shadow offset based on light angle and distances
+            const objectCenterY = 160; // Object center Y position
+            const lightY = 20 + lightDistance;
+            
+            // Shadow moves opposite to light direction
+            const shadowOffset = Math.tan(lightAngle * Math.PI / 180) * screenDistance * 0.5;
+            
+            shadow.style.transform = `translateX(${Math.round(-shadowOffset)}px)`;
+            
+            // Shadow size changes with light position
+            const shadowSizeFactor = 1 + (Math.abs(lightAngle) / 60) * 0.5;
+            
+            if (shadow.classList.contains('circle') || shadow.classList.contains('square')) {
+                const originalWidth = parseInt(shadow.style.width);
+                const originalHeight = parseInt(shadow.style.height);
+                shadow.style.width = Math.round(originalWidth * shadowSizeFactor) + 'px';
+                shadow.style.height = Math.round(originalHeight * shadowSizeFactor) + 'px';
+            } else if (shadow.classList.contains('hand')) {
+                const originalWidth = parseInt(shadow.style.width);
+                const originalHeight = parseInt(shadow.style.height);
+                shadow.style.width = Math.round(originalWidth * shadowSizeFactor) + 'px';
+                shadow.style.height = Math.round(originalHeight * shadowSizeFactor) + 'px';
+            }
+        }
+        
+        // Event listeners
+        lightAngleSlider.addEventListener('input', updateSimulation);
+        lightDistanceSlider.addEventListener('input', updateSimulation);
+        objectShapeSelect.addEventListener('change', updateSimulation);
+        objectSizeSlider.addEventListener('input', updateSimulation);
+        screenDistanceSlider.addEventListener('input', updateSimulation);
+        prismAngleSlider.addEventListener('input', updateSimulation);
+        
+        shadowModeBtn.addEventListener('click', () => {
+            currentMode = 'shadow';
+            shadowModeBtn.classList.add('secondary');
+            mirrorModeBtn.classList.remove('secondary');
+            updateSimulation();
+        });
+        
+        mirrorModeBtn.addEventListener('click', () => {
+            currentMode = 'mirror';
+            shadowModeBtn.classList.remove('secondary');
+            mirrorModeBtn.classList.add('secondary');
+            updateSimulation();
+        });
+        
+        resetBtn.addEventListener('click', () => {
+            lightAngleSlider.value = '0';
+            lightDistanceSlider.value = '120';
+            objectShapeSelect.value = 'circle';
+            objectSizeSlider.value = '80';
+            screenDistanceSlider.value = '120';
+            prismAngleSlider.value = '0';
+            currentMode = 'shadow';
+            shadowModeBtn.classList.add('secondary');
+            mirrorModeBtn.classList.remove('secondary');
+            updateSimulation();
+        });
+        
+        // Initialize simulation
+        init();
+        
+        // Add touch feedback for buttons
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('touchstart', function(e) {
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earth's Rotation and Revolution</title>
+    <style>
+        :root {
+            --bg: #f8f9fa;
+            --panel: #ffffff;
+            --text: #2c3e50;
+            --accent: #3498db;
+            --accent2: #e74c3c;
+            --border: #e0e0e0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.4;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+        
+        header {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        h1 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .simulation-container {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .canvas-wrapper {
+            width: 100%;
+            height: 400px;
+            position: relative;
+            margin-bottom: 12px;
+        }
+        
+        canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            background: linear-gradient(180deg, #87ceeb 0%, #e6f7ff 100%);
+            border: 1px solid var(--border);
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        
+        .control-group {
+            background: #f5f7fa;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+        }
+        
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .control-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .slider-container {
+            display: grid;
+            grid-template-columns: 1fr 80px;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            border: 2px solid white;
+        }
+        
+        .value-display {
+            text-align: right;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        
+        .btn {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            background: var(--accent);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 44px;
+        }
+        
+        .btn.secondary {
+            background: var(--accent2);
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .info-panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .info-item {
+            background: #f5f7fa;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px;
+        }
+        
+        .info-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        .info-value {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .explanation {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .legend {
+            display: flex;
+            gap: 16px;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            border: 1px solid var(--border);
+        }
+        
+        .misconception {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+        
+        .misconception-title {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #856404;
+        }
+        
+        @media (max-width: 600px) {
+            .buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Earth's Rotation and Revolution</h1>
+            <div class="subtitle">Interactive simulation showing day/night and seasons</div>
+        </header>
+        
+        <div class="simulation-container">
+            <div class="canvas-wrapper">
+                <canvas id="simulationCanvas"></canvas>
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <div class="control-header">
+                        <div class="control-title">Rotation Speed</div>
+                        <div id="rotationValue" class="value-display">15°/s</div>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="rotationSlider" class="slider" min="0" max="360" step="15" value="15">
+                        <div class="value-display">0-360°</div>
+                    </div>
+                    <div class="explanation">How fast Earth spins on its axis (24 hours = one full rotation)</div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-header">
+                        <div class="control-title">Revolution Position</div>
+                        <div id="revolutionValue" class="value-display">0°</div>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="revolutionSlider" class="slider" min="0" max="360" step="10" value="0">
+                        <div class="value-display">0-360°</div>
+                    </div>
+                    <div class="explanation">Earth's position in its orbit around the Sun (365 days = one full orbit)</div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-header">
+                        <div class="control-title">Axial Tilt</div>
+                        <div id="tiltValue" class="value-display">23.5°</div>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="tiltSlider" class="slider" min="0" max="45" step="1" value="23.5">
+                        <div class="value-display">0-45°</div>
+                    </div>
+                    <div class="explanation">Earth's axis is tilted - this causes seasons!</div>
+                </div>
+                
+                <div class="buttons">
+                    <button id="toggleDayNight" class="btn">Toggle Day/Night View</button>
+                    <button id="toggleSeasons" class="btn">Toggle Seasons View</button>
+                    <button id="resetButton" class="btn secondary">Reset</button>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ffd54f;"></div>
+                        <span>Day side</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #4a4a4a;"></div>
+                        <span>Night side</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #e74c3c;"></div>
+                        <span>Summer hemisphere</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #3498db;"></div>
+                        <span>Winter hemisphere</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-panel">
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Local Time</div>
+                    <div id="timeDisplay" class="info-value">12:00 PM</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Season</div>
+                    <div id="seasonDisplay" class="info-value">Equinox</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Day Length</div>
+                    <div id="dayLengthDisplay" class="info-value">12 hours</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Rotation Angle</div>
+                    <div id="rotationAngleDisplay" class="info-value">0°</div>
+                </div>
+            </div>
+            
+            <div class="explanation">
+                <strong>How it works:</strong> Earth rotates on its axis every 24 hours, causing day and night. Earth also orbits the Sun every 365 days. The tilt of Earth's axis makes different parts of Earth receive more direct sunlight at different times of year, creating seasons.
+            </div>
+            
+            <div class="misconception">
+                <div class="misconception-title">Common Misconceptions:</div>
+                <div>• Seasons are NOT caused by Earth being closer/farther from the Sun</div>
+                <div>• Day and night are NOT caused by the Sun moving around Earth</div>
+                <div>• Earth's orbit is nearly circular, not highly elliptical</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Canvas setup
+        const canvas = document.getElementById('simulationCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // UI elements
+        const rotationSlider = document.getElementById('rotationSlider');
+        const revolutionSlider = document.getElementById('revolutionSlider');
+        const tiltSlider = document.getElementById('tiltSlider');
+        const toggleDayNightBtn = document.getElementById('toggleDayNight');
+        const toggleSeasonsBtn = document.getElementById('toggleSeasons');
+        const resetBtn = document.getElementById('resetButton');
+        
+        // Value displays
+        const rotationValue = document.getElementById('rotationValue');
+        const revolutionValue = document.getElementById('revolutionValue');
+        const tiltValue = document.getElementById('tiltValue');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const seasonDisplay = document.getElementById('seasonDisplay');
+        const dayLengthDisplay = document.getElementById('dayLengthDisplay');
+        const rotationAngleDisplay = document.getElementById('rotationAngleDisplay');
+        
+        // State
+        let state = {
+            rotationSpeed: 15, // degrees per second
+            revolutionAngle: 0, // degrees
+            axialTilt: 23.5, // degrees
+            showDayNight: true,
+            showSeasons: true,
+            rotationAngle: 0, // current rotation
+            lastTime: 0
+        };
+        
+        // Initialize
+        function init() {
+            updateDisplays();
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Event listeners
+            rotationSlider.addEventListener('input', (e) => {
+                state.rotationSpeed = parseFloat(e.target.value);
+                rotationValue.textContent = state.rotationSpeed + '°/s';
+                updateDisplays();
+            });
+            
+            revolutionSlider.addEventListener('input', (e) => {
+                state.revolutionAngle = parseFloat(e.target.value);
+                revolutionValue.textContent = state.revolutionAngle + '°';
+                updateDisplays();
+            });
+            
+            tiltSlider.addEventListener('input', (e) => {
+                state.axialTilt = parseFloat(e.target.value);
+                tiltValue.textContent = state.axialTilt + '°';
+                updateDisplays();
+            });
+            
+            toggleDayNightBtn.addEventListener('click', () => {
+                state.showDayNight = !state.showDayNight;
+                toggleDayNightBtn.textContent = state.showDayNight ? 'Hide Day/Night View' : 'Show Day/Night View';
+            });
+            
+            toggleSeasonsBtn.addEventListener('click', () => {
+                state.showSeasons = !state.showSeasons;
+                toggleSeasonsBtn.textContent = state.showSeasons ? 'Hide Seasons View' : 'Show Seasons View';
+            });
+            
+            resetBtn.addEventListener('click', resetSimulation);
+            
+            // Start animation
+            requestAnimationFrame(animate);
+        }
+        
+        function resetSimulation() {
+            state.rotationSpeed = 15;
+            state.revolutionAngle = 0;
+            state.axialTilt = 23.5;
+            state.showDayNight = true;
+            state.showSeasons = true;
+            state.rotationAngle = 0;
+            
+            rotationSlider.value = state.rotationSpeed;
+            revolutionSlider.value = state.revolutionAngle;
+            tiltSlider.value = state.axialTilt;
+            
+            rotationValue.textContent = state.rotationSpeed + '°/s';
+            revolutionValue.textContent = state.revolutionAngle + '°';
+            tiltValue.textContent = state.axialTilt + '°';
+            
+            toggleDayNightBtn.textContent = 'Hide Day/Night View';
+            toggleSeasonsBtn.textContent = 'Hide Seasons View';
+            
+            updateDisplays();
+        }
+        
+        function resizeCanvas() {
+            const wrapper = document.querySelector('.canvas-wrapper');
+            const width = wrapper.clientWidth;
+            const height = Math.min(500, Math.max(300, width * 0.8));
+            
+            canvas.width = width;
+            canvas.height = height;
+        }
+        
+        function updateDisplays() {
+            // Calculate time based on rotation angle
+            const hours = Math.floor((state.rotationAngle % 360) / 15);
+            const minutes = Math.floor((((state.rotationAngle % 360) / 15) - hours) * 60);
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const displayHours = hours % 12 || 12;
+            timeDisplay.textContent = `${displayHours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+            
+            // Calculate season based on revolution angle and tilt
+            const tiltRad = state.axialTilt * Math.PI / 180;
+            const revRad = state.revolutionAngle * Math.PI / 180;
+            
+            // Northern hemisphere gets more sun when revolution angle is between 90-270
+            const northernSummer = (state.revolutionAngle >= 90 && state.revolutionAngle <= 270);
+            const southernSummer = !northernSummer;
+            
+            if (state.revolutionAngle === 0 || state.revolutionAngle === 180) {
+                seasonDisplay.textContent = 'Equinox';
+            } else if (northernSummer) {
+                seasonDisplay.textContent = 'Northern Summer';
+            } else {
+                seasonDisplay.textContent = 'Northern Winter';
+            }
+            
+            // Calculate day length
+            const dayLength = 12 + (state.axialTilt / 15) * Math.sin(revRad);
+            dayLengthDisplay.textContent = `${dayLength.toFixed(1)} hours`;
+            
+            rotationAngleDisplay.textContent = `${Math.floor(state.rotationAngle % 360)}°`;
+        }
+        
+        function animate(timestamp) {
+            if (!state.lastTime) state.lastTime = timestamp;
+            const delta = (timestamp - state.lastTime) / 1000;
+            state.lastTime = timestamp;
+            
+            // Update rotation
+            state.rotationAngle += state.rotationSpeed * delta;
+            if (state.rotationAngle >= 360) state.rotationAngle -= 360;
+            
+            updateDisplays();
+            draw();
+            requestAnimationFrame(animate);
+        }
+        
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw Sun
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            drawSun(centerX, centerY);
+            
+            // Calculate Earth position
+            const orbitRadius = Math.min(canvas.width, canvas.height) * 0.35;
+            const earthX = centerX + orbitRadius * Math.cos(state.revolutionAngle * Math.PI / 180);
+            const earthY = centerY + orbitRadius * Math.sin(state.revolutionAngle * Math.PI / 180);
+            
+            // Draw orbit
+            drawOrbit(centerX, centerY, orbitRadius);
+            
+            // Draw Earth
+            const earthRadius = Math.min(canvas.width, canvas.height) * 0.08;
+            drawEarth(earthX, earthY, earthRadius);
+            
+            // Draw axis
+            drawAxis(earthX, earthY, earthRadius);
+            
+            // Draw day/night
+            if (state.showDayNight) {
+                drawDayNight(earthX, earthY, earthRadius);
+            }
+            
+            // Draw seasons
+            if (state.showSeasons) {
+                drawSeasons(earthX, earthY, earthRadius);
+            }
+        }
+        
+        function drawSun(x, y) {
+            const radius = Math.min(canvas.width, canvas.height) * 0.06;
+            
+            // Sun glow
+            const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius * 2);
+            gradient.addColorStop(0, 'rgba(255, 215, 0, 0.8)');
+            gradient.addColorStop(1, 'rgba(255, 215, 0, 0)');
+            
+            ctx.beginPath();
+            ctx.fillStyle = gradient;
+            ctx.arc(x, y, radius * 2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Sun core
+            ctx.beginPath();
+            ctx.fillStyle = '#ffd54f';
+            ctx.strokeStyle = '#f5c331';
+            ctx.lineWidth = 2;
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            
+            // Sun rays
+            ctx.save();
+            ctx.translate(x, y);
+            for (let i = 0; i < 12; i++) {
+                ctx.rotate(Math.PI / 6);
+                ctx.beginPath();
+                ctx.moveTo(radius + 5, 0);
+                ctx.lineTo(radius + 15, 0);
+                ctx.strokeStyle = '#ffd54f';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+        
+        function drawOrbit(centerX, centerY, radius) {
+            ctx.beginPath();
+            ctx.strokeStyle = '#bdc3c7';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Mark positions
+            const positions = [0, 90, 180, 270];
+            positions.forEach(pos => {
+                const x = centerX + radius * Math.cos(pos * Math.PI / 180);
+                const y = centerY + radius * Math.sin(pos * Math.PI / 180);
+                ctx.beginPath();
+                ctx.fillStyle = '#95a5a6';
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+        
+        function drawEarth(x, y, radius) {
+            // Earth body
+            ctx.beginPath();
+            ctx.fillStyle = '#3498db';
+            ctx.strokeStyle = '#2980b9';
+            ctx.lineWidth = 2;
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            
+            // Simple continents
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(state.rotationAngle * Math.PI / 180);
+            
+            // Continent 1
+            ctx.beginPath();
+            ctx.fillStyle = '#2ecc71';
+            ctx.moveTo(-radius * 0.3, -radius * 0.2);
+            ctx.quadraticCurveTo(0, -radius * 0.4, radius * 0.3, -radius * 0.2);
+            ctx.quadraticCurveTo(radius * 0.2, 0, radius * 0.1, radius * 0.2);
+            ctx.quadraticCurveTo(0, radius * 0.3, -radius * 0.2, radius * 0.1);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Continent 2
+            ctx.beginPath();
+            ctx.fillStyle = '#2ecc71';
+            ctx.moveTo(-radius * 0.4, radius * 0.1);
+            ctx.quadraticCurveTo(-radius * 0.2, radius * 0.3, 0, radius * 0.2);
+            ctx.quadraticCurveTo(radius * 0.1, radius * 0.1, 0, 0);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.restore();
+        }
+        
+        function drawAxis(x, y, radius) {
+            ctx.save();
+            ctx.translate(x, y);
+            
+            // Draw axis line (tilted)
+            const tiltRad = state.axialTilt * Math.PI / 180;
+            ctx.beginPath();
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 2;
+            ctx.moveTo(-radius * Math.sin(tiltRad), -radius * Math.cos(tiltRad));
+            ctx.lineTo(radius * Math.sin(tiltRad), radius * Math.cos(tiltRad));
+            ctx.stroke();
+            
+            // North pole
+            ctx.beginPath();
+            ctx.fillStyle = '#e74c3c';
+            ctx.arc(-radius * Math.sin(tiltRad), -radius * Math.cos(tiltRad), 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // South pole
+            ctx.beginPath();
+            ctx.fillStyle = '#e74c3c';
+            ctx.arc(radius * Math.sin(tiltRad), radius * Math.cos(tiltRad), 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.restore();
+        }
+        
+        function drawDayNight(x, y, radius) {
+            // Calculate sun direction
+            const sunX = canvas.width / 2;
+            const sunY = canvas.height / 2;
+            const dx = x - sunX;
+            const dy = y - sunY;
+            const sunAngle = Math.atan2(dy, dx);
+            
+            // Draw night side
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(sunAngle);
+            
+            ctx.beginPath();
+            ctx.fillStyle = 'rgba(74, 74, 74, 0.6)';
+            ctx.moveTo(0, 0);
+            ctx.arc(0, 0, radius, -Math.PI / 2, Math.PI / 2);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.restore();
+        }
+        
+        function drawSeasons(x, y, radius) {
+            // Determine which hemisphere gets more sun
+            const northernSummer = (state.revolutionAngle >= 90 && state.revolutionAngle <= 270);
+            
+            ctx.save();
+            ctx.translate(x, y);
+            
+            // Draw seasonal highlight
+            const tiltRad = state.axialTilt * Math.PI / 180;
+            const seasonColor = northernSummer ? 'rgba(231, 76, 60, 0.3)' : 'rgba(52, 152, 219, 0.3)';
+            
+            ctx.beginPath();
+            ctx.fillStyle = seasonColor;
+            
+            if (northernSummer) {
+                // Highlight northern hemisphere
+                ctx.moveTo(0, 0);
+                ctx.arc(0, 0, radius, -Math.PI / 2 - tiltRad, Math.PI / 2 - tiltRad);
+            } else {
+                // Highlight southern hemisphere
+                ctx.moveTo(0, 0);
+                ctx.arc(0, 0, radius, Math.PI / 2 - tiltRad, -Math.PI / 2 - tiltRad, true);
+            }
+            
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.restore();
+        }
+        
+        // Start the simulation
+        init();
+    </script>
+</body>
+</html>

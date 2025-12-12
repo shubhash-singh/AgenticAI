@@ -1,0 +1,73 @@
+{
+  "learning_objectives": [
+    "Students will be able to distinguish between Earth's rotation and revolution through visual representation",
+    "Students will observe how Earth's axial tilt affects seasonal changes",
+    "Students will understand the relationship between orbital position and day/night cycles"
+  ],
+  "key_concepts": [
+    "Earth's rotation on its axis (24-hour cycle)",
+    "Earth's revolution around the Sun (365-day cycle)",
+    "Axial tilt and its effect on seasons"
+  ],
+  "visual_design": {
+    "main_display": "Animated Earth model with visible axis line, rotating on its axis while orbiting a stationary Sun. Earth shows day/night terminator line and seasonal tilt effects.",
+    "color_scheme": ["#FFD700", "#4A90E2", "#27AE60"],
+    "animation_style": "smooth continuous rotation with stepped orbital movement",
+    "visual_metaphor": "Earth as a spinning top moving around a campfire"
+  },
+  "variables_to_simulate": [
+    {
+      "name": "Rotation_Speed",
+      "control_type": "slider",
+      "min": 1,
+      "max": 10,
+      "default": 5,
+      "unit": "speed",
+      "visual_effect": "Changes Earth's spin rate - faster rotation makes day/night cycle complete quicker"
+    },
+    {
+      "name": "Axial_Tilt",
+      "control_type": "slider",
+      "min": 0,
+      "max": 45,
+      "default": 23.5,
+      "unit": "degrees",
+      "visual_effect": "Tilts Earth's axis line and changes which hemisphere receives more sunlight"
+    },
+    {
+      "name": "Orbital_Position",
+      "control_type": "slider",
+      "min": 0,
+      "max": 360,
+      "default": 0,
+      "unit": "degrees",
+      "visual_effect": "Moves Earth along its elliptical orbit path around the Sun"
+    }
+  ],
+  "layout_structure": {
+    "sections": [
+      {"id": "header", "height": "60px", "content": "Earth's Rotation and Revolution Simulator"},
+      {"id": "visual-area", "height": "50vh", "content": "Animated solar system visualization with Earth and Sun"},
+      {"id": "controls", "height": "auto", "content": "Three sliders with labels and value displays"},
+      {"id": "info", "height": "auto", "content": "Current variable values and seasonal information"}
+    ],
+    "spacing": "16px between sections"
+  },
+  "simulation_logic": [
+    "Step 1: Initialize Earth at default orbital position with 23.5° tilt and medium rotation speed",
+    "Step 2: Start continuous Earth rotation animation around its axis",
+    "Step 3: When orbital position slider moves, smoothly transition Earth along elliptical path",
+    "Step 4: When tilt slider moves, animate axis line rotation and update sunlight angle",
+    "Step 5: When rotation speed slider moves, adjust animation duration for Earth's spin",
+    "Step 6: Update day/night terminator line position based on combined rotation and orbital position"
+  ],
+  "text_instructions": "Adjust sliders to see how Earth's movements create day/night and seasons",
+  "misconceptions_to_address": [
+    "Seasons are caused by distance from Sun (not tilt)",
+    "Day and night are caused by Sun moving around Earth"
+  ],
+  "safety_constraints": [
+    "Age-appropriate content",
+    "No external resources"
+  ]
+}

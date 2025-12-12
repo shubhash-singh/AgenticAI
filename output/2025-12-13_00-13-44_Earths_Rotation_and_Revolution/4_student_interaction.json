@@ -1,0 +1,50 @@
+{
+  "intro": "Welcome, young scientists! Get ready to explore the amazing movements of our Earth. This interactive simulation will help you understand how our planet spins and travels through space. As you experiment with the controls, pay attention to how these movements create day and night, and cause the changing seasons. Let's dive in and discover the wonders of our spinning, orbiting Earth!",
+  "questions": [
+    {
+      "question": "When you watch the Earth rotate on the simulation, which side experiences daylight and which side experiences nighttime?",
+      "type": "mcq",
+      "options": [
+        "A) The side facing away from the Sun has daylight, and the side facing the Sun has nighttime",
+        "B) The side facing the Sun has daylight, and the side facing away from the Sun has nighttime",
+        "C) Both sides have daylight at the same time",
+        "D) The entire Earth has nighttime all the time"
+      ],
+      "correct_index": 1,
+      "hint": "Think about which side gets sunlight - is it the side that can 'see' the Sun or the side that can't?",
+      "explanation": "The correct answer is B. When you watch the Earth rotate, the side that faces the Sun receives direct sunlight and experiences daytime. The side that faces away from the Sun is in darkness and experiences nighttime. This is exactly what happens in real life - we have day when our part of Earth faces the Sun, and night when it faces away."
+    },
+    {
+      "question": "What would happen if you increased the Earth's rotation speed to maximum? How would this affect our days and nights?",
+      "type": "mcq",
+      "options": [
+        "A) Days and nights would become longer",
+        "B) Days and nights would become shorter",
+        "C) There would be no more nighttime",
+        "D) There would be no more daytime"
+      ],
+      "correct_index": 1,
+      "hint": "Try moving the rotation speed slider to maximum and count how many times the Earth spins. Remember, in real life one complete spin equals one day and one night.",
+      "explanation": "The correct answer is B. If Earth rotated faster (spun more quickly), it would complete its spin in less time. Since one complete rotation equals one full day-night cycle, spinning faster means days and nights would be shorter. Imagine if Earth spun twice as fast - we'd have sunrise, daytime, sunset, nighttime, and then sunrise again all in just 12 hours instead of 24!"
+    },
+    {
+      "question": "In real life, where can you observe the concept of Earth's revolution around the Sun?",
+      "type": "mcq",
+      "options": [
+        "A) Watching leaves change color in autumn",
+        "B) Seeing the Moon go through its phases",
+        "C) Observing the Sun rise in the east and set in the west",
+        "D) Watching birds fly south for winter"
+      ],
+      "correct_index": 0,
+      "hint": "Remember that revolution takes about one year to complete and causes changes that happen over long periods of time, not daily changes.",
+      "explanation": "The correct answer is A. Earth's revolution around the Sun takes one year and causes the seasons to change. In autumn, we see leaves change color because as Earth moves in its orbit, the angle of sunlight changes, causing temperatures to drop and trees to prepare for winter. The other options (Moon phases, sunrise/sunset, bird migration) are related to different concepts - Moon phases come from the Moon's orbit around Earth, sunrise/sunset comes from Earth's rotation, and bird migration is a response to seasonal changes."
+    }
+  ],
+  "followups": [
+    "Try setting both the rotation speed and orbital speed to maximum. What do you notice about how quickly the Earth spins compared to how quickly it orbits the Sun?",
+    "Can you find a combination of rotation and orbit speeds that makes the Earth complete exactly one rotation during one-quarter of its orbit? What would this mean for seasons?",
+    "Challenge: Before changing any settings, predict what would happen if Earth's axis tilt was completely straight up and down (no tilt). Then test your prediction by adjusting the tilt slider!"
+  ],
+  "summary": "Great job exploring Earth's movements! You discovered that Earth's rotation on its axis creates day and night, while its revolution around the Sun causes the seasons. Remember, rotation is a quick spin that takes 24 hours, while revolution is a slow journey that takes a full year. These movements work together with Earth's tilted axis to create the perfect conditions for life on our planet."
+}

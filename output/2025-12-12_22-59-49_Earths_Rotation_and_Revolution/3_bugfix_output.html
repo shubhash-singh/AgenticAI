@@ -676,17 +676,17 @@
                             let score = 0;
                             
                             questions.forEach((q, index) => {
-                                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                                const selected = document.querySelector("input[name='q" + index + "']:checked");
                                 if (selected && parseInt(selected.value) === q.answer) {
                                     score++;
                                 }
                             });
                             
                             const result = document.getElementById('result');
-                            result.innerHTML = `You scored ${score}/${questions.length}!`;
+                            result.innerHTML = "You scored " + score + "/" + questions.length + "!";
                             result.style.color = score >= 4 ? 'green' : 'red';
                         }
-                    </script>
+                    <\/script>
                 </body>
                 </html>
             `);

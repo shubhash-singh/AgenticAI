@@ -1,0 +1,118 @@
+{
+  "learning_objectives": [
+    "Understand and differentiate between Earth's rotation and revolution",
+    "Observe how Earth's rotation causes the cycle of day and night",
+    "Explain how Earth's revolution and axial tilt cause the seasons",
+    "Visualize the Earth's orbit and axis inclination in a simplified model",
+    "Apply knowledge to predict day/night and seasonal changes based on Earth's position"
+  ],
+  "key_concepts": [
+    "Rotation: Earth spins on its axis (24 hours)",
+    "Revolution: Earth orbits the Sun (365.25 days)",
+    "Axial tilt: Earth's axis is inclined at ~23.5 degrees",
+    "Orbit: Elliptical path around the Sun",
+    "Day and night caused by rotation",
+    "Seasons caused by revolution + axial tilt"
+  ],
+  "variables_to_simulate": [
+    "Earth rotation speed (degrees per second)",
+    "Earth revolution position (angle around Sun)",
+    "Axial tilt angle (degrees)",
+    "Time of day display (local time)"
+  ],
+  "user_interactions": [
+    {
+      "type": "slider",
+      "id": "rotationSlider",
+      "label": "Rotation Speed",
+      "min": "0",
+      "max": "360",
+      "step": "15",
+      "default": "15",
+      "description": "Adjust how fast Earth rotates"
+    },
+    {
+      "type": "slider",
+      "id": "revolutionSlider",
+      "label": "Revolution Position",
+      "min": "0",
+      "max": "360",
+      "step": "10",
+      "default": "0",
+      "description": "Move Earth around the Sun"
+    },
+    {
+      "type": "slider",
+      "id": "tiltSlider",
+      "label": "Axial Tilt",
+      "min": "0",
+      "max": "45",
+      "step": "1",
+      "default": "23.5",
+      "description": "Change Earth's axial tilt"
+    },
+    {
+      "type": "button",
+      "id": "toggleDayNight",
+      "label": "Toggle Day/Night View",
+      "description": "Show/hide day and night visualization"
+    },
+    {
+      "type": "button",
+      "id": "toggleSeasons",
+      "label": "Toggle Seasons View",
+      "description": "Show/hide seasonal changes"
+    },
+    {
+      "type": "button",
+      "id": "resetButton",
+      "label": "Reset",
+      "description": "Reset all values to default"
+    }
+  ],
+  "simulation_logic": [
+    "Initialize Earth at default position with Sun at center",
+    "Draw Earth with visible axis line showing tilt angle",
+    "Apply rotation: update Earth's spin angle based on rotationSlider value",
+    "Apply revolution: position Earth along circular orbit based on revolutionSlider value",
+    "Render day/night: illuminate hemisphere facing Sun, darken opposite side",
+    "Render seasons: highlight hemisphere receiving more direct sunlight based on tilt and position",
+    "Update time display: calculate local time based on rotation angle",
+    "Handle user interactions: update simulation state when sliders/buttons change",
+    "Loop: continuously redraw with updated positions and lighting"
+  ],
+  "mobile_ui_plan": [
+    "Vertical scroll layout optimized for mobile screens",
+    "Header with title and brief description",
+    "Canvas element taking full width for simulation visualization",
+    "Control panel below canvas with sliders and buttons",
+    "Information panel showing current values and explanations",
+    "Responsive design: controls stack vertically, canvas scales with screen size",
+    "Touch-friendly: large slider handles and button sizes"
+  ],
+  "misconceptions_to_address": [
+    "Confusing rotation with revolution",
+    "Believing seasons are caused by Earth's distance from Sun (not tilt)",
+    "Thinking day and night are caused by the Sun moving around Earth",
+    "Assuming Earth's orbit is highly elliptical (it's nearly circular)",
+    "Not understanding that axial tilt direction remains constant during revolution"
+  ],
+  "text_instructions_for_students": [
+    "Welcome! This simulation shows how Earth moves and why we have day/night and seasons.",
+    "Use the Rotation Speed slider to spin Earth faster or slower.",
+    "Use the Revolution Position slider to move Earth around the Sun.",
+    "Adjust the Axial Tilt slider to see how the tilt affects seasons.",
+    "Click 'Toggle Day/Night View' to see which side is in daylight.",
+    "Click 'Toggle Seasons View' to see which hemisphere gets more sunlight.",
+    "Press 'Reset' to start over with default settings.",
+    "Tip: Try changing one slider at a time to see its effect!"
+  ],
+  "file_target": "single_file_html",
+  "safety_constraints": [
+    "All visualizations are simplified models for educational purposes",
+    "Not to scale: distances and sizes are exaggerated for clarity",
+    "Sun representation is symbolic - do not look directly at real Sun",
+    "Simulation uses safe, non-flashing graphics",
+    "No personal data collection or external network requests"
+  ]
+}

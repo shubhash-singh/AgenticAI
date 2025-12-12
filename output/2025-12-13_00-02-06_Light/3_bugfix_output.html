@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shadow Play - Interactive Simulation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f9f9f9;
+        }
+        #app { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 16px; 
+            background: white;
+            min-height: 100vh;
+        }
+        header {
+            padding: 16px 0;
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        h1 { font-size: 24px; margin-bottom: 8px; }
+        .subtitle { font-size: 14px; color: #666; }
+        
+        #visual-area {
+            position: relative;
+            height: 50vh;
+            min-height: 300px;
+            background: #0b0b0b;
+            border-radius: 8px;
+            margin: 16px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        #scene-container {
+            position: relative;
+            width: 90%;
+            max-width: 500px;
+            height: 80%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        #controls {
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .control-group {
+            margin: 16px 0;
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 44px;
+            cursor: pointer;
+        }
+        
+        button {
+            width: 100%;
+            min-height: 48px;
+            padding: 12px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 8px 0;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        #info {
+            padding: 16px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .light-source {
+            fill: url(#lightGradient);
+            transition: all 0.3s ease;
+        }
+        
+        .object {
+            fill: #2E86AB;
+            transition: all 0.3s ease;
+        }
+        
+        .shadow {
+            fill: #333;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+        
+        .reflection {
+            fill: #F39189;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+        
+        .wall {
+            fill: #f0f0f0;
+            transition: all 0.3s ease;
+        }
+        
+        .mirror {
+            fill: #e0e0e0;
+            transition: all 0.3s ease;
+        }
+        
+        .label {
+            font-size: 12px;
+            fill: #666;
+        }
+        
+        .legend {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-top: 8px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Shadow Play</h1>
+            <p class="subtitle">Explore how light creates shadows and reflections</p>
+        </header>
+        
+        <div id="visual-area">
+            <div id="scene-container">
+                <svg viewBox="0 0 400 300" id="scene">
+                    <defs>
+                        <radialGradient id="lightGradient" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#FFD700" stop-opacity="1"/>
+                            <stop offset="70%" stop-color="#FFD700" stop-opacity="0.8"/>
+                            <stop offset="100%" stop-color="#FFD700" stop-opacity="0"/>
+                        </radialGradient>
+                        <filter id="shadowBlur" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+                            <feOffset dx="2" dy="4" result="offsetblur"/>
+                            <feComponentTransfer>
+                                <feFuncA type="linear" slope="0.5"/>
+                            </feComponentTransfer>
+                            <feMerge>
+                                <feMergeNode/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    
+                    <!-- Background wall -->
+                    <rect class="wall" x="0" y="0" width="400" height="300"/>
+                    
+                    <!-- Light source -->
+                    <circle id="light-source" class="light-source" cx="50" cy="150" r="20"/>
+                    
+                    <!-- 3D-style object -->
+                    <g id="object">
+                        <!-- Main body -->
+                        <rect class="object" x="180" y="120" width="40" height="80" rx="4"/>
+                        <!-- 3D effect - top -->
+                        <polygon class="object" points="180,120 220,120 230,110 190,110" opacity="0.8"/>
+                        <!-- 3D effect - side -->
+                        <polygon class="object" points="220,120 230,110 230,190 220,200" opacity="0.6"/>
+                    </g>
+                    
+                    <!-- Shadow on wall -->
+                    <polygon id="shadow" class="shadow" points="220,200 350,200 350,220 220,220" filter="url(#shadowBlur)"/>
+                    
+                    <!-- Mirror below -->
+                    <rect class="mirror" x="0" y="240" width="400" height="60"/>
+                    
+                    <!-- Reflection of object -->
+                    <g id="reflection">
+                        <rect class="reflection" x="180" y="240" width="40" height="40" rx="4"/>
+                        <polygon class="reflection" points="180,240 220,240 230,250 190,250" opacity="0.6"/>
+                        <polygon class="reflection" points="220,240 230,250 230,280 220,280" opacity="0.4"/>
+                    </g>
+                    
+                    <!-- Light rays -->
+                    <g id="rays">
+                        <line x1="70" y1="150" x2="180" y2="120" stroke="#FFD700" stroke-width="2" opacity="0.6"/>
+                        <line x1="70" y1="150" x2="180" y2="200" stroke="#FFD700" stroke-width="2" opacity="0.6"/>
+                        <line x1="70" y1="150" x2="220" y2="120" stroke="#FFD700" stroke-width="2" opacity="0.6"/>
+                        <line x1="70" y1="150" x2="220" y2="200" stroke="#FFD700" stroke-width="2" opacity="0.6"/>
+                    </g>
+                    
+                    <!-- Labels -->
+                    <text x="50" y="110" class="label" text-anchor="middle">Light Source</text>
+                    <text x="200" y="100" class="label" text-anchor="middle">3D Object</text>
+                    <text x="285" y="190" class="label" text-anchor="middle">Shadow</text>
+                    <text x="200" y="270" class="label" text-anchor="middle">Mirror Reflection</text>
+                </svg>
+            </div>
+        </div>
+        
+        <div id="controls">
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Light Distance</span>
+                    <span id="distance-value">130px</span>
+                </div>
+                <input type="range" id="distance-slider" min="50" max="200" value="130">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Light Height</span>
+                    <span id="height-value">150px</span>
+                </div>
+                <input type="range" id="height-slider" min="80" max="220" value="150">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Object Size</span>
+                    <span id="size-value">40px</span>
+                </div>
+                <input type="range" id="size-slider" min="20" max="80" value="40">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Shadow Intensity</span>
+                    <span id="intensity-value">80%</span>
+                </div>
+                <input type="range" id="intensity-slider" min="30" max="100" value="80">
+            </div>
+            
+            <button id="reset-btn">Reset</button>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #FFD700;"></div>
+                    <span>Light</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #2E86AB;"></div>
+                    <span>Object</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #333;"></div>
+                    <span>Shadow</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #F39189;"></div>
+                    <span>Reflection</span>
+                </div>
+            </div>
+        </div>
+        
+        <div id="info">
+            <h3>Observations</h3>
+            <p id="observation-text">Move the light closer to make the shadow larger. Raise the light to make the shadow shorter.</p>
+            <div style="margin-top: 8px;">
+                <strong>Current Setup:</strong>
+                <ul id="current-values">
+                    <li>Light Distance: 130px</li>
+                    <li>Light Height: 150px</li>
+                    <li>Object Width: 40px</li>
+                    <li>Shadow Intensity: 80%</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Get DOM elements
+        const lightSource = document.getElementById('light-source');
+        const object = document.getElementById('object');
+        const shadow = document.getElementById('shadow');
+        const rays = document.getElementById('rays');
+        const reflection = document.getElementById('reflection');
+        
+        const distanceSlider = document.getElementById('distance-slider');
+        const heightSlider = document.getElementById('height-slider');
+        const sizeSlider = document.getElementById('size-slider');
+        const intensitySlider = document.getElementById('intensity-slider');
+        
+        const distanceValue = document.getElementById('distance-value');
+        const heightValue = document.getElementById('height-value');
+        const sizeValue = document.getElementById('size-value');
+        const intensityValue = document.getElementById('intensity-value');
+        
+        const observationText = document.getElementById('observation-text');
+        const currentValues = document.getElementById('current-values');
+        
+        const resetBtn = document.getElementById('reset-btn');
+        
+        // Initial values
+        let lightDistance = 130;
+        let lightHeight = 150;
+        let objectSize = 40;
+        let shadowIntensity = 80;
+        
+        // Update function
+        function updateScene() {
+            try {
+                // Update light position
+                lightSource.setAttribute('cx', 200 - lightDistance);
+                lightSource.setAttribute('cy', lightHeight);
+                lightSource.setAttribute('r', 15 + (200 - lightDistance) / 10);
+                
+                // Update object size
+                const objectX = 200 - objectSize / 2;
+                const objectY = 160 - objectSize / 2;
+                
+                // Main body
+                const mainRect = object.children[0];
+                mainRect.setAttribute('x', objectX);
+                mainRect.setAttribute('y', objectY);
+                mainRect.setAttribute('width', objectSize);
+                mainRect.setAttribute('height', objectSize * 2);
+                
+                // Top face
+                const topPolygon = object.children[1];
+                topPolygon.setAttribute('points', 
+                    objectX + ',' + objectY + ' ' + 
+                    (objectX + objectSize) + ',' + objectY + ' ' + 
+                    (objectX + objectSize + 10) + ',' + (objectY - 10) + ' ' + 
+                    (objectX + 10) + ',' + (objectY - 10)
+                );
+                
+                // Side face
+                const sidePolygon = object.children[2];
+                sidePolygon.setAttribute('points', 
+                    (objectX + objectSize) + ',' + objectY + ' ' + 
+                    (objectX + objectSize + 10) + ',' + (objectY - 10) + ' ' + 
+                    (objectX + objectSize + 10) + ',' + (objectY + objectSize * 2 - 10) + ' ' + 
+                    (objectX + objectSize) + ',' + (objectY + objectSize * 2)
+                );
+                
+                // Calculate shadow position and size
+                const shadowStartX = objectX + objectSize;
+                const shadowEndX = 350 + (lightDistance - 130) * 1.5;
+                const shadowHeight = 20 + (150 - lightHeight) / 5;
+                const shadowY = 200 - shadowHeight / 2;
+                
+                shadow.setAttribute('points', 
+                    shadowStartX + ',' + (shadowY + shadowHeight) + ' ' + 
+                    shadowEndX + ',' + (shadowY + shadowHeight) + ' ' + 
+                    shadowEndX + ',' + (shadowY + shadowHeight + 20) + ' ' + 
+                    shadowStartX + ',' + (shadowY + shadowHeight + 20)
+                );
+                
+                // Update shadow intensity
+                shadow.setAttribute('opacity', shadowIntensity / 100);
+                
+                // Update light rays
+                const rayPoints = [
+                    [200 - lightDistance + 20, lightHeight, objectX, objectY],
+                    [200 - lightDistance + 20, lightHeight, objectX, objectY + objectSize * 2],
+                    [200 - lightDistance + 20, lightHeight, objectX + objectSize, objectY],
+                    [200 - lightDistance + 20, lightHeight, objectX + objectSize, objectY + objectSize * 2]
+                ];
+                
+                for (let i = 0; i < rays.children.length; i++) {
+                    const ray = rays.children[i];
+                    const points = rayPoints[i];
+                    ray.setAttribute('x1', points[0]);
+                    ray.setAttribute('y1', points[1]);
+                    ray.setAttribute('x2', points[2]);
+                    ray.setAttribute('y2', points[3]);
+                    ray.setAttribute('opacity', 0.3 + (lightDistance - 50) / 300);
+                }
+                
+                // Update reflection
+                const reflectionY = 240;
+                const reflectionHeight = objectSize * 1.5;
+                
+                const reflectionMain = reflection.children[0];
+                reflectionMain.setAttribute('x', objectX);
+                reflectionMain.setAttribute('y', reflectionY);
+                reflectionMain.setAttribute('width', objectSize);
+                reflectionMain.setAttribute('height', reflectionHeight);
+                
+                const reflectionTop = reflection.children[1];
+                reflectionTop.setAttribute('points', 
+                    objectX + ',' + reflectionY + ' ' + 
+                    (objectX + objectSize) + ',' + reflectionY + ' ' + 
+                    (objectX + objectSize + 10) + ',' + (reflectionY + 10) + ' ' + 
+                    (objectX + 10) + ',' + (reflectionY + 10)
+                );
+                
+                const reflectionSide = reflection.children[2];
+                reflectionSide.setAttribute('points', 
+                    (objectX + objectSize) + ',' + reflectionY + ' ' + 
+                    (objectX + objectSize + 10) + ',' + (reflectionY + 10) + ' ' + 
+                    (objectX + objectSize + 10) + ',' + (reflectionY + reflectionHeight - 10) + ' ' + 
+                    (objectX + objectSize) + ',' + (reflectionY + reflectionHeight)
+                );
+                
+                // Update observation text
+                if (lightDistance < 100) {
+                    observationText.textContent = 'Light is close to the object, creating a large, soft shadow.';
+                } else if (lightDistance > 160) {
+                    observationText.textContent = 'Light is far from the object, creating a small, sharp shadow.';
+                } else if (lightHeight < 120) {
+                    observationText.textContent = 'Light is low, creating a long shadow.';
+                } else if (lightHeight > 180) {
+                    observationText.textContent = 'Light is high, creating a short shadow.';
+                } else {
+                    observationText.textContent = 'Move the light closer to make the shadow larger. Raise the light to make the shadow shorter.';
+                }
+                
+                // Update current values display
+                currentValues.innerHTML = 
+                    '<li>Light Distance: ' + lightDistance + 'px</li>' +
+                    '<li>Light Height: ' + lightHeight + 'px</li>' +
+                    '<li>Object Width: ' + objectSize + 'px</li>' +
+                    '<li>Shadow Intensity: ' + shadowIntensity + '%</li>';
+                
+                // Update value displays
+                distanceValue.textContent = lightDistance + 'px';
+                heightValue.textContent = lightHeight + 'px';
+                sizeValue.textContent = objectSize + 'px';
+                intensityValue.textContent = shadowIntensity + '%';
+                
+            } catch (error) {
+                console.error('Error updating scene:', error);
+            }
+        }
+        
+        // Event listeners
+        distanceSlider.addEventListener('input', (e) => {
+            lightDistance = parseInt(e.target.value);
+            updateScene();
+        });
+        
+        heightSlider.addEventListener('input', (e) => {
+            lightHeight = parseInt(e.target.value);
+            updateScene();
+        });
+        
+        sizeSlider.addEventListener('input', (e) => {
+            objectSize = parseInt(e.target.value);
+            updateScene();
+        });
+        
+        intensitySlider.addEventListener('input', (e) => {
+            shadowIntensity = parseInt(e.target.value);
+            updateScene();
+        });
+        
+        resetBtn.addEventListener('click', () => {
+            lightDistance = 130;
+            lightHeight = 150;
+            objectSize = 40;
+            shadowIntensity = 80;
+            
+            distanceSlider.value = lightDistance;
+            heightSlider.value = lightHeight;
+            sizeSlider.value = objectSize;
+            intensitySlider.value = shadowIntensity;
+            
+            updateScene();
+        });
+        
+        // Initialize
+        updateScene();
+    </script>
+</body>
+</html>

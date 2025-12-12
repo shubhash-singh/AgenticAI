@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earth's Rotation and Orbit - Interactive Simulation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f9f9f9;
+        }
+        #app { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 16px; 
+            background: white;
+            min-height: 100vh;
+        }
+        header {
+            padding: 16px 0;
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        h1 { font-size: 24px; margin-bottom: 8px; }
+        .subtitle { font-size: 14px; color: #666; }
+        
+        #visual-area {
+            position: relative;
+            height: 50vh;
+            min-height: 300px;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #0f0f1a 50%, #0b0b14 100%);
+            border-radius: 8px;
+            margin: 16px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
+        }
+        
+        svg {
+            width: 95%;
+            max-width: 500px;
+            height: auto;
+            display: block;
+        }
+        
+        .sun {
+            fill: url(#sunGradient);
+            stroke: #FFD700;
+            stroke-width: 2;
+        }
+        
+        .orbit {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.2);
+            stroke-width: 2;
+        }
+        
+        .earth {
+            stroke: rgba(255, 255, 255, 0.3);
+            stroke-width: 1;
+        }
+        
+        .axis {
+            stroke: #FFD700;
+            stroke-width: 2;
+            stroke-dasharray: 4 4;
+        }
+        
+        .terminator {
+            fill: rgba(0, 0, 0, 0.4);
+        }
+        
+        .season-label {
+            font-size: 12px;
+            fill: #FFD700;
+            text-anchor: middle;
+        }
+        
+        .legend {
+            font-size: 12px;
+            fill: #FFD700;
+        }
+        
+        #controls {
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .control-group {
+            margin: 16px 0;
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 44px;
+            cursor: pointer;
+        }
+        
+        button {
+            width: 100%;
+            min-height: 48px;
+            padding: 12px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 8px 0;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        #info {
+            padding: 16px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        
+        .toggle {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin: 8px 0;
+        }
+        
+        .toggle input {
+            width: auto;
+            height: auto;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Earth's Rotation and Orbit</h1>
+            <p class="subtitle">Interactive simulation showing Earth's axial tilt, rotation, and orbit around the Sun</p>
+        </header>
+        
+        <div id="visual-area">
+            <svg viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <radialGradient id="sunGradient" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#FFF59D"/>
+                        <stop offset="50%" stop-color="#FFD700"/>
+                        <stop offset="100%" stop-color="#FF8C00"/>
+                    </radialGradient>
+                    <radialGradient id="earthGradient" cx="30%" cy="30%" r="70%">
+                        <stop offset="0%" stop-color="#87CEEB"/>
+                        <stop offset="50%" stop-color="#4A90E2"/>
+                        <stop offset="100%" stop-color="#2C5AA0"/>
+                    </radialGradient>
+                </defs>
+                
+                <!-- Sun at center -->
+                <circle id="sun" class="sun" cx="300" cy="300" r="40"></circle>
+                
+                <!-- Orbit path -->
+                <circle id="orbit" class="orbit" cx="300" cy="300" r="200"></circle>
+                
+                <!-- Earth group -->
+                <g id="earthGroup">
+                    <!-- Earth sphere -->
+                    <circle id="earth" class="earth" r="25" fill="url(#earthGradient)"></circle>
+                    
+                    <!-- Axis line -->
+                    <line id="axis" class="axis" x1="-25" y1="0" x2="25" y2="0"></line>
+                    
+                    <!-- Terminator line (day/night boundary) -->
+                    <path id="terminator" class="terminator" d=""></path>
+                </g>
+                
+                <!-- Season labels -->
+                <text class="season-label" x="300" y="80">Summer Solstice</text>
+                <text class="season-label" x="300" y="540">Winter Solstice</text>
+                <text class="season-label" x="80" y="310">Spring Equinox</text>
+                <text class="season-label" x="520" y="310">Fall Equinox</text>
+                
+                <!-- Legend -->
+                <text class="legend" x="20" y="580">Yellow line = Earth's axis (23.5° tilt)</text>
+                <text class="legend" x="20" y="595">Dark area = Night side of Earth</text>
+            </svg>
+        </div>
+        
+        <div id="controls">
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Rotation Speed</span>
+                    <span id="rotationValue">1.0x</span>
+                </div>
+                <input type="range" id="rotationSlider" min="0" max="3" step="0.1" value="1">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Orbit Speed</span>
+                    <span id="orbitValue">1.0x</span>
+                </div>
+                <input type="range" id="orbitSlider" min="0" max="3" step="0.1" value="1">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Earth Tilt</span>
+                    <span id="tiltValue">23.5°</span>
+                </div>
+                <input type="range" id="tiltSlider" min="0" max="45" step="0.1" value="23.5">
+            </div>
+            
+            <div class="toggle">
+                <input type="checkbox" id="showAxis">
+                <label for="showAxis">Show Earth's axis</label>
+            </div>
+            
+            <div class="toggle">
+                <input type="checkbox" id="showTerminator">
+                <label for="showTerminator">Show day/night terminator</label>
+            </div>
+            
+            <button id="pauseBtn">Pause</button>
+            <button id="resetBtn">Reset</button>
+        </div>
+        
+        <div id="info">
+            <div class="info-row">
+                <span>Current Season:</span>
+                <span id="season">Spring</span>
+            </div>
+            <div class="info-row">
+                <span>Day Length:</span>
+                <span id="dayLength">12 hours</span>
+            </div>
+            <div class="info-row">
+                <span>Earth Position:</span>
+                <span id="position">0°</span>
+            </div>
+            <div class="info-row">
+                <span>Axis Tilt:</span>
+                <span id="axisTilt">23.5°</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Simulation variables
+        let rotationSpeed = 1.0;
+        let orbitSpeed = 1.0;
+        let earthTilt = 23.5;
+        let orbitAngle = 0;
+        let rotationAngle = 0;
+        let isPaused = false;
+        let animationId = null;
+        
+        // DOM elements
+        const earthGroup = document.getElementById('earthGroup');
+        const earth = document.getElementById('earth');
+        const axis = document.getElementById('axis');
+        const terminator = document.getElementById('terminator');
+        const seasonText = document.getElementById('season');
+        const dayLengthText = document.getElementById('dayLength');
+        const positionText = document.getElementById('position');
+        const axisTiltText = document.getElementById('axisTilt');
+        const rotationValue = document.getElementById('rotationValue');
+        const orbitValue = document.getElementById('orbitValue');
+        const tiltValue = document.getElementById('tiltValue');
+        const showAxisCheckbox = document.getElementById('showAxis');
+        const showTerminatorCheckbox = document.getElementById('showTerminator');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        
+        // Initialize
+        function init() {
+            // Center Earth at orbit position 0
+            earthGroup.setAttribute('transform', 'translate(300, 300) rotate(0) translate(200, 0)');
+            
+            // Set initial axis tilt
+            updateAxisVisibility();
+            updateTerminatorVisibility();
+            updateAxisTiltText();
+            
+            // Start animation
+            animate();
+            
+            // Event listeners
+            document.getElementById('rotationSlider').addEventListener('input', (e) => {
+                rotationSpeed = parseFloat(e.target.value);
+                rotationValue.textContent = rotationSpeed.toFixed(1) + 'x';
+            });
+            
+            document.getElementById('orbitSlider').addEventListener('input', (e) => {
+                orbitSpeed = parseFloat(e.target.value);
+                orbitValue.textContent = orbitSpeed.toFixed(1) + 'x';
+            });
+            
+            document.getElementById('tiltSlider').addEventListener('input', (e) => {
+                earthTilt = parseFloat(e.target.value);
+                tiltValue.textContent = earthTilt.toFixed(1) + '°';
+                updateAxisTiltText();
+            });
+            
+            showAxisCheckbox.addEventListener('change', updateAxisVisibility);
+            showTerminatorCheckbox.addEventListener('change', updateTerminatorVisibility);
+            
+            pauseBtn.addEventListener('click', togglePause);
+            resetBtn.addEventListener('click', resetSimulation);
+        }
+        
+        function updateAxisVisibility() {
+            axis.style.display = showAxisCheckbox.checked ? 'block' : 'none';
+        }
+        
+        function updateTerminatorVisibility() {
+            terminator.style.display = showTerminatorCheckbox.checked ? 'block' : 'none';
+        }
+        
+        function updateAxisTiltText() {
+            axisTiltText.textContent = earthTilt.toFixed(1) + '°';
+        }
+        
+        function togglePause() {
+            isPaused = !isPaused;
+            pauseBtn.textContent = isPaused ? 'Resume' : 'Pause';
+            if (isPaused) {
+                cancelAnimationFrame(animationId);
+            } else {
+                animate();
+            }
+        }
+        
+        function resetSimulation() {
+            orbitAngle = 0;
+            rotationAngle = 0;
+            rotationSpeed = 1.0;
+            orbitSpeed = 1.0;
+            earthTilt = 23.5;
+            
+            document.getElementById('rotationSlider').value = '1';
+            document.getElementById('orbitSlider').value = '1';
+            document.getElementById('tiltSlider').value = '23.5';
+            
+            rotationValue.textContent = '1.0x';
+            orbitValue.textContent = '1.0x';
+            tiltValue.textContent = '23.5°';
+            
+            updateAxisTiltText();
+            updateEarthPosition();
+        }
+        
+        function animate() {
+            if (!isPaused) {
+                // Update angles
+                orbitAngle += 0.5 * orbitSpeed;
+                rotationAngle += 2 * rotationSpeed;
+                
+                // Keep angles within 0-360
+                if (orbitAngle >= 360) orbitAngle -= 360;
+                if (rotationAngle >= 360) rotationAngle -= 360;
+                
+                updateEarthPosition();
+                
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+        
+        function updateEarthPosition() {
+            // Calculate Earth's position on orbit
+            const centerX = 300;
+            const centerY = 300;
+            const orbitRadius = 200;
+            
+            const x = centerX + orbitRadius * Math.cos(orbitAngle * Math.PI / 180);
+            const y = centerY + orbitRadius * Math.sin(orbitAngle * Math.PI / 180);
+            
+            // Calculate season based on orbit angle
+            const season = getSeason(orbitAngle);
+            seasonText.textContent = season.name;
+            
+            // Calculate day length based on season and tilt
+            const dayLength = calculateDayLength(orbitAngle, earthTilt);
+            dayLengthText.textContent = dayLength.toFixed(2) + ' hours';
+            
+            // Update position display
+            positionText.textContent = orbitAngle.toFixed(1) + '°';
+            
+            // Apply transforms to Earth group
+            // 1. Translate to center
+            // 2. Rotate around center (orbit)
+            // 3. Translate to orbit radius
+            // 4. Rotate Earth on its axis (with tilt)
+            earthGroup.setAttribute('transform', 
+                `translate(${centerX}, ${centerY}) ` +
+                `rotate(${orbitAngle}) ` +
+                `translate(${orbitRadius}, 0) ` +
+                `rotate(${-earthTilt}) ` +
+                `rotate(${rotationAngle})`
+            );
+            
+            // Update terminator line based on sun position
+            updateTerminator(x, y, season.tiltDirection);
+        }
+        
+        function getSeason(angle) {
+            // 0° = Spring Equinox, 90° = Summer Solstice, 180° = Fall Equinox, 270° = Winter Solstice
+            const normalized = (angle + 360) % 360;
+            
+            if (normalized >= 330 || normalized < 30) return { name: 'Spring', tiltDirection: 1 };
+            if (normalized >= 30 && normalized < 60) return { name: 'Spring', tiltDirection: 1 };
+            if (normalized >= 60 && normalized < 120) return { name: 'Summer', tiltDirection: 1 };
+            if (normalized >= 120 && normalized < 150) return { name: 'Summer', tiltDirection: 1 };
+            if (normalized >= 150 && normalized < 210) return { name: 'Fall', tiltDirection: -1 };
+            if (normalized >= 210 && normalized < 240) return { name: 'Fall', tiltDirection: -1 };
+            if (normalized >= 240 && normalized < 300) return { name: 'Winter', tiltDirection: -1 };
+            if (normalized >= 300 && normalized < 330) return { name: 'Winter', tiltDirection: -1 };
+            
+            return { name: 'Spring', tiltDirection: 1 };
+        }
+        
+        function calculateDayLength(angle, tilt) {
+            // Simplified day length calculation based on season
+            // At equinoxes: 12 hours
+            // At solstices: varies based on tilt
+            const normalized = (angle + 360) % 360;
+            
+            // Calculate how close we are to solstices (90° and 270°)
+            const distanceToSummer = Math.min(
+                Math.abs(normalized - 90),
+                360 - Math.abs(normalized - 90)
+            );
+            const distanceToWinter = Math.min(
+                Math.abs(normalized - 270),
+                360 - Math.abs(normalized - 270)
+            );
+            
+            // Interpolate between 12 hours and extremes
+            const maxDeviation = tilt / 10; // Simplified
+            const summerDayLength = 12 + maxDeviation;
+            const winterDayLength = 12 - maxDeviation;
+            
+            if (distanceToSummer < distanceToWinter) {
+                // Closer to summer solstice
+                const t = 1 - (distanceToSummer / 90);
+                return 12 + (summerDayLength - 12) * t;
+            } else {
+                // Closer to winter solstice
+                const t = 1 - (distanceToWinter / 90);
+                return 12 + (winterDayLength - 12) * t;
+            }
+        }
+        
+        function updateTerminator(earthX, earthY, tiltDirection) {
+            // Calculate terminator line based on sun position and Earth's tilt
+            // Sun is at (300, 300), Earth is at (earthX, earthY)
+            const sunX = 300;
+            const sunY = 300;
+            const earthRadius = 25;
+            
+            // Vector from Earth to Sun
+            let dx = sunX - earthX;
+            let dy = sunY - earthY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            // Normalize
+            dx = dx / distance;
+            dy = dy / distance;
+            
+            // Rotate by Earth's tilt (simplified)
+            const tiltRad = (earthTilt * Math.PI / 180) * tiltDirection;
+            const cosT = Math.cos(tiltRad);
+            const sinT = Math.sin(tiltRad);
+            
+            const rotatedDx = dx * cosT - dy * sinT;
+            const rotatedDy = dx * sinT + dy * cosT;
+            
+            // Calculate terminator ellipse
+            const a = earthRadius; // semi-major axis
+            const b = earthRadius * 0.7; // semi-minor axis (flattened)
+            
+            // Terminator is a line through center, perpendicular to sun direction
+            const normalDx = -rotatedDy;
+            const normalDy = rotatedDx;
+            
+            // Create elliptical terminator path
+            const steps = 20;
+            let path = '';
+            
+            for (let i = 0; i <= steps; i++) {
+                const t = (i / steps) * Math.PI * 2;
+                const x = Math.cos(t) * a * 0.8;
+                const y = Math.sin(t) * b * 0.8;
+                
+                // Rotate to align with sun direction
+                const rx = x * normalDx - y * normalDy;
+                const ry = x * normalDy + y * normalDx;
+                
+                if (i === 0) {
+                    path = `M ${rx} ${ry}`;
+                } else {
+                    path += ` L ${rx} ${ry}`;
+                }
+            }
+            
+            terminator.setAttribute('d', path + ' Z');
+        }
+        
+        // Start the simulation
+        init();
+    </script>
+</body>
+</html>

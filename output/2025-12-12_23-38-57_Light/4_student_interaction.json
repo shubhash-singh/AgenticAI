@@ -1,0 +1,46 @@
+{
+  "intro": "Great job exploring the world of light! Let's check what you've learned and have some fun with it.",
+  "questions": [
+    {
+      "question": "You've seen how light travels in straight lines and how shadows are formed. Now, imagine you are standing in a dark room with a small flashlight and a ball. If you shine the flashlight on the ball, you will see a shadow on the wall. What would happen to the size of the shadow if you moved the flashlight closer to the ball?",
+      "type": "mcq",
+      "options": [
+        "A) The shadow would get bigger.",
+        "B) The shadow would get smaller.",
+        "C) The shadow would stay the same size.",
+        "D) The shadow would disappear."
+      ],
+      "hint": "Think about how the light rays spread out from the flashlight. When the flashlight is closer to the ball, the rays hitting the ball come from a wider angle.",
+      "correct_index": 0
+    },
+    {
+      "question": "You've learned that a plane mirror creates a virtual image that is laterally inverted. Imagine you are looking at your reflection in a mirror and you raise your right hand. What does your reflection appear to do?",
+      "type": "mcq",
+      "options": [
+        "A) Raise its right hand.",
+        "B) Raise its left hand.",
+        "C) Not raise any hand.",
+        "D) Raise both hands."
+      ],
+      "hint": "Lateral inversion means left and right are swapped. Think about which hand in the mirror is directly opposite your real right hand.",
+      "correct_index": 1
+    },
+    {
+      "question": "You've seen that white light is actually a mixture of seven colors. If you had a prism and a beam of sunlight, what would you see?",
+      "type": "mcq",
+      "options": [
+        "A) A single beam of white light coming out the other side.",
+        "B) A beam of light that has changed to a single, different color.",
+        "C) A rainbow-like band of seven colors.",
+        "D) A beam of light that has become brighter."
+      ],
+      "hint": "The activity showed how different colors in white light bend by different amounts when passing through a prism. This is called dispersion.",
+      "correct_index": 2
+    }
+  ],
+  "followups": [
+    "Think about how a periscope in a submarine uses mirrors to see over things. Can you explain it using what you learned about reflection?",
+    "Look at a rainbow in the sky or in a picture. Can you point out the seven colors in order? How does this connect to the prism activity?"
+  ],
+  "summary": "Light is amazing! It travels in straight lines, which is why we get sharp shadows. When it bounces off a mirror, it creates a virtual image that is flipped left-to-right. And the white light we see every day is actually a beautiful mix of seven colors that we can separate with a prism."
+}

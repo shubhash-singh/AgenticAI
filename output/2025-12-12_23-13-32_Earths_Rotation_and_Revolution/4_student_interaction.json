@@ -1,0 +1,46 @@
+{
+  "intro": "Great job exploring Earth's movements! Let's check your understanding with these fun questions.",
+  "questions": [
+    {
+      "question": "If you could speed up Earth's rotation, what would you notice first?",
+      "type": "mcq",
+      "options": [
+        "A) The seasons would change faster",
+        "B) Days and nights would get shorter",
+        "C) The Sun would appear bigger",
+        "D) Nights would get longer"
+      ],
+      "hint": "Think about what happens when Earth spins faster on its axis",
+      "correct_index": 1
+    },
+    {
+      "question": "What causes summer in the Northern Hemisphere?",
+      "type": "mcq",
+      "options": [
+        "A) Earth is closer to the Sun",
+        "B) Northern Hemisphere tilts toward the Sun",
+        "C) Southern Hemisphere tilts away from the Sun",
+        "D) The Sun gets brighter"
+      ],
+      "hint": "Remember how the Earth's tilt and position around the Sun work together",
+      "correct_index": 1
+    },
+    {
+      "question": "Which statement is TRUE about Earth's movement?",
+      "type": "mcq",
+      "options": [
+        "A) Rotation takes about 365 days",
+        "B) Revolution causes day and night",
+        "C) Earth spins around its axis once every 24 hours",
+        "D) The axis changes its tilt throughout the year"
+      ],
+      "hint": "Review the key differences between rotation and revolution",
+      "correct_index": 2
+    }
+  ],
+  "followups": [
+    "Want to see how changing Earth's tilt affects seasons? Try the simulation!",
+    "Curious about what would happen if Earth stopped spinning? Let's explore together!"
+  ],
+  "summary": "Earth spins on its axis (rotation) causing day and night every 24 hours. Earth also travels around the Sun (revolution) once every year. Earth's tilted axis makes different parts get more direct sunlight at different times, creating seasons."
+}

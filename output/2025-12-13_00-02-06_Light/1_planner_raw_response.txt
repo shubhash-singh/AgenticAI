@@ -1,0 +1,71 @@
+{
+  "learning_objectives": [
+    "Students will be able to explain that light travels in straight lines by observing shadow formation",
+    "Students will identify how changing light source position affects shadow size and shape",
+    "Students will demonstrate understanding of reflection by predicting image behavior in mirrors"
+  ],
+  "key_concepts": [
+    "Light travels in straight lines (rectilinear propagation)",
+    "Shadows form when opaque objects block light",
+    "Plane mirrors create virtual, erect, laterally inverted images"
+  ],
+  "visual_design": {
+    "main_display": "Interactive scene showing a light source, 3D-style opaque object, and shadow on wall with mirror reflection below",
+    "color_scheme": ["#FFD700", "#2E86AB", "#F39189"],
+    "animation_style": "smooth",
+    "visual_metaphor": "Flashlight shining on objects to create shadows, like playing with flashlight in a dark room"
+  },
+  "variables_to_simulate": [
+    {
+      "name": "Light Source Distance",
+      "control_type": "slider",
+      "min": 1,
+      "max": 10,
+      "default": 5,
+      "unit": "units",
+      "visual_effect": "changes shadow size - closer makes shadow larger, farther makes shadow smaller"
+    },
+    {
+      "name": "Object Size",
+      "control_type": "slider",
+      "min": 20,
+      "max": 100,
+      "default": 50,
+      "unit": "px",
+      "visual_effect": "changes the size of the opaque object, which directly changes shadow size"
+    },
+    {
+      "name": "Mirror Angle",
+      "control_type": "slider",
+      "min": 0,
+      "max": 90,
+      "default": 45,
+      "unit": "degrees",
+      "visual_effect": "rotates the mirror to show how reflection angle changes, with light ray animation"
+    }
+  ],
+  "layout_structure": {
+    "sections": [
+      {"id": "header", "height": "60px", "content": "Title and brief description"},
+      {"id": "visual-area", "height": "50vh", "content": "Main interactive visualization"},
+      {"id": "controls", "height": "auto", "content": "Sliders and buttons"},
+      {"id": "info", "height": "auto", "content": "Current values and observations"}
+    ],
+    "spacing": "16px between sections"
+  },
+  "simulation_logic": [
+    "Step 1: Initialize visual with default values showing light source, object, shadow, and mirror",
+    "Step 2: When slider moves, calculate new value and update visual elements",
+    "Step 3: Animate visual change over 300ms with smooth transitions",
+    "Step 4: Update display text with new values and observations"
+  ],
+  "text_instructions": "Adjust the sliders to see how light behaves with objects and mirrors",
+  "misconceptions_to_address": [
+    "Light bends around corners to create shadows",
+    "Mirrors reverse images top-to-bottom instead of left-to-right"
+  ],
+  "safety_constraints": [
+    "Age-appropriate content",
+    "No external resources"
+  ]
+}

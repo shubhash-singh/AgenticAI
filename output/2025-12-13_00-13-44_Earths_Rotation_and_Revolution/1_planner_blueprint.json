@@ -1,0 +1,10 @@
+{
+  "main_display": "Animated Earth model with visible axis line, rotating on its axis while orbiting a stationary Sun. Earth shows day/night terminator line and seasonal tilt effects.",
+  "color_scheme": [
+    "#FFD700",
+    "#4A90E2",
+    "#27AE60"
+  ],
+  "animation_style": "smooth continuous rotation with stepped orbital movement",
+  "visual_metaphor": "Earth as a spinning top moving around a campfire"
+}

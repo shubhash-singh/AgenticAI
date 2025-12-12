@@ -1,0 +1,50 @@
+{
+  "intro": "Welcome, young scientists! Today we're going to explore the fascinating world of light, shadows, and reflections. Get ready to discover how light behaves and why we see things the way we do!",
+  "questions": [
+    {
+      "question": "You have a flashlight and a ball. If you shine the flashlight on the ball in a dark room, what will happen on the wall behind the ball?",
+      "type": "mcq",
+      "options": [
+        "A) The wall will become brighter than before",
+        "B) A bright circle of light will appear on the wall",
+        "C) A dark shadow shaped like the ball will appear on the wall",
+        "D) The wall will turn different colors"
+      ],
+      "correct_index": 2,
+      "hint": "Think about what happens when an object blocks light from reaching a surface",
+      "explanation": "When light travels in straight lines and hits an opaque object like a ball, it cannot pass through. This creates a dark area behind the ball where the light doesn't reach - this is called a shadow. The shadow's shape matches the object blocking the light."
+    },
+    {
+      "question": "You're standing in front of a mirror and you raise your right hand. What does your reflection appear to do?",
+      "type": "mcq",
+      "options": [
+        "A) Raises its right hand",
+        "B) Raises its left hand",
+        "C) Doesn't raise any hand",
+        "D) Raises both hands"
+      ],
+      "correct_index": 1,
+      "hint": "Look at yourself in a mirror and notice what happens when you raise your hand",
+      "explanation": "The image in a plane mirror is laterally inverted, which means left and right are flipped. When you raise your right hand, your reflection appears to raise its left hand. This is because the mirror reflects light symmetrically across its surface."
+    },
+    {
+      "question": "Which of these everyday situations shows that white light is made up of many colors?",
+      "type": "mcq",
+      "options": [
+        "A) Seeing your reflection in a window",
+        "B) Watching a rainbow after rain",
+        "C) Looking at a shadow under a tree",
+        "D) Turning on a flashlight in a dark room"
+      ],
+      "correct_index": 1,
+      "hint": "Think about what causes the beautiful colors you see in the sky after it rains",
+      "explanation": "Rainbows are formed when sunlight passes through water droplets in the air. These water droplets act like tiny prisms, dispersing the white light into its seven component colors (VIBGYOR: Violet, Indigo, Blue, Green, Yellow, Orange, Red). This proves that white light is actually a combination of different colors."
+    }
+  ],
+  "followups": [
+    "Try shining a flashlight through different materials (glass, paper, wood) - which ones let light through?",
+    "Experiment with different angles in front of a mirror - does the reflection change?",
+    "Look for examples of light dispersion around your home - can you find any?"
+  ],
+  "summary": "Great job exploring light concepts! Remember: light travels in straight lines, which explains how shadows form; mirrors create virtual, laterally inverted images; and white light is actually made of seven beautiful colors that we can see in rainbows."
+}

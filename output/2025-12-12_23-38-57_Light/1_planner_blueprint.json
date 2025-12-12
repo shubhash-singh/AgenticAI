@@ -1,0 +1,56 @@
+{
+  "learning_objectives": [
+    "Understand that light travels in straight lines and observe this through shadow formation.",
+    "Explore how shadows change with the position of the light source and the object.",
+    "Learn the basics of reflection by comparing shadows and mirror images.",
+    "Discover that white light is made of many colors through a simple prism activity."
+  ],
+  "key_concepts": [
+    "Light travels in straight lines (rectilinear propagation).",
+    "Shadows form when an opaque object blocks light.",
+    "The shape and size of a shadow depend on the light source and object positions.",
+    "Mirrors reflect light to create images that are virtual, erect, same size, and laterally inverted.",
+    "White light splits into seven colors (VIBGYOR) when passed through a prism."
+  ],
+  "variables_to_simulate": [
+    "Light source position (angle and distance).",
+    "Object size and shape.",
+    "Screen distance from the object.",
+    "Prism angle for dispersion."
+  ],
+  "user_interactions": [
+    "Slider to move the light source up/down and left/right.",
+    "Dropdown to change the object shape (circle, square, hand).",
+    "Slider to adjust the object size.",
+    "Button to switch between shadow mode and mirror mode.",
+    "Slider to rotate the prism and see color splitting.",
+    "Button to reset the simulation."
+  ],
+  "simulation_logic": [
+    "When the simulation starts, show a light source, an object, and a screen.",
+    "Moving the light source slider changes the direction of light rays (straight lines) and updates the shadow on the screen in real time.",
+    "Changing the object shape or size updates the shadow shape and size immediately.",
+    "Clicking the mirror mode button replaces the screen with a mirror. The object's image appears behind the mirror, showing virtual, erect, same-size, and left-right flipped properties.",
+    "In prism mode, rotating the prism splits white light into a rainbow band of colors (VIBGYOR).",
+    "The reset button returns all controls to their default positions."
+  ],
+  "mobile_ui_plan": [
+    "Top section: Title and short instruction text.",
+    "Middle section: Interactive canvas showing light rays, object, and screen/mirror.",
+    "Bottom section: Vertical stack of sliders and buttons for controls.",
+    "All elements are large enough to be used with fingers, with clear labels."
+  ],
+  "misconceptions_to_address": [
+    "Light bends around objects (show straight rays and sharp shadows).",
+    "Shadows are the same size and shape as the object (show how they change with light position).",
+    "Mirror images are real and exist behind the mirror (explain virtual image).",
+    "White light is a single color (show it splits into many colors)."
+  ],
+  "text_instructions_for_students": "Welcome! In this activity, you will learn about light by playing with a light source, objects, and screens. Use the sliders to move the light and change the object. See how the shadow changes. Switch to mirror mode to see how mirrors reflect light. Try the prism to see colors appear. Have fun exploring!",
+  "file_target": "single_file_html",
+  "safety_constraints": [
+    "Use soft colors and avoid flashing effects to prevent eye strain.",
+    "Keep text simple and avoid complex scientific terms.",
+    "Ensure all interactive elements are easy to tap on small screens."
+  ]
+}

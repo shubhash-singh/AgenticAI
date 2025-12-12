@@ -1,0 +1,10 @@
+{
+  "main_display": "Interactive scene showing a light source, 3D-style opaque object, and shadow on wall with mirror reflection below",
+  "color_scheme": [
+    "#FFD700",
+    "#2E86AB",
+    "#F39189"
+  ],
+  "animation_style": "smooth",
+  "visual_metaphor": "Flashlight shining on objects to create shadows, like playing with flashlight in a dark room"
+}
