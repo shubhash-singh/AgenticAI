@@ -1,0 +1,1051 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thermal Equilibrium: The Flow of Heat</title>
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --card: #ffffff;
+            --accent: #3b82f6;
+            --accent-dark: #2563eb;
+            --accent-light: #93c5fd;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border-light: #e2e8f0;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --error: #ef4444;
+            --error-light: #fee2e2;
+            --shadow: 0 4px 12px rgba(0,0,0,0.06);
+            --radius: 12px;
+            --padding-base: 1rem;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            background-color: var(--bg);
+            color: var(--text-primary);
+            margin: 0;
+            padding: var(--padding-base);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 720px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: var(--padding-base);
+        }
+
+        .card {
+            background-color: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: var(--padding-base);
+        }
+
+        h1, h2, h3 {
+            color: var(--text-primary);
+            margin-top: 0;
+            margin-bottom: 0.8rem;
+        }
+
+        /* SVG Visualization */
+        #simCanvas {
+            width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            border-radius: var(--radius);
+        }
+
+        .object-circle {
+            transition: fill 0.3s ease;
+        }
+
+        .temp-indicator {
+            transition: width 0.3s ease, fill 0.3s ease;
+        }
+
+        .heat-arrow use {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            stroke: var(--accent); /* Make arrows more visible */
+            stroke-width: 2px; /* Make arrows more visible */
+        }
+
+        #thermometer-group {
+            cursor: grab;
+            touch-action: none; /* Prevent browser touch actions */
+        }
+
+        #thermometer-group.dragging {
+            cursor: grabbing;
+        }
+
+        #mercury {
+            transition: height 0.3s ease, y 0.3s ease;
+        }
+
+        /* Controls Section */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--padding-base);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .control-group label {
+            font-weight: bold;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .slider-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        input[type="range"] {
+            flex-grow: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: var(--border-light);
+            border-radius: 4px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px; /* Touch friendly */
+            height: 24px; /* Touch friendly */
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: grab;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            margin-top: -8px; /* Center thumb vertically */
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 24px; /* Touch friendly */
+            height: 24px; /* Touch friendly */
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: grab;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .value-pill {
+            display: inline-flex;
+            min-width: 70px; /* Ensure sufficient width */
+            padding: 0.3rem 0.6rem;
+            background-color: var(--accent-light);
+            color: var(--text-primary);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold; /* Make value stand out */
+        }
+
+        .button-group {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+        }
+
+        .button-group button {
+            flex: 1; /* Distribute space */
+            min-width: 100px; /* Prevent buttons from becoming too small */
+            padding: 0.75rem 1rem; /* Touch friendly */
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+            min-height: 44px; /* Touch friendly */
+        }
+
+        .button-group button:not(:disabled):hover {
+            opacity: 0.9;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .button-group button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .button-primary {
+            background-color: var(--accent);
+            color: var(--card);
+        }
+
+        .button-secondary {
+            background-color: var(--text-secondary);
+            color: var(--card);
+        }
+
+        .button-reset {
+            background-color: #fca5a5; /* Light red */
+            color: var(--text-primary);
+        }
+
+        /* Stats Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: var(--padding-base);
+            margin-top: 1rem;
+        }
+
+        .stat-card {
+            background-color: var(--bg); /* Lighter background for stat cards */
+            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid var(--border-light);
+        }
+
+        .stat-card .label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-card .value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .formula-display {
+            background-color: var(--bg);
+            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--border-light);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            margin-top: 1rem;
+            overflow-x: auto; /* For long formulas */
+        }
+
+        /* Educational Content (Collapsible) */
+        .collapsible-btn {
+            background-color: var(--bg);
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 1rem;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 44px; /* Touch friendly */
+        }
+
+        .collapsible-btn:hover {
+            background-color: #e2e8f0;
+        }
+
+        .collapsible-btn.active .arrow {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-btn .arrow {
+            margin-left: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .collapsible-content {
+            padding: 0 1rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background-color: var(--card);
+        }
+        .collapsible-content p, .collapsible-content ul {
+            padding-bottom: 0.8rem;
+            padding-top: 0.8rem;
+            margin: 0;
+            color: var(--text-secondary);
+        }
+        .collapsible-content ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+        }
+        .collapsible-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Quiz Styling */
+        .quiz-question-card {
+            background-color: var(--bg);
+            border-radius: 8px;
+            padding: var(--padding-base);
+            margin-bottom: var(--padding-base);
+            border: 1px solid var(--border-light);
+        }
+
+        .quiz-question-card p {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .quiz-question-card .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .quiz-question-card .option {
+            background-color: var(--card);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+            min-height: 44px; /* Touch friendly */
+            font-size: 0.95rem;
+        }
+
+        .quiz-question-card .option:not(:disabled):hover {
+            background-color: #f0f4f8;
+            border-color: var(--accent-light);
+        }
+
+        .quiz-question-card .option:disabled {
+            cursor: not-allowed;
+            opacity: 0.9;
+        }
+
+        .quiz-question-card .feedback {
+            margin-top: 1rem;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            display: none; /* Hidden by default */
+        }
+        .quiz-question-card .feedback.success {
+            background-color: var(--success-light);
+            color: var(--success);
+        }
+        .quiz-question-card .feedback.error {
+            background-color: var(--error-light);
+            color: var(--error);
+        }
+
+        /* Image styling */
+        .info-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--radius);
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        .image-caption {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        /* Specific additions for thermometer connection */
+        .thermometer-connection-line {
+            stroke: var(--accent);
+            stroke-width: 2;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="card">
+            <h1>Thermal Equilibrium: The Flow of Heat</h1>
+            <p>Explore how heat energy transfers between objects at different temperatures until they reach equilibrium.</p>
+        </header>
+
+        <section class="card">
+            <h2>Simulation Area</h2>
+            <svg id="simCanvas" viewBox="0 0 500 350">
+                <!-- Simulation background -->
+                <rect x="0" y="0" width="500" height="350" fill="var(--card)" rx="12" ry="12"></rect>
+
+                <!-- Object A -->
+                <g id="objectA">
+                    <circle cx="150" cy="180" r="50" fill="#FF5733" opacity="0.8" class="object-circle"></circle>
+                    <rect x="120" y="170" width="60" height="20" fill="white" rx="5" ry="5" stroke="var(--border-light)" stroke-width="1"></rect> <!-- Temp bar container -->
+                    <rect id="tempBarA" x="120" y="170" width="0" height="20" fill="#FF5733" rx="5" ry="5" class="temp-indicator"></rect>
+                    <text x="150" y="250" font-size="16" text-anchor="middle" fill="var(--text-primary)">Object A</text>
+                    <text id="tempTextA" x="150" y="200" font-size="14" text-anchor="middle" fill="var(--text-primary)" font-weight="bold">80°C</text>
+                </g>
+
+                <!-- Object B -->
+                <g id="objectB">
+                    <circle cx="350" cy="180" r="50" fill="#3366FF" opacity="0.8" class="object-circle"></circle>
+                    <rect x="320" y="170" width="60" height="20" fill="white" rx="5" ry="5" stroke="var(--border-light)" stroke-width="1"></rect> <!-- Temp bar container -->
+                    <rect id="tempBarB" x="320" y="170" width="0" height="20" fill="#3366FF" rx="5" ry="5" class="temp-indicator"></rect>
+                    <text x="350" y="250" font-size="16" text-anchor="middle" fill="var(--text-primary)">Object B</text>
+                    <text id="tempTextB" x="350" y="200" font-size="14" text-anchor="middle" fill="var(--text-primary)" font-weight="bold">20°C</text>
+                </g>
+
+                <!-- Heat Flow Arrows -->
+                <g id="heatFlowArrows">
+                    <!-- Base arrow shape: A simple arrow pointing right, with its tip at (0,0) -->
+                    <path d="M0,0 L-10,-5 L-10,5 Z" id="arrowBase" fill="#FFA500" style="opacity: 0;"></path>
+
+                    <!-- Multiple instances, transformed. These will be dynamically updated. -->
+                    <use href="#arrowBase" class="heat-arrow" transform="translate(200, 160) scale(1.2)"></use>
+                    <use href="#arrowBase" class="heat-arrow" transform="translate(200, 180)"></use>
+                    <use href="#arrowBase" class="heat-arrow" transform="translate(200, 200) scale(0.8)"></use>
+                </g>
+
+                <!-- Thermometer (Draggable element) -->
+                <g id="thermometer-group">
+                    <!-- Thermometer body -->
+                    <rect x="230" y="100" width="20" height="150" fill="white" stroke="var(--text-secondary)" stroke-width="1" rx="5" ry="5"></rect>
+                    <circle cx="240" cy="250" r="15" fill="white" stroke="var(--text-secondary)" stroke-width="1"></circle>
+                    
+                    <!-- Mercury -->
+                    <rect id="mercury" x="232" y="248" width="16" height="0" fill="#FF0000" rx="3" ry="3"></rect>
+                    <circle cx="240" cy="250" r="12" fill="#FF0000"></circle> <!-- Mercury bulb -->
+
+                    <!-- Labels -->
+                    <text id="thermometerTempText" x="240" y="90" font-size="14" text-anchor="middle" fill="var(--text-primary)">Drag to read</text>
+                    <text x="240" y="105" font-size="9" text-anchor="middle" fill="var(--text-secondary)">100°C</text>
+                    <text x="240" y="245" font-size="9" text-anchor="middle" fill="var(--text-secondary)">0°C</text>
+                </g>
+
+                <!-- Visual connection line for thermometer -->
+                <line id="thermometerConnectionLine" class="thermometer-connection-line" x1="240" y1="100" x2="240" y2="100"></line>
+
+                <!-- Hitboxes for draggable thermometer (make them slightly larger than objects for easier touch target) -->
+                <rect id="objectA-hitbox" x="90" y="120" width="120" height="120" fill="transparent" pointer-events="all"></rect>
+                <rect id="objectB-hitbox" x="290" y="120" width="120" height="120" fill="transparent" pointer-events="all"></rect>
+            </svg>
+        </section>
+
+        <section class="card">
+            <h2>Controls</h2>
+            <p>Adjust the initial temperatures of Object A and Object B using the sliders. Click 'Start Simulation' to observe heat flow and the approach to thermal equilibrium.</p>
+            <div class="controls-grid">
+                <div class="control-group">
+                    <label for="slider1">Initial Temperature of Object A:</label>
+                    <div class="slider-wrapper">
+                        <input type="range" id="slider1" min="0" max="100" value="80" step="1">
+                        <span id="valuePill1" class="value-pill">80°C</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="slider2">Initial Temperature of Object B:</label>
+                    <div class="slider-wrapper">
+                        <input type="range" id="slider2" min="0" max="100" value="20" step="1">
+                        <span id="valuePill2" class="value-pill">20°C</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button id="startButton" class="button-primary">Start Simulation</button>
+                <button id="stopButton" class="button-secondary" disabled>Stop Simulation</button>
+                <button id="resetButton" class="button-reset">Reset</button>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Simulation Stats</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="label">Temperature A</span>
+                    <span id="statsTempA" class="value">80.0°C</span>
+                </div>
+                <div class="stat-card">
+                    <span class="label">Temperature B</span>
+                    <span id="statsTempB" class="value">20.0°C</span>
+                </div>
+                <div class="stat-card">
+                    <span class="label">Temp Difference</span>
+                    <span id="statsDiff" class="value">60.0°C</span>
+                </div>
+                <div class="stat-card">
+                    <span class="label">Equilibrium Reached?</span>
+                    <span id="statsEquilibrium" class="value">No</span>
+                </div>
+            </div>
+            <div class="formula-display">
+                <p><strong>Formula:</strong> Heat Flow Rate ∝ (T_hot - T_cold)</p>
+                <p><code>dT/dt = -k * (T_A - T_B)</code></p>
+                <p>Where <code>k</code> is the heat transfer coefficient. The simulation shows heat flowing from higher to lower temperatures until equilibrium is reached.</p>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>The Flow of Heat Explained</h2>
+            
+            <div class="collapsible">
+                <button class="collapsible-btn">What is Heat Flow? <span class="arrow">▼</span></button>
+                <div class="collapsible-content">
+                    <p>Heat is a form of energy that naturally moves from a region of higher temperature to a region of lower temperature. Think of it like water flowing downhill; heat naturally flows from places where it's more concentrated (hotter) to places where it's less concentrated (colder). This movement of heat is what we call the "flow of heat."</p>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/System_boundary.svg/250px-System_boundary.svg.png" alt="A diagram of a generic thermodynamic system" class="info-image">
+                    <p class="image-caption">A diagram illustrating a thermodynamic system and its boundary for heat transfer.</p>
+                    <p>Learn more about Thermodynamics: <a href="https://www.youtube.com/watch?v=bJsWGPXjYuc" target="_blank" rel="noopener noreferrer">What is Thermodynamics?</a></p>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <button class="collapsible-btn">Key Concepts <span class="arrow">▼</span></button>
+                <div class="collapsible-content">
+                    <ul>
+                        <li><strong>Hot and Cold Objects:</strong> We describe objects as "hot" or "cold" based on their temperature and how they feel to our touch. This feeling is directly related to the rate of heat transfer.</li>
+                        <li><strong>Temperature:</strong> Temperature is a quantitative measure of hotness or coldness, reflecting the average kinetic energy of the particles within an object. Thermometers are used to measure it.</li>
+                        <li><strong>Heat Transfer:</strong> Heat transfer is the movement of thermal energy. It's driven by temperature differences and continues until thermal equilibrium is achieved.</li>
+                        <li><strong>Thermal Equilibrium:</strong> This is the state where two or more systems are at the same temperature, and there is no net flow of heat between them.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <button class="collapsible-btn">How the Simulation Works <span class="arrow">▼</span></button>
+                <div class="collapsible-content">
+                    <p>Heat flows from a region of <strong>higher temperature</strong> to a region of <strong>lower temperature</strong>. This simulation models this by adjusting the temperatures of Object A and Object B over time based on their current difference. The simulation stops when the temperatures are close enough to be considered in equilibrium.</p>
+                    <p><strong>Using the Thermometer:</strong> Drag the thermometer over Object A or Object B to see its precise temperature. The system also estimates an average temperature when the thermometer is not directly over an object.</p>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <button class="collapsible-btn">Intuitive Analogy <span class="arrow">▼</span></button>
+                <div class="collapsible-content">
+                    <p>Think of heat like people trying to spread out evenly. If one room is very crowded (high temperature) and another is almost empty (low temperature), people will naturally move from the crowded room to the empty one until the distribution is more even. Heat behaves similarly, spreading out until temperatures are equal.</p>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <button class="collapsible-btn">Real-World Examples <span class="arrow">▼</span></button>
+                <div class="collapsible-content">
+                    <ul>
+                        <li><strong>Cooking:</strong> Heat from a stovetop flows into a pan, and then into food, cooking it.</li>
+                        <li><strong>Insulation:</strong> Winter clothing traps body heat by slowing down the flow of heat from your warm body to the cold environment.</li>
+                        <li><strong>Cooling Drinks:</strong> An ice cube cools a drink because heat flows from the warmer drink to the colder ice.</li>
+                        <li><strong>Electronics:</strong> Heat sinks are used to draw heat away from sensitive electronic components, preventing overheating.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Quiz Time!</h2>
+            <p>Test your understanding of thermal equilibrium and heat flow.</p>
+
+            <div class="quiz-question-card" data-question-id="1">
+                <p><strong>1. Which of the following statements best describes the flow of heat?</strong></p>
+                <div class="options">
+                    <button class="option" data-answer="a_cold_to_hot">a) Heat flows from colder objects to hotter objects.</button>
+                    <button class="option" data-answer="b_hot_to_cold">b) Heat flows from hotter objects to colder objects.</button>
+                    <button class="option" data-answer="c_no_flow">c) Heat does not flow; it stays in the object.</button>
+                    <button class="option" data-answer="d_only_touch">d) Heat flows only when an object is touched.</button>
+                </div>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="quiz-question-card" data-question-id="2">
+                <p><strong>2. When you hold an ice cube, your hand feels cold. What is happening to the heat energy?</strong></p>
+                <div class="options">
+                    <button class="option" data-answer="a_hand_to_ice">a) Heat is flowing from your hand to the ice cube.</button>
+                    <button class="option" data-answer="b_ice_to_hand">b) Heat is flowing from the ice cube to your hand.</button>
+                    <button class="option" data-answer="c_no_flow">c) No heat is flowing.</button>
+                    <button class="option" data-answer="d_created">d) Heat is being created.</button>
+                </div>
+                <div class="feedback"></div>
+            </div>
+
+            <div class="quiz-question-card" data-question-id="3">
+                <p><strong>3. Temperature is a measure of:</strong></p>
+                <div class="options">
+                    <button class="option" data-answer="a_water_amount">a) How much water is in an object.</button>
+                    <button class="option" data-answer="b_heat_stored">b) How much heat is stored in an object.</button>
+                    <button class="option" data-answer="c_kinetic_energy">c) The average kinetic energy of the particles in an object.</button>
+                    <button class="option" data-answer="d_object_weight">d) How heavy an object is.</button>
+                </div>
+                <div class="feedback"></div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // State management
+        let state = {
+            initialTempA: 80,
+            initialTempB: 20,
+            currentTempA: 80,
+            currentTempB: 20,
+            k_heatTransfer: 0.05, // A constant for heat transfer rate, adjusted for visual speed
+            epsilon: 0.5, // Temperature difference threshold for equilibrium
+            simulationRunning: false,
+            animationInterval: null,
+            timeStep: 0.5, // seconds for simulation step
+            thermometerReading: "Drag to read", // Default text for thermometer
+            thermometerOver: null, // "A", "B", or null
+            thermometerX: 200, // Initial X translation for thermometer-group
+            thermometerY: 0, // Initial Y translation for thermometer-group
+            quizAnswers: {
+                1: 'b_hot_to_cold',
+                2: 'a_hand_to_ice',
+                3: 'c_kinetic_energy'
+            }
+        };
+
+        // DOM references
+        let svg, tempBarA, tempTextA, tempBarB, tempTextB,
+            sliderTempA, valuePillA, sliderTempB, valuePillB,
+            heatFlowArrows, thermometerGroup, mercury, thermometerTempText, thermometerConnectionLine,
+            objectAHitbox, objectBHitbox,
+            statsTempA, statsTempB, statsDiff, statsEquilibrium,
+            startButton, resetButton, stopButton;
+
+        function initSimulation() {
+            // Get all DOM references
+            svg = document.getElementById('simCanvas');
+            tempBarA = document.getElementById('tempBarA');
+            tempTextA = document.getElementById('tempTextA');
+            tempBarB = document.getElementById('tempBarB');
+            tempTextB = document.getElementById('tempTextB');
+            
+            sliderTempA = document.getElementById('slider1');
+            valuePillA = document.getElementById('valuePill1');
+            sliderTempB = document.getElementById('slider2');
+            valuePillB = document.getElementById('valuePill2');
+
+            heatFlowArrows = document.getElementById('heatFlowArrows');
+            thermometerGroup = document.getElementById('thermometer-group');
+            mercury = document.getElementById('mercury');
+            thermometerTempText = document.getElementById('thermometerTempText');
+            thermometerConnectionLine = document.getElementById('thermometerConnectionLine');
+            
+            objectAHitbox = document.getElementById('objectA-hitbox');
+            objectBHitbox = document.getElementById('objectB-hitbox');
+            
+            statsTempA = document.getElementById('statsTempA');
+            statsTempB = document.getElementById('statsTempB');
+            statsDiff = document.getElementById('statsDiff');
+            statsEquilibrium = document.getElementById('statsEquilibrium');
+            
+            startButton = document.getElementById('startButton');
+            stopButton = document.getElementById('stopButton');
+            resetButton = document.getElementById('resetButton');
+            
+            // Set initial state from sliders
+            state.initialTempA = parseFloat(sliderTempA.value);
+            state.initialTempB = parseFloat(sliderTempB.value);
+            state.currentTempA = state.initialTempA;
+            state.currentTempB = state.initialTempB;
+            valuePillA.textContent = `${state.initialTempA}°C`;
+            valuePillB.textContent = `${state.initialTempB}°C`;
+
+            // Set up event listeners for sliders
+            sliderTempA.addEventListener('input', (e) => {
+                state.initialTempA = parseFloat(e.target.value);
+                valuePillA.textContent = `${state.initialTempA}°C`;
+                resetSimulation(); // Reset when sliders change
+            });
+            sliderTempB.addEventListener('input', (e) => {
+                state.initialTempB = parseFloat(e.target.value);
+                valuePillB.textContent = `${state.initialTempB}°C`;
+                resetSimulation(); // Reset when sliders change
+            });
+
+            // Set up event listeners for control buttons
+            startButton.addEventListener('click', startSimulation);
+            stopButton.addEventListener('click', stopSimulation);
+            resetButton.addEventListener('click', resetSimulation);
+
+            // Setup draggable for the thermometer
+            setupDraggable(thermometerGroup, objectAHitbox, objectBHitbox);
+
+            // Setup collapsible sections
+            document.querySelectorAll('.collapsible-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    const content = this.nextElementSibling;
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        this.querySelector('.arrow').textContent = '▼';
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        this.querySelector('.arrow').textContent = '▲';
+                    }
+                });
+            });
+
+            // Setup quiz functionality
+            document.querySelectorAll('.quiz-question-card').forEach(quizCard => {
+                const questionId = quizCard.dataset.question-id;
+                const feedbackDiv = quizCard.querySelector('.feedback');
+                
+                quizCard.querySelectorAll('.option').forEach(optionButton => {
+                    optionButton.addEventListener('click', function() {
+                        // Reset previous feedback styles
+                        quizCard.querySelectorAll('.option').forEach(btn => {
+                            btn.style.backgroundColor = '';
+                            btn.disabled = true; // Disable all options after first click
+                        });
+
+                        const userAnswer = this.dataset.answer;
+                        feedbackDiv.style.display = 'block';
+                        
+                        if (userAnswer === state.quizAnswers[questionId]) {
+                            feedbackDiv.className = 'feedback success';
+                            feedbackDiv.textContent = 'Correct! ' + getQuizExplanation(questionId);
+                            this.style.backgroundColor = 'var(--success-light)';
+                        } else {
+                            feedbackDiv.className = 'feedback error';
+                            feedbackDiv.textContent = 'Incorrect. ' + getQuizExplanation(questionId);
+                            this.style.backgroundColor = 'var(--error-light)';
+                            // Highlight correct answer
+                            const correctAnswerButton = quizCard.querySelector(`.option[data-answer="${state.quizAnswers[questionId]}"]`);
+                            if (correctAnswerButton) {
+                                correctAnswerButton.style.backgroundColor = 'var(--success-light)';
+                            }
+                        }
+                    });
+                });
+            });
+
+            // Initial render
+            updateSimulation();
+            stopSimulation(); // Start paused
+        }
+
+        function startSimulation() {
+            if (!state.simulationRunning) {
+                state.simulationRunning = true;
+                state.animationInterval = setInterval(updateSimulation, state.timeStep * 1000);
+                startButton.disabled = true;
+                stopButton.disabled = false;
+                resetButton.disabled = false;
+            }
+        }
+
+        function stopSimulation() {
+            if (state.simulationRunning) {
+                clearInterval(state.animationInterval);
+                state.animationInterval = null; // Clear interval ID
+                state.simulationRunning = false;
+                startButton.disabled = false;
+                stopButton.disabled = true;
+            }
+        }
+
+        function resetSimulation() {
+            stopSimulation();
+            state.currentTempA = state.initialTempA;
+            state.currentTempB = state.initialTempB;
+            state.thermometerReading = "Drag to read";
+            state.thermometerOver = null;
+            // Reset thermometer position
+            state.thermometerX = 200; // Reset to a sensible default position
+            state.thermometerY = 0;
+            thermometerGroup.setAttribute('transform', `translate(${state.thermometerX}, ${state.thermometerY})`);
+            
+            // Reset quiz cards
+            document.querySelectorAll('.quiz-question-card').forEach(quizCard => {
+                quizCard.querySelectorAll('.option').forEach(btn => {
+                    btn.style.backgroundColor = '';
+                    btn.disabled = false;
+                });
+                quizCard.querySelector('.feedback').style.display = 'none';
+            });
+
+            updateSimulation(); // Render initial state
+            startButton.disabled = false;
+            stopButton.disabled = true;
+        }
+
+        function updateSimulation() {
+            // Calculate temperature difference and heat flow
+            let tempDiff = state.currentTempA - state.currentTempB;
+            let absTempDiff = Math.abs(tempDiff);
+
+            if (absTempDiff > state.epsilon && state.simulationRunning) {
+                let heatFlowRate = state.k_heatTransfer * tempDiff;
+                let deltaT = heatFlowRate * state.timeStep;
+                state.currentTempA -= deltaT;
+                state.currentTempB += deltaT;
+            } else if (state.simulationRunning) {
+                // Reached equilibrium, stop simulation
+                stopSimulation();
+            }
+
+            // Cap temperatures at 0-100 for display purposes
+            state.currentTempA = Math.max(0, Math.min(100, state.currentTempA));
+            state.currentTempB = Math.max(0, Math.min(100, state.currentTempB));
+
+            // Update SVG elements for objects
+            updateObjectSVG(tempBarA, tempTextA, state.currentTempA, '#FF5733'); // Hotter: Red
+            updateObjectSVG(tempBarB, tempTextB, state.currentTempB, '#3366FF'); // Colder: Blue
+
+            // Update heat flow arrows
+            updateHeatFlowArrows(tempDiff);
+
+            // Update thermometer display
+            updateThermometerDisplay();
+
+            // Update stats
+            statsTempA.textContent = `${state.currentTempA.toFixed(1)}°C`;
+            statsTempB.textContent = `${state.currentTempB.toFixed(1)}°C`;
+            statsDiff.textContent = `${absTempDiff.toFixed(1)}°C`;
+            statsEquilibrium.textContent = absTempDiff <= state.epsilon ? 'Yes' : 'No';
+        }
+
+        function updateObjectSVG(bar, text, temp, baseColor) {
+            const maxBarWidth = 60; // Max width of the temp indicator bar
+            const newWidth = (temp / 100) * maxBarWidth;
+            bar.setAttribute('width', newWidth);
+            
+            // Interpolate color between baseColor and white for visual effect
+            // Hotter temperatures should be more saturated, colder less so.
+            bar.setAttribute('fill', interpolateHexColor(baseColor, '#FFFFFF', 1 - (temp / 100))); 
+            text.textContent = `${temp.toFixed(0)}°C`;
+        }
+
+        // Helper function for color interpolation (Hex to Hex)
+        function interpolateHexColor(color1, color2, factor) {
+            function hexToRgb(hex) {
+                const bigint = parseInt(hex.slice(1), 16);
+                const r = (bigint >> 16) & 255;
+                const g = (bigint >> 8) & 255;
+                const b = bigint & 255;
+                return [r, g, b];
+            }
+
+            function rgbToHex(r, g, b) {
+                return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+            }
+
+            const rgb1 = hexToRgb(color1);
+            const rgb2 = hexToRgb(color2);
+
+            const r = Math.round(rgb1[0] + factor * (rgb2[0] - rgb1[0]));
+            const g = Math.round(rgb1[1] + factor * (rgb2[1] - rgb1[1]));
+            const b = Math.round(rgb1[2] + factor * (rgb2[2] - rgb1[2]));
+
+            return rgbToHex(r, g, b);
+        }
+
+        function updateHeatFlowArrows(tempDiff) {
+            const arrows = heatFlowArrows.querySelectorAll('.heat-arrow');
+            const maxOpacity = 0.9;
+            const minOpacity = 0.05;
+            const maxTempDiffForFullOpacity = 80; 
+
+            let opacity = Math.min(maxOpacity, Math.max(minOpacity, Math.abs(tempDiff) / maxTempDiffForFullOpacity * maxOpacity));
+            let directionScale = 1; // 1 for A->B, -1 for B->A
+            let baseTranslateX = 200; // Starting point near Object A's edge for A->B direction
+
+            if (tempDiff < 0) { // B is hotter, heat flows B -> A
+                directionScale = -1;
+                baseTranslateX = 300; // Starting point near Object B's edge for B->A direction
+            } else if (Math.abs(tempDiff) <= state.epsilon) {
+                opacity = 0; // No flow at equilibrium
+            }
+
+            arrows.forEach((arrow, index) => {
+                const offset = (index - 1) * 20; // Slight vertical offset for each arrow instance
+                const scale = 1 + (index - 1) * 0.2; // Slightly different sizes
+
+                arrow.setAttribute('transform', `translate(${baseTranslateX}, ${180 + offset}) scale(${directionScale * scale}, ${scale})`);
+                arrow.style.opacity = opacity;
+            });
+        }
+
+        function updateThermometerDisplay() {
+            let tempToDisplay = "Drag to read";
+            let tempValue = (state.currentTempA + state.currentTempB) / 2; // Default to average if not over an object
+
+            if (state.thermometerOver === 'A') {
+                tempToDisplay = `${state.currentTempA.toFixed(1)}°C`;
+                tempValue = state.currentTempA;
+            } else if (state.thermometerOver === 'B') {
+                tempToDisplay = `${state.currentTempB.toFixed(1)}°C`;
+                tempValue = state.currentTempB;
+            } else {
+                tempToDisplay = `System Avg: ${tempValue.toFixed(1)}°C`;
+            }
+            thermometerTempText.textContent = tempToDisplay;
+            setMercuryLevel(tempValue);
+            updateThermometerConnectionLine();
+        }
+
+        function setMercuryLevel(temp) {
+            const mercuryTrackHeight = 148; // From y=100 (100°C) to y=248 (0°C)
+            const mercuryMinY = 100; // Y-coordinate for 100°C
+            const mercuryMaxY = 248; // Y-coordinate for 0°C
+
+            const newMercuryHeight = (temp / 100) * mercuryTrackHeight;
+            const newMercuryY = mercuryMaxY - newMercuryHeight;
+
+            mercury.setAttribute('y', newMercuryY);
+            mercury.setAttribute('height', newMercuryHeight);
+        }
+
+        // Draggable functionality
+        function setupDraggable(element, hitboxA, hitboxB) {
+            let isDragging = false;
+            let initialX, initialY;
+            
+            // Initialize thermometer position based on state
+            element.setAttribute('transform', `translate(${state.thermometerX}, ${state.thermometerY})`);
+
+            element.addEventListener('pointerdown', dragStart);
+            element.addEventListener('pointerup', dragEnd);
+            element.addEventListener('pointerleave', dragEnd); // End drag if pointer leaves SVG
+            svg.addEventListener('pointermove', drag); // Use SVG as broader area for move
+
+            function getTranslation(transform) {
+                if (!transform || transform === 'none') return { x: 0, y: 0 };
+                const match = transform.match(/translate\(([^)]+)\)/);
+                if (match) {
+                    const parts = match[1].split(',').map(parseFloat);
+                    return { x: parts[0] || 0, y: parts[1] || 0 };
+                }
+                return { x: 0, y: 0 };
+            }
+
+            function dragStart(e) {
+                e.preventDefault();
+                isDragging = true;
+                element.classList.add('dragging');
+                const currentTransform = getTranslation(element.getAttribute('transform'));
+                initialX = e.clientX - currentTransform.x;
+                initialY = e.clientY - currentTransform.y;
+                element.setPointerCapture(e.pointerId); // Capture pointer for consistent dragging
+            }
+
+            function drag(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+
+                // Calculate new position
+                state.thermometerX = e.clientX - initialX;
+                state.thermometerY = e.clientY - initialY;
+                
+                // Constrain movement within SVG bounds slightly
+                const minX = -100; // To the left of Object A
+                const maxX = 300; // To the right of Object B
+                const minY = 0;
+                const maxY = 200; // Not going too low
+
+                state.thermometerX = Math.max(minX, Math.min(maxX, state.thermometerX));
+                state.thermometerY = Math.max(minY, Math.min(maxY, state.thermometerY));
+
+
+                element.setAttribute('transform', `translate(${state.thermometerX}, ${state.thermometerY})`);
+
+                // Check collision with hitboxes
+                const svgRect = svg.getBoundingClientRect();
+                
+                // Convert client coordinates to SVG coordinates
+                const x = e.clientX - svgRect.left;
+                const y = e.clientY - svgRect.top;
+
+                const objectARect = objectAHitbox.getBBox(); // getBBox returns values in SVG coordinates
+                const objectBRect = objectBHitbox.getBBox();
+
+                // Check for intersection with SVG BBox
+                const intersectA = x > objectARect.x && x < (objectARect.x + objectARect.width) &&
+                                   y > objectARect.y && y < (objectARect.y + objectARect.height);
+                const intersectB = x > objectBRect.x && x < (objectBRect.x + objectBRect.width) &&
+                                   y > objectBRect.y && y < (objectBRect.y + objectBRect.height);
+
+                if (intersectA) {
+                    state.thermometerOver = 'A';
+                } else if (intersectB) {
+                    state.thermometerOver = 'B';
+                } else {
+                    state.thermometerOver = null;
+                }
+                updateThermometerDisplay();
+            }
+
+            function dragEnd(e) {
+                if (!isDragging) return;
+                isDragging = false;
+                element.classList.remove('dragging');
+                element.releasePointerCapture(e.pointerId);
+            }
+        }
+
+        function updateThermometerConnectionLine() {
+            const thermometerTipX = 240;
+            const thermometerTipY = 100; // Top of the thermometer tube
+            
+            const line = thermometerConnectionLine;
+            
+            if (state.thermometerOver === 'A') {
+                const objectAcenter = { x: 150, y: 180 };
+                line.setAttribute('x1', thermometerTipX);
+                line.setAttribute('y1', thermometerTipY);
+                line.setAttribute('x2', objectAcenter.x);
+                line.setAttribute('y2', objectAcenter.y);
+                line.style.opacity = 0.7;
+            } else if (state.thermometerOver === 'B') {
+                const objectBcenter = { x: 350, y: 180 };
+                line.setAttribute('x1', thermometerTipX);
+                line.setAttribute('y1', thermometerTipY);
+                line.setAttribute('x2', objectBcenter.x);
+                line.setAttribute('y2', objectBcenter.y);
+                line.style.opacity = 0.7;
+            } else {
+                line.style.opacity = 0;
+            }
+        }
+
+        // Quiz explanations (helper function)
+        function getQuizExplanation(questionId) {
+            const explanations = {
+                1: 'Heat naturally flows from regions of higher temperature to regions of lower temperature.',
+                2: 'Heat flows from your warmer hand to the colder ice cube, causing your hand to lose thermal energy and feel cold.',
+                3: 'Temperature is a direct measure of the average kinetic energy of the particles within a substance.'
+            };
+            return explanations[questionId] || '';
+        }
+
+        // Initialize simulation when DOM is ready
+        document.addEventListener('DOMContentLoaded', initSimulation);
+    </script>
+</body>
+</html>
+```

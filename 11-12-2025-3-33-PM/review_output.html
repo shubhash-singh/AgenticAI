@@ -1,0 +1,694 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heat Flow Simulation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            width: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2em;
+            letter-spacing: 1px;
+        }
+
+        .visual-section {
+            background-color: #ffffff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 350px; /* Ensure enough space for SVG */
+            position: relative;
+        }
+
+        svg {
+            width: 100%;
+            height: auto;
+            display: block;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .controls-section,
+        .explanation-section,
+        .quiz-section {
+            background-color: #ffffff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 8px;
+            margin-top: 0;
+        }
+
+        .slider-container,
+        .object-controls {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .value-display {
+            font-weight: bold;
+            color: #28a745;
+            margin-left: 10px;
+        }
+
+        .object {
+            cursor: grab;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .object:active {
+            cursor: grabbing;
+        }
+
+        .hotter-object {
+            fill: #ff6347; /* Tomato Red */
+        }
+
+        .colder-object {
+            fill: #4682b4; /* Steel Blue */
+        }
+
+        .temperature-label {
+            font-size: 0.8em;
+            fill: white;
+            text-anchor: middle;
+            dominant-baseline: middle;
+            pointer-events: none;
+        }
+
+        .heat-flow-arrow {
+            stroke: #fd7e14; /* Coral */
+            stroke-width: 2;
+            fill: none;
+            animation: flow 1s linear infinite;
+        }
+
+        .heat-flow-arrow line {
+            stroke: #fd7e14;
+            stroke-width: 3;
+            marker-end: url(#arrowhead);
+        }
+
+        .equilibrium-text {
+            font-size: 1.5em;
+            font-weight: bold;
+            fill: #28a745;
+            text-anchor: middle;
+            dominant-baseline: middle;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .info-icon {
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 50%;
+            background-color: #17a2b8;
+            color: white;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: 5px;
+            font-size: 0.8em;
+            vertical-align: middle;
+            transition: background-color 0.3s ease;
+            position: relative; /* Needed for tooltip positioning */
+        }
+
+        .info-icon:hover {
+            background-color: #138496;
+        }
+
+        .tooltip {
+            position: absolute;
+            bottom: 120%; /* Position above the icon */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+        }
+
+        .info-icon:hover .tooltip {
+            opacity: 1;
+        }
+
+        .explanation-box {
+            background-color: #e9ecef;
+            border-left: 4px solid #17a2b8;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .step-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .step-controls button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .step-controls button:hover {
+            background-color: #0056b3;
+        }
+
+        .quiz-question {
+            margin-bottom: 15px;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 15px;
+        }
+
+        .quiz-question:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .quiz-question p {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .options label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: normal;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .options label:hover {
+            background-color: #e9ecef;
+        }
+
+        .options input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .feedback {
+            margin-top: 5px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .feedback.correct {
+            color: #28a745;
+        }
+
+        .feedback.incorrect {
+            color: #dc3545;
+        }
+
+        /* Animations */
+        @keyframes flow {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            header h1 {
+                font-size: 1.7em;
+            }
+            .visual-section {
+                min-height: 250px;
+            }
+            .temperature-label {
+                font-size: 0.7em;
+            }
+            .equilibrium-text {
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>The Flow of Heat</h1>
+        </header>
+
+        <section class="visual-section">
+            <svg id="simCanvas" viewBox="0 0 500 350">
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#fd7e14"/>
+                    </marker>
+                </defs>
+
+                <!-- Background -->
+                <rect width="100%" height="100%" fill="#e0f7fa"/>
+
+                <!-- Heat Flow Arrows (initially hidden) -->
+                <g id="heatFlowGroup">
+                    <line class="heat-flow-arrow" x1="250" y1="175" x2="300" y2="175"></line>
+                    <line class="heat-flow-arrow" x1="250" y1="185" x2="300" y2="185"></line>
+                    <line class="heat-flow-arrow" x1="250" y1="195" x2="300" y2="195"></line>
+                </g>
+
+                <!-- Objects -->
+                <circle id="colderObject" class="object colder-object" cx="150" cy="175" r="50" />
+                <circle id="hotterObject" class="object hotter-object" cx="350" cy="175" r="50" />
+
+                <!-- Temperature Labels -->
+                <text id="colderTempText" class="temperature-label" x="150" y="175">--°C</text>
+                <text id="hotterTempText" class="temperature-label" x="350" y="175">--°C</text>
+
+                <!-- Equilibrium Indicator -->
+                <text id="equilibriumIndicator" class="equilibrium-text" x="250" y="50">Equilibrium Reached!</text>
+            </svg>
+        </section>
+
+        <section class="controls-section">
+            <h2>Controls</h2>
+
+            <div class="object-controls">
+                <label>Drag Objects to Adjust Proximity:</label>
+                <p>Click and drag the circles to change their distance. Proximity affects how quickly heat transfers.</p>
+            </div>
+
+            <div class="slider-container">
+                <label for="tempDiffSlider">Initial Temperature Difference:</label>
+                <input type="range" id="tempDiffSlider" min="10" max="100" value="40">
+                <span id="tempDiffValue" class="value-display">40°C</span>
+            </div>
+
+            <div class="slider-container">
+                <label for="heatRateSlider">Heat Transfer Rate:</label>
+                <input type="range" id="heatRateSlider" min="0.1" max="2.0" step="0.1" value="1.0">
+                <span id="heatRateValue" class="value-display">1.0</span>
+            </div>
+        </section>
+
+        <section class="explanation-section">
+            <h2>Understanding Heat Flow</h2>
+            <div class="step-controls">
+                <button id="prevStepBtn">Previous</button>
+                <button id="nextStepBtn">Next</button>
+            </div>
+            <div id="explanationContent">
+                <p>Welcome to the Heat Flow Simulation! This simulation helps you visualize how heat energy moves between objects.</p>
+                <p>Click the info icons (<span class="info-icon">?</span>) for more details on specific concepts.</p>
+            </div>
+            <div id="explanationDetail1" class="explanation-box">
+                <p><strong>Hot and Cold Objects:</strong> We perceive objects as "hot" or "cold" based on how heat energy transfers to or from our skin. This feeling is directly related to their temperatures.</p>
+            </div>
+            <div id="explanationDetail2" class="explanation-box">
+                <p><strong>Temperature:</strong> Temperature is a quantitative measure of "hotness" or "coldness." It represents the average kinetic energy of the particles within an object. We use thermometers to measure it.</p>
+            </div>
+            <div id="explanationDetail3" class="explanation-box">
+                <p><strong>Heat Transfer:</strong> Heat is energy in transit. It naturally moves from regions of higher temperature to regions of lower temperature. This movement is called the "flow of heat."</p>
+            </div>
+            <div id="explanationDetail4" class="explanation-box">
+                <p><strong>Working Principle:</strong> Heat flows from a region of <strong>higher temperature</strong> to a region of <strong>lower temperature</strong>. This process continues until both objects reach the same temperature, a state known as <strong>thermal equilibrium</strong>.</p>
+            </div>
+        </section>
+
+        <section class="quiz-section">
+            <h2>Quiz Time!</h2>
+            <div class="quiz-question">
+                <p>Q: Heat always flows from:</p>
+                <div class="options">
+                    <label><input type="radio" name="q1" value="a"> A hotter object to a colder object. <span class="info-icon">?<span class="tooltip">This is the fundamental principle of heat transfer.</span></span></label>
+                    <label><input type="radio" name="q1" value="b"> A colder object to a hotter object.</label>
+                    <label><input type="radio" name="q1" value="c"> It does not flow; it stays in place.</label>
+                </div>
+                <div class="feedback q1-feedback"></div>
+            </div>
+
+            <div class="quiz-question">
+                <p>Q: What does the "Thermal Equilibrium" state represent in this simulation?</p>
+                <div class="options">
+                    <label><input type="radio" name="q2" value="a"> The point where the objects start to cool down.</label>
+                    <label><input type="radio" name="q2" value="b"> The point where both objects have reached the same temperature. <span class="info-icon">?<span class="tooltip">When temperatures are equal, there is no net heat flow.</span></span></label>
+                    <label><input type="radio" name="q2" value="c"> The point where heat transfer stops completely, regardless of temperature.</label>
+                </div>
+                <div class="feedback q2-feedback"></div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        let hotterObject, colderObject, tempDiffSlider, heatRateSlider,
+            hotterTempText, colderTempText, equilibriumIndicator,
+            heatFlowGroup, tempDiffValue, heatRateValue;
+
+        // Simulation State Variables
+        let hotterTemp = 0;
+        let colderTemp = 0;
+        let initialTempDiff = 40;
+        let heatTransferRate = 1.0;
+        let thermalEquilibrium = false;
+
+        // Dragging variables
+        let activeObject = null;
+        let offsetX, offsetY;
+
+        // Step-by-step explanation variables
+        let currentStep = 0;
+        const totalSteps = 4;
+        let explanationDetails;
+
+        function initSimulation() {
+            // Get DOM Elements
+            hotterObject = document.getElementById('hotterObject');
+            colderObject = document.getElementById('colderObject');
+            tempDiffSlider = document.getElementById('tempDiffSlider');
+            heatRateSlider = document.getElementById('heatRateSlider');
+            hotterTempText = document.getElementById('hotterTempText');
+            colderTempText = document.getElementById('colderTempText');
+            equilibriumIndicator = document.getElementById('equilibriumIndicator');
+            heatFlowGroup = document.getElementById('heatFlowGroup');
+            tempDiffValue = document.getElementById('tempDiffValue');
+            heatRateValue = document.getElementById('heatRateValue');
+
+            explanationDetails = [
+                document.getElementById('explanationDetail1'),
+                document.getElementById('explanationDetail2'),
+                document.getElementById('explanationDetail3'),
+                document.getElementById('explanationDetail4')
+            ];
+
+            // Set up event listeners
+            tempDiffSlider.addEventListener('input', handleSliderChange);
+            heatRateSlider.addEventListener('input', handleSliderChange);
+
+            hotterObject.addEventListener('mousedown', startDrag);
+            colderObject.addEventListener('mousedown', startDrag);
+            document.addEventListener('mousemove', dragObject);
+            document.addEventListener('mouseup', endDrag);
+
+            // Quiz event listeners
+            document.querySelectorAll('input[name="q1"], input[name="q2"]').forEach(radio => {
+                radio.addEventListener('change', handleQuizAnswer);
+            });
+
+            // Step-by-step controls
+            document.getElementById('nextStepBtn').addEventListener('click', nextStep);
+            document.getElementById('prevStepBtn').addEventListener('click', prevStep);
+
+            // Initial setup
+            updateExplanationDisplay(); // Show the first step initially
+            updateSimulation();
+        }
+
+        function updateSimulation() {
+            // Read current state from sliders and state variables
+            initialTempDiff = parseInt(tempDiffSlider.value);
+            heatTransferRate = parseFloat(heatRateSlider.value);
+
+            if (!thermalEquilibrium) {
+                hotterTemp = Math.max(0, initialTempDiff); // Ensure positive temps
+                colderTemp = 0; // Cold object starts at 0 (relative)
+            } else {
+                // Temperatures are equal when in equilibrium
+                hotterTemp = hotterTemp; // Maintain current temp if already equal
+                colderTemp = colderTemp;
+            }
+
+            // Dynamically adjust object temperatures based on heat transfer (if not in equilibrium)
+            if (!thermalEquilibrium) {
+                const distance = Math.abs(parseFloat(hotterObject.getAttribute('cx')) - parseFloat(colderObject.getAttribute('cx')));
+                // Closer objects transfer heat faster, but let's simplify for now and focus on rate slider
+                // The transfer amount should also be influenced by the temperature difference.
+                const tempChange = (hotterTemp - colderTemp) * 0.01 * heatTransferRate * (50 / distance); // Added distance influence
+
+                if (hotterTemp > colderTemp) {
+                    hotterTemp -= tempChange;
+                    colderTemp += tempChange;
+                } else {
+                    // If somehow colderTemp became higher, reverse flow
+                    colderTemp -= tempChange;
+                    hotterTemp += tempChange;
+                }
+
+                // Clamp temperatures to prevent going below 0 or excessively high
+                hotterTemp = Math.max(0, hotterTemp);
+                colderTemp = Math.max(0, colderTemp);
+
+                // Check for thermal equilibrium
+                if (Math.abs(hotterTemp - colderTemp) < 0.1) { // Small tolerance for floating point
+                    thermalEquilibrium = true;
+                    hotterTemp = hotterTemp; // Final stable temperature
+                    colderTemp = colderTemp;
+                }
+            }
+
+            // Update SVG geometry and text displays
+            hotterTempText.textContent = `${hotterTemp.toFixed(1)}°C`;
+            colderTempText.textContent = `${colderTemp.toFixed(1)}°C`;
+
+            // Update object colors based on temperature (simplified: shades of red/blue)
+            const maxPossibleTemp = initialTempDiff + 50; // A reasonable max for color scaling
+            const hotterColorValue = Math.min(255, Math.max(100, 255 - (hotterTemp / maxPossibleTemp) * 155)); // Red intensity
+            const colderColorValue = Math.min(255, Math.max(100, 100 + (colderTemp / maxPossibleTemp) * 155)); // Blue intensity
+
+            hotterObject.style.fill = `rgb(${hotterColorValue}, ${100 - (hotterColorValue - 100) * 0.3}, 100)`;
+            colderObject.style.fill = `rgb(100, 100, ${colderColorValue})`;
+
+            // Animate heat flow arrows
+            if (!thermalEquilibrium && hotterTemp > colderTemp) {
+                heatFlowGroup.style.opacity = 1;
+                const arrowLength = Math.min(50, (hotterTemp - colderTemp) * 0.5); // Arrow length depends on diff
+                const arrowX2 = 250 + arrowLength;
+                const arrowY2 = 175;
+
+                const arrow1 = heatFlowGroup.children[0];
+                const arrow2 = heatFlowGroup.children[1];
+                const arrow3 = heatFlowGroup.children[2];
+
+                arrow1.setAttribute('x1', '250'); arrow1.setAttribute('y1', '175'); arrow1.setAttribute('x2', arrowX2); arrow1.setAttribute('y2', arrowY2);
+                arrow2.setAttribute('x1', '250'); arrow2.setAttribute('y1', '185'); arrow2.setAttribute('x2', arrowX2 + 5); arrow2.setAttribute('y2', arrowY2 + 5);
+                arrow3.setAttribute('x1', '250'); arrow3.setAttribute('y1', '195'); arrow3.setAttribute('x2', arrowX2 + 10); arrow3.setAttribute('y2', arrowY2 + 10);
+
+                // Adjust animation speed based on heatTransferRate
+                const animationDuration = 2.0 / heatTransferRate;
+                arrow1.style.animationDuration = `${animationDuration}s`;
+                arrow2.style.animationDuration = `${animationDuration}s`;
+                arrow3.style.animationDuration = `${animationDuration}s`;
+
+            } else {
+                heatFlowGroup.style.opacity = 0;
+            }
+
+            // Show equilibrium indicator
+            if (thermalEquilibrium) {
+                equilibriumIndicator.style.opacity = 1;
+            } else {
+                equilibriumIndicator.style.opacity = 0;
+            }
+        }
+
+        function handleSliderChange() {
+            tempDiffValue.textContent = `${tempDiffSlider.value}°C`;
+            heatRateValue.textContent = parseFloat(heatRateSlider.value).toFixed(1);
+            thermalEquilibrium = false; // Reset equilibrium when sliders change
+            updateSimulation();
+        }
+
+        // Dragging functions
+        function startDrag(e) {
+            if (e.target.classList.contains('object')) {
+                activeObject = e.target;
+                const svgRect = activeObject.closest('svg').getBoundingClientRect();
+                const clickX = e.clientX - svgRect.left;
+                const clickY = e.clientY - svgRect.top;
+                offsetX = clickX - parseFloat(activeObject.getAttribute('cx'));
+                offsetY = clickY - parseFloat(activeObject.getAttribute('cy'));
+                activeObject.style.cursor = 'grabbing';
+                document.addEventListener('mousemove', dragObject);
+                document.addEventListener('mouseup', endDrag);
+                e.preventDefault(); // Prevent default drag behavior
+            }
+        }
+
+        function dragObject(e) {
+            if (!activeObject) return;
+            const svgRect = activeObject.closest('svg').getBoundingClientRect();
+            let newX = e.clientX - svgRect.left - offsetX;
+            let newY = e.clientY - svgRect.top - offsetY;
+
+            // Keep objects within SVG bounds
+            const radius = parseFloat(activeObject.getAttribute('r'));
+            const svgWidth = parseFloat(activeObject.closest('svg').getAttribute('viewBox').split(' ')[2]);
+            const svgHeight = parseFloat(activeObject.closest('svg').getAttribute('viewBox').split(' ')[3]);
+
+            newX = Math.max(radius, Math.min(svgWidth - radius, newX));
+            newY = Math.max(radius, Math.min(svgHeight - radius, newY));
+
+            activeObject.setAttribute('cx', newX);
+            activeObject.setAttribute('cy', newY);
+
+            // Update text label positions to follow the object
+            if (activeObject.id === 'hotterObject') {
+                hotterTempText.setAttribute('x', newX);
+                hotterTempText.setAttribute('y', newY);
+            } else {
+                colderTempText.setAttribute('x', newX);
+                colderTempText.setAttribute('y', newY);
+            }
+
+            // Re-evaluate heat flow based on new positions
+            thermalEquilibrium = false;
+            updateSimulation();
+        }
+
+        function endDrag() {
+            if (activeObject) {
+                activeObject.style.cursor = 'grab';
+                activeObject = null;
+                document.removeEventListener('mousemove', dragObject);
+                document.removeEventListener('mouseup', endDrag);
+            }
+        }
+
+        // Step-by-step explanation
+        function updateExplanationDisplay() {
+            explanationDetails.forEach((detail, index) => {
+                if (index === currentStep - 1) { // -1 because currentStep is 1-based for display
+                    detail.style.display = 'block';
+                    setTimeout(() => { detail.style.opacity = 1; }, 50);
+                } else {
+                    detail.style.opacity = 0;
+                    detail.style.display = 'none';
+                }
+            });
+
+            // Manage button states
+            document.getElementById('prevStepBtn').disabled = currentStep === 0;
+            document.getElementById('nextStepBtn').disabled = currentStep === totalSteps;
+        }
+
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateExplanationDisplay();
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 0) {
+                currentStep--;
+                updateExplanationDisplay();
+            }
+        }
+
+        // Hover-to-explain icons
+        document.querySelectorAll('.info-icon').forEach(icon => {
+            icon.addEventListener('click', (e) => {
+                const detailId = e.target.closest('label').querySelector('.explanation-box').id;
+                const detailElement = document.getElementById(detailId);
+                if (detailElement.style.display === 'block') {
+                    detailElement.style.opacity = 0;
+                    detailElement.style.display = 'none';
+                } else {
+                    detailElement.style.display = 'block';
+                    setTimeout(() => { detailElement.style.opacity = 1; }, 50);
+                }
+            });
+        });
+
+
+        // Quiz feedback
+        function handleQuizAnswer(e) {
+            const questionName = e.target.name;
+            const feedbackElement = document.querySelector(`.feedback.${questionName}-feedback`);
+            let correctAnswer = '';
+
+            if (questionName === 'q1') correctAnswer = 'a';
+            else if (questionName === 'q2') correctAnswer = 'b';
+
+            if (e.target.value === correctAnswer) {
+                feedbackElement.textContent = 'Correct!';
+                feedbackElement.className = `feedback correct`;
+            } else {
+                feedbackElement.textContent = 'Incorrect. Try again!';
+                feedbackElement.className = `feedback incorrect`;
+            }
+            // Disable further changes for this question after first answer
+            document.querySelectorAll(`input[name="${questionName}"]`).forEach(radio => radio.disabled = true);
+        }
+
+        document.addEventListener("DOMContentLoaded", initSimulation);
+    </script>
+</body>
+</html>
+```
