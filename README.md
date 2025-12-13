@@ -1,68 +1,306 @@
-# AI-Powered Educational Simulation Generator
+# CBSE Simulation Generator
 
-This project uses a multi-agent AI pipeline to automatically generate, debug, and review simple, interactive, mobile-first educational simulations from a JSON specification.
+An AI-powered educational simulation generator that creates interactive, mobile-first HTML simulations for CBSE Class 7 science concepts using multi-agent LLM orchestration.
 
-## How It Works
+## 🎯 Overview
 
-The project is orchestrated by `main.py` and follows a three-step process:
+This system uses multiple specialized LLM agents to automatically generate high-quality, interactive educational simulations from simple concept specifications. Each agent has a specific role in the generation pipeline, ensuring pedagogically sound, technically correct, and engaging learning experiences.
 
-1.  **Creation**: A "creator" agent (`llama-3.3-70b-versatile` via Groq) receives a JSON file (`spec.json`) describing an educational concept. It generates a single, self-contained HTML file with vanilla JavaScript and inline CSS to create an interactive simulation.
+## ✨ Features
 
-2.  **Bug-Fixing**: A "bug-fixer" agent (`openai/gpt-oss-20b` via Groq) inspects the generated HTML for any syntax errors, layout issues on mobile, or broken JavaScript. It automatically corrects any issues it finds.
+- **Multi-Agent Architecture**: Six specialized agents (Planner, Creator, Bugfix, Student Interaction, Feedback, Review)
+- **Mobile-First Design**: All simulations optimized for 360px+ screens with touch-friendly controls
+- **Self-Contained HTML**: Single-file outputs with no external dependencies
+- **Visual Learning Focus**: Emphasizes graphics and animations over text
+- **Quality Assurance**: Built-in review system with scoring across 6 criteria
+- **Intermediate Saves**: All agent outputs saved for debugging and analysis
+- **Flexible LLM Backend**: Uses OpenRouter API with configurable models
 
-3.  **Review**: A "reviewer" agent (`qwen/qwen3-32b` via Groq) performs a final quality check on the HTML. It ensures the simulation is mobile-friendly, interactive, and clearly explains the concept.
+## 📋 Requirements
 
-This cycle repeats up to three times until the simulation is approved by the reviewer. The final, polished `simulation.html` is then saved to disk.
+- Python 3.8+
+- OpenRouter API key
+- Required Python packages:
+  - `langchain-core`
+  - `langchain-openai`
+  - `python-dotenv`
 
-The included example generates a **Projectile Motion Simulator**.
+## 🚀 Installation
 
-## Project Structure
+1. **Clone the repository**:
+   ```bash
+   git clone <your-repo-url>
+   cd simulation-generator
+   ```
 
--   `main.py`: The main script that orchestrates the agent pipeline.
--   `spec.json`: The input file that defines the simulation to be created. You can modify this to generate different simulations.
--   `simulation.html`: The final, generated output file.
--   `.env`: The file to store your API keys (see Setup).
--   `SimulationAgent/`: (Currently unused) Intended for more complex agent logic.
+2. **Install dependencies**:
+   ```bash
+   pip install langchain-core langchain-openai python-dotenv
+   ```
 
-## Technologies Used
+3. **Set up environment variables**:
+   Create a `.env` file in the project root:
+   ```env
+   OPENROUTER_API_KEY=your_openrouter_api_key_here
+   ```
 
--   **Python**
--   **LangChain** for orchestrating the AI models.
--   **Groq** for high-speed inference with open-source LLMs.
--   **AI Models**:
-    -   `llama-3.3-70b-versatile`: For creative code generation.
-    -   `openai/gpt-oss-20b`: For technical bug fixing.
-    -   `qwen/qwen3-32b`: For final review and quality assurance.
--   **HTML, CSS, JavaScript** (in the generated output).
+4. **Get an OpenRouter API key**:
+   - Visit [OpenRouter.ai](https://openrouter.ai/)
+   - Sign up and get your API key
+   - Add credits to your account
 
-## Setup
+## 📝 Usage
 
-1.  **Clone the repository.**
+### Basic Usage
 
-2.  **Install Python dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-    *(Note: A `requirements.txt` file would need to be created from the virtual environment if not present.)*
+1. **Create a spec file** (`spec.json`):
+   ```json
+   {
+     "Concept": "Photosynthesis",
+     "Description": "Learn how plants convert sunlight into energy through photosynthesis",
+     "Grade": 7,
+     "Subject": "Science",
+     "Topic": "Nutrition in Plants"
+   }
+   ```
 
-3.  **Create a `.env` file** in the root of the project and add your Groq API keys:
-    ```
-    GROQ_API_KEY_GENERATE_SIMULATION="your_groq_api_key"
-    GROQ_API_KEY_FIX_BUGS="your_groq_api_key"
-    GROQ_API_KEY_REVIEW="your_groq_api_key"
-    ```
-    *(You can use the same key for all three if you wish.)*
+2. **Run the generator**:
+   ```bash
+   python open_router_runner.py --spec spec.json
+   ```
 
-## How to Run
+3. **View the output**:
+   - Open `output/YYYY-MM-DD_HH-MM-SS_ConceptName/5_final_output.html` in a browser
 
-Execute the main script from your terminal:
+### Advanced Options
 
 ```bash
-python main.py
+# Custom output directory
+python open_router_runner.py --spec spec.json --output-root my_outputs
+
+# Don't save intermediate files (faster, less disk space)
+python open_router_runner.py --spec spec.json --no-save-intermediates
+
+# Show help
+python open_router_runner.py --help
 ```
 
-The script will print its progress through the creation, bug-fixing, and review steps. Once complete, you can open `simulation.html` in your web browser to see the result.
+## 🏗️ Project Structure
 
-## Customizing the Simulation
+```
+simulation-generator/
+├── open_router_runner.py      # Main CLI entry point
+├── sim_generator.py            # Core orchestration logic
+├── spec.json                   # Example concept specification
+├── .env                        # Environment variables (not in repo)
+├── README.md                   # This file
+└── output/                     # Generated simulations (created automatically)
+    └── YYYY-MM-DD_HH-MM-SS_ConceptName/
+        ├── spec.json                           # Input specification
+        ├── 1_planner_raw_response.txt         # Raw planner output
+        ├── 1_planner_blueprint.json           # Parsed blueprint
+        ├── 2_creator_raw_response.txt         # Raw creator output
+        ├── 2_creator_output.html              # Initial HTML
+        ├── 3_bugfix_raw_response.txt          # Raw bugfix output
+        ├── 3_bugfix_output.html               # Fixed HTML
+        ├── 4_student_interaction.json         # Generated questions
+        ├── 5_final_output.html                # ✨ Final simulation
+        └── 6_review_results.json              # Quality review scores
+```
 
-To create a different simulation, modify the `spec.json` file. The keys in this JSON object guide the creation agent. For example, you could change the `title`, `concept`, and `learning_objectives` to describe a different topic.
+## 🤖 Agent Architecture
+
+### 1. **Planner Agent** (Temperature: 0.3)
+- Analyzes concept specification
+- Creates detailed blueprint with visual design, variables, and layout
+- Ensures mobile-first and visual-learning principles
+
+### 2. **Creator Agent** (Temperature: 0)
+- Receives raw planner output
+- Generates complete, self-contained HTML simulation
+- Implements responsive design with proper centering and touch targets
+
+### 3. **Bugfix Agent** (Temperature: 0.2)
+- Fixes structural, layout, and positioning issues
+- Ensures mobile responsiveness
+- Adds missing meta tags and validates HTML
+
+### 4. **Student Interaction Agent** (Temperature: 0.6)
+- Creates 3 progressive difficulty MCQ questions
+- Generates hints and explanations
+- Provides follow-up exploration prompts
+
+### 5. **Feedback Integration Agent** (Temperature: 0.2)
+- Applies user-requested improvements
+- Maintains quality while implementing changes
+- Documents all modifications
+
+### 6. **Review Agent** (Temperature: 0.1)
+- Scores simulation across 6 criteria (each 0-5):
+  - Pedagogical Clarity
+  - Conceptual Correctness
+  - Mobile Responsiveness
+  - Interactivity Quality
+  - Code Reliability
+  - Safety & Age Appropriateness
+- Minimum passing: All scores ≥3, average ≥4.0
+
+## ⚙️ Configuration
+
+### Changing LLM Models
+
+Edit `open_router_runner.py` in the `build_all_chains()` function:
+
+```python
+planner_llm = ChatOpenAI(
+    model="anthropic/claude-3.5-sonnet",  # Change model here
+    temperature=0.3,
+    api_key=os.getenv("OPENROUTER_API_KEY"),
+    base_url="https://openrouter.ai/api/v1",
+)
+```
+
+### Available Models on OpenRouter
+
+- Free tier: `kwaipilot/kat-coder-pro:free`
+- Claude: `anthropic/claude-3.5-sonnet`, `anthropic/claude-3-opus`
+- GPT: `openai/gpt-4-turbo`, `openai/gpt-3.5-turbo`
+- Many more at [OpenRouter Models](https://openrouter.ai/models)
+
+### Adjusting Temperature
+
+- **Lower (0-0.3)**: More deterministic, consistent outputs (Bugfix, Review)
+- **Medium (0.3-0.6)**: Balanced creativity (Planner, Feedback)
+- **Higher (0.6-1.0)**: More creative variations (Student Interaction)
+
+## 📊 Output Structure
+
+Each run creates a timestamped folder containing:
+
+| File | Description |
+|------|-------------|
+| `spec.json` | Your input specification |
+| `1_planner_*` | Planner agent outputs (raw + parsed) |
+| `2_creator_*` | Creator agent outputs (raw + HTML) |
+| `3_bugfix_*` | Bugfix agent outputs |
+| `4_student_interaction.json` | MCQ questions and hints |
+| `5_final_output.html` | **Main deliverable** - Open in browser |
+| `6_review_results.json` | Quality scores and feedback |
+
+## 🎨 Simulation Features
+
+Generated simulations include:
+
+- **Visual Elements**: SVG graphics, animations, color schemes
+- **Interactive Controls**: Sliders, buttons, toggles (≥48px touch targets)
+- **Real-time Feedback**: Immediate visual responses to input
+- **Responsive Layout**: Works on mobile (360px+) and desktop
+- **Educational Content**: Instructions, current values, observations
+- **No External Dependencies**: Self-contained, works offline
+
+## 🐛 Troubleshooting
+
+### "No module named 'langchain_core'"
+```bash
+pip install langchain-core langchain-openai
+```
+
+### "API key not found"
+- Check that `.env` file exists in project root
+- Verify `OPENROUTER_API_KEY` is set correctly
+- Make sure `.env` is in same directory as `open_router_runner.py`
+
+### "Rate limit exceeded"
+- OpenRouter free tier has rate limits
+- Add credits to your OpenRouter account
+- Wait a few minutes between runs
+
+### Simulation not displaying correctly
+- Check browser console (F12) for JavaScript errors
+- Verify the HTML file is complete (not truncated)
+- Review intermediate files in output folder for issues
+
+### Low review scores
+- Check `6_review_results.json` for specific issues
+- Review `required_changes` array for actionable feedback
+- Try running again with clearer spec description
+
+## 🔧 Customization
+
+### Adding New Agents
+
+1. Create prompt template in `open_router_runner.py`
+2. Build chain in `build_all_chains()`
+3. Add invocation in `sim_generator.py`
+4. Update return tuple
+
+### Modifying Prompts
+
+Edit the prompt templates in `open_router_runner.py`:
+- `planner_prompt` - Blueprint creation guidelines
+- `creation_prompt` - HTML generation instructions
+- `bugfix_prompt` - Fix checklist
+- `student_interaction_prompt` - Question design rules
+- `review_prompt` - Scoring criteria
+
+### Changing Quality Thresholds
+
+Edit `review_prompt` in `open_router_runner.py`:
+```python
+PASSING CRITERIA:
+- ALL scores must be ≥ 3  # Change minimum score
+- Average score must be ≥ 4.0  # Change average requirement
+```
+
+## 📚 Example Concepts
+
+Good spec.json examples:
+
+```json
+{
+  "Concept": "States of Matter",
+  "Description": "Explore how temperature affects particles in solids, liquids, and gases"
+}
+```
+
+```json
+{
+  "Concept": "Photosynthesis",
+  "Description": "Interactive model showing how plants make food using sunlight, water, and CO2"
+}
+```
+
+```json
+{
+  "Concept": "Simple Pendulum",
+  "Description": "Adjust length and mass to see how they affect a pendulum's swing period"
+}
+```
+
+## 📄 License
+
+[Specify your license here - e.g., MIT, Apache 2.0, GPL, etc.]
+
+## 🤝 Contributing
+
+Contributions are welcome! Please:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📧 Contact
+
+[Your contact information or project maintainer details]
+
+## 🙏 Acknowledgments
+
+- Built with [LangChain](https://www.langchain.com/)
+- Powered by [OpenRouter](https://openrouter.ai/)
+- Designed for CBSE curriculum
+
+---
+
+**Note**: This is an AI-powered tool. Always review generated content for accuracy and appropriateness before use in educational settings.
