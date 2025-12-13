@@ -1,0 +1,10 @@
+{
+  "main_display": "Interactive 2D scene showing a light source (sun/bulb), an adjustable object in the middle, and a screen/wall where the shadow or image appears. The scene uses clear visual elements: a bright yellow circle for light, a colored rectangle for the object, and a gray rectangle for the screen.",
+  "color_scheme": [
+    "#FFD700",
+    "#4A90E2",
+    "#7ED321"
+  ],
+  "animation_style": "smooth",
+  "visual_metaphor": "A flashlight shining on objects to create shadows, like how the sun creates shadows during the day"
+}

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heat Flow - Interactive Simulation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f9f9f9;
+        }
+        #app { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 16px; 
+            background: white;
+            min-height: 100vh;
+        }
+        header {
+            padding: 16px 0;
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        h1 { font-size: 24px; margin-bottom: 8px; }
+        .subtitle { font-size: 14px; color: #666; }
+        
+        #visual-area {
+            position: relative;
+            height: 50vh;
+            min-height: 300px;
+            background: linear-gradient(180deg, #f0f0f0, #e8e8e8);
+            border-radius: 8px;
+            margin: 16px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .object {
+            position: relative;
+            width: 40%;
+            max-width: 200px;
+            aspect-ratio: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2), inset 0 0 20px rgba(255,255,255,0.3);
+            position: relative;
+            transition: background-color 0.3s ease;
+        }
+        
+        .label {
+            position: absolute;
+            bottom: -28px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+            text-align: center;
+            width: 100%;
+        }
+        
+        .temperature {
+            position: absolute;
+            top: -24px;
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .arrow-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            height: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .arrow {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .arrow-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #FF4D4D, #FFD166);
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+        
+        .arrow-head {
+            position: absolute;
+            right: -10px;
+            top: -5px;
+            width: 0;
+            height: 0;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-left: 15px solid #FFD166;
+            transition: right 0.3s ease;
+        }
+        
+        .flow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #FF4D4D, #FFD166);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .flow::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            animation: flow 2s linear infinite;
+        }
+        
+        @keyframes flow {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        #controls {
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .control-group {
+            margin: 16px 0;
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 44px;
+            cursor: pointer;
+        }
+        
+        button {
+            width: 100%;
+            min-height: 48px;
+            padding: 12px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 8px 0;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        #info {
+            padding: 16px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 12px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Heat Flow Simulation</h1>
+            <p class="subtitle">Visualize heat transfer from hot to cold objects</p>
+        </header>
+        
+        <div id="visual-area">
+            <div class="container">
+                <div class="object">
+                    <div class="circle" id="hot-circle"></div>
+                    <div class="label">Hot Object</div>
+                    <div class="temperature" id="hot-temp">50°C</div>
+                </div>
+                
+                <div class="object">
+                    <div class="circle" id="cold-circle"></div>
+                    <div class="label">Cold Object</div>
+                    <div class="temperature" id="cold-temp">10°C</div>
+                </div>
+            </div>
+            
+            <div class="arrow-container">
+                <div class="arrow">
+                    <div class="arrow-line" id="arrow-line"></div>
+                    <div class="arrow-head" id="arrow-head"></div>
+                </div>
+            </div>
+            
+            <div class="flow" id="heat-flow"></div>
+        </div>
+        
+        <div id="controls">
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Hot Object Temperature</span>
+                    <span id="hot-value">50°C</span>
+                </div>
+                <input type="range" id="hot-slider" min="20" max="80" value="50">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Cold Object Temperature</span>
+                    <span id="cold-value">10°C</span>
+                </div>
+                <input type="range" id="cold-slider" min="0" max="60" value="10">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Heat Flow Speed</span>
+                    <span id="speed-value">Medium</span>
+                </div>
+                <input type="range" id="speed-slider" min="0.5" max="3" step="0.1" value="1.5">
+            </div>
+            
+            <button id="reset-btn">Reset to Default</button>
+        </div>
+        
+        <div id="info">
+            <h3 style="margin-bottom: 8px; font-size: 16px;">Current State</h3>
+            <div class="info-row">
+                <span>Temperature Difference:</span>
+                <span id="delta">40°C</span>
+            </div>
+            <div class="info-row">
+                <span>Heat Flow Direction:</span>
+                <span id="direction">Hot → Cold</span>
+            </div>
+            <div class="info-row">
+                <span>Flow Intensity:</span>
+                <span id="intensity">Medium</span>
+            </div>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #FF4D4D;"></div>
+                    <span>Hot</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4D4DFF;"></div>
+                    <span>Cold</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #FFD166;"></div>
+                    <span>Heat Flow</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const hotSlider = document.getElementById('hot-slider');
+        const coldSlider = document.getElementById('cold-slider');
+        const speedSlider = document.getElementById('speed-slider');
+        const resetBtn = document.getElementById('reset-btn');
+        
+        const hotValue = document.getElementById('hot-value');
+        const coldValue = document.getElementById('cold-value');
+        const speedValue = document.getElementById('speed-value');
+        
+        const hotCircle = document.getElementById('hot-circle');
+        const coldCircle = document.getElementById('cold-circle');
+        const hotTemp = document.getElementById('hot-temp');
+        const coldTemp = document.getElementById('cold-temp');
+        
+        const arrowLine = document.getElementById('arrow-line');
+        const arrowHead = document.getElementById('arrow-head');
+        const heatFlow = document.getElementById('heat-flow');
+        
+        const deltaDisplay = document.getElementById('delta');
+        const directionDisplay = document.getElementById('direction');
+        const intensityDisplay = document.getElementById('intensity');
+        
+        function updateVisuals() {
+            const hotTempValue = parseFloat(hotSlider.value);
+            const coldTempValue = parseFloat(coldSlider.value);
+            const speedValueNum = parseFloat(speedSlider.value);
+            const delta = hotTempValue - coldTempValue;
+            
+            // Update temperature displays
+            hotValue.textContent = hotTempValue + '°C';
+            coldValue.textContent = coldTempValue + '°C';
+            hotTemp.textContent = hotTempValue + '°C';
+            coldTemp.textContent = coldTempValue + '°C';
+            
+            // Calculate color intensity for hot object (red gradient)
+            const hotIntensity = Math.min(1, (hotTempValue - 20) / 60);
+            const hotRed = Math.round(255);
+            const hotGreen = Math.round(77 + (hotIntensity * (209 - 77)));
+            const hotBlue = Math.round(77 + (hotIntensity * (102 - 77)));
+            hotCircle.style.backgroundColor = `rgb(${hotRed}, ${hotGreen}, ${hotBlue})`;
+            
+            // Calculate color intensity for cold object (blue gradient)
+            const coldIntensity = Math.min(1, coldTempValue / 60);
+            const coldRed = Math.round(77 + (coldIntensity * (255 - 77)));
+            const coldGreen = Math.round(77 + (coldIntensity * (209 - 77)));
+            const coldBlue = Math.round(255);
+            coldCircle.style.backgroundColor = `rgb(${coldRed}, ${coldGreen}, ${coldBlue})`;
+            
+            // Update arrow and flow based on temperature difference
+            if (delta > 0) {
+                // Heat flows from hot to cold
+                const arrowWidth = Math.min(100, 20 + (delta * 2));
+                arrowLine.style.width = arrowWidth + '%';
+                arrowHead.style.right = '-10px';
+                
+                // Update flow animation speed
+                heatFlow.style.animationDuration = (3 - (speedValueNum * 0.8)) + 's';
+                heatFlow.style.opacity = Math.min(1, delta / 50);
+                
+                // Update info
+                deltaDisplay.textContent = delta.toFixed(1) + '°C';
+                directionDisplay.textContent = 'Hot → Cold';
+                
+                const intensity = speedValueNum < 1 ? 'Low' : speedValueNum < 2 ? 'Medium' : 'High';
+                intensityDisplay.textContent = intensity;
+                
+                // Update arrow color based on intensity
+                arrowLine.style.background = `linear-gradient(90deg, #FF4D4D, ${speedValueNum < 1 ? '#FFD166' : speedValueNum < 2 ? '#FFD166' : '#FFFF00'})`;
+                arrowHead.style.borderLeftColor = speedValueNum < 1 ? '#FFD166' : speedValueNum < 2 ? '#FFD166' : '#FFFF00';
+            } else if (delta < 0) {
+                // Heat flows from cold to hot (reverse)
+                const arrowWidth = Math.min(100, 20 + (Math.abs(delta) * 2));
+                arrowLine.style.width = arrowWidth + '%';
+                arrowHead.style.right = 'calc(100% - 5px)';
+                arrowLine.style.background = 'linear-gradient(90deg, #4D4DFF, #6666FF)';
+                arrowHead.style.borderLeftColor = '#6666FF';
+                
+                heatFlow.style.animationDuration = (3 - (speedValueNum * 0.8)) + 's';
+                heatFlow.style.opacity = Math.min(1, Math.abs(delta) / 50);
+                
+                deltaDisplay.textContent = Math.abs(delta).toFixed(1) + '°C';
+                directionDisplay.textContent = 'Cold → Hot';
+                
+                const intensity = speedValueNum < 1 ? 'Low' : speedValueNum < 2 ? 'Medium' : 'High';
+                intensityDisplay.textContent = intensity;
+            } else {
+                // No temperature difference
+                arrowLine.style.width = '0%';
+                arrowHead.style.right = '-10px';
+                heatFlow.style.opacity = '0';
+                deltaDisplay.textContent = '0°C';
+                directionDisplay.textContent = 'No Flow';
+                intensityDisplay.textContent = 'None';
+            }
+        }
+        
+        function updateSpeedLabel() {
+            const speed = parseFloat(speedSlider.value);
+            if (speed < 1) {
+                speedValue.textContent = 'Low';
+            } else if (speed < 2) {
+                speedValue.textContent = 'Medium';
+            } else {
+                speedValue.textContent = 'High';
+            }
+        }
+        
+        hotSlider.addEventListener('input', updateVisuals);
+        coldSlider.addEventListener('input', updateVisuals);
+        speedSlider.addEventListener('input', () => {
+            updateSpeedLabel();
+            updateVisuals();
+        });
+        
+        resetBtn.addEventListener('click', () => {
+            hotSlider.value = '50';
+            coldSlider.value = '10';
+            speedSlider.value = '1.5';
+            updateSpeedLabel();
+            updateVisuals();
+        });
+        
+        // Initialize
+        updateSpeedLabel();
+        updateVisuals();
+    </script>
+</body>
+</html>

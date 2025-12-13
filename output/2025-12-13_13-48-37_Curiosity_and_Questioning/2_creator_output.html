@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curiosity Spark - Interactive Simulation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f9f9f9;
+        }
+        #app { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 16px; 
+            background: white;
+            min-height: 100vh;
+        }
+        header {
+            padding: 16px 0;
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        h1 { font-size: 24px; margin-bottom: 8px; }
+        .subtitle { font-size: 14px; color: #666; }
+        
+        #visual-area {
+            position: relative;
+            height: 50vh;
+            min-height: 300px;
+            background: linear-gradient(180deg, #f0f4ff 0%, #ffffff 100%);
+            border-radius: 8px;
+            margin: 16px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: inset 0 0 0 1px #e0e0e0;
+        }
+        
+        #controls {
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .control-group {
+            margin: 16px 0;
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 44px;
+            cursor: pointer;
+        }
+        
+        button {
+            width: 100%;
+            min-height: 48px;
+            padding: 12px;
+            font-size: 16px;
+            background: #4A90E2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 8px 0;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: #357ABD;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        #info {
+            padding: 16px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        
+        .legend {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        /* SVG Styles */
+        .wonder-bubble {
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }
+        
+        .question-bubble {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        
+        .glow {
+            filter: drop-shadow(0 0 8px rgba(74, 144, 226, 0.6));
+        }
+        
+        .question-mark {
+            transition: transform 0.3s ease;
+        }
+        
+        .sparkle {
+            animation: sparkle 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-120px) scale(0.8); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Curiosity Spark</h1>
+            <p class="subtitle">A balloon that inflates and lights up with curiosity</p>
+        </header>
+        
+        <div id="visual-area">
+            <svg id="main-visual" viewBox="0 0 400 400" style="width: 90%; max-width: 400px; height: auto;">
+                <!-- Background sparkle effect -->
+                <defs>
+                    <radialGradient id="bubbleGradient" cx="50%" cy="40%" r="60%">
+                        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+                        <stop offset="100%" stop-color="#4A90E2" stop-opacity="0.3"/>
+                    </radialGradient>
+                    <radialGradient id="questionGradient" cx="50%" cy="40%" r="60%">
+                        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+                        <stop offset="100%" stop-color="#7ED321" stop-opacity="0.4"/>
+                    </radialGradient>
+                </defs>
+                
+                <!-- Wonder Bubble -->
+                <g id="wonder-bubble" class="wonder-bubble">
+                    <circle id="wonder-circle" cx="200" cy="220" r="80" fill="url(#bubbleGradient)" stroke="#4A90E2" stroke-width="2" opacity="0.8"/>
+                    <text id="wonder-question" class="question-mark" x="200" y="230" text-anchor="middle" font-size="48" fill="#4A90E2">?</text>
+                    <circle id="wonder-sparkle" class="sparkle" cx="260" cy="160" r="6" fill="#F5A623" opacity="0.6"/>
+                </g>
+                
+                <!-- Question Bubbles Container -->
+                <g id="question-bubbles"></g>
+            </svg>
+        </div>
+        
+        <div id="controls">
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Curiosity Level</span>
+                    <span id="curiosity-value">50</span>
+                </div>
+                <input type="range" id="curiosity-slider" min="0" max="100" value="50">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Question Intensity</span>
+                    <span id="question-value">3</span>
+                </div>
+                <input type="range" id="question-slider" min="1" max="10" value="3">
+            </div>
+            
+            <button id="ask-question">Ask a Question</button>
+            <button id="reset">Reset</button>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="legend-dot" style="background: #4A90E2;"></span>
+                    <span>Wonder Bubble</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot" style="background: #7ED321;"></span>
+                    <span>Question Bubble</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot" style="background: #F5A623;"></span>
+                    <span>Sparkle</span>
+                </div>
+            </div>
+        </div>
+        
+        <div id="info">
+            <div class="info-row">
+                <span>Current Curiosity:</span>
+                <span id="info-curiosity">50%</span>
+            </div>
+            <div class="info-row">
+                <span>Questions Asked:</span>
+                <span id="info-questions">0</span>
+            </div>
+            <div class="info-row">
+                <span>Bubble Size:</span>
+                <span id="info-size">80px</span>
+            </div>
+            <div class="info-row">
+                <span>Bubble Brightness:</span>
+                <span id="info-brightness">Medium</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // State variables
+        let curiosityLevel = 50;
+        let questionIntensity = 3;
+        let questionsAsked = 0;
+        let questionBubbles = [];
+        
+        // DOM elements
+        const curiositySlider = document.getElementById('curiosity-slider');
+        const questionSlider = document.getElementById('question-slider');
+        const askQuestionBtn = document.getElementById('ask-question');
+        const resetBtn = document.getElementById('reset');
+        const curiosityValue = document.getElementById('curiosity-value');
+        const questionValue = document.getElementById('question-value');
+        const wonderBubble = document.getElementById('wonder-bubble');
+        const wonderCircle = document.getElementById('wonder-circle');
+        const wonderQuestion = document.getElementById('wonder-question');
+        const wonderSparkle = document.getElementById('wonder-sparkle');
+        const questionBubblesContainer = document.getElementById('question-bubbles');
+        const infoCuriosity = document.getElementById('info-curiosity');
+        const infoQuestions = document.getElementById('info-questions');
+        const infoSize = document.getElementById('info-size');
+        const infoBrightness = document.getElementById('info-brightness');
+        
+        // Initialize
+        updateVisuals();
+        updateInfo();
+        
+        // Event listeners
+        curiositySlider.addEventListener('input', (e) => {
+            curiosityLevel = parseInt(e.target.value);
+            curiosityValue.textContent = curiosityLevel;
+            updateVisuals();
+            updateInfo();
+        });
+        
+        questionSlider.addEventListener('input', (e) => {
+            questionIntensity = parseInt(e.target.value);
+            questionValue.textContent = questionIntensity;
+            updateInfo();
+        });
+        
+        askQuestionBtn.addEventListener('click', () => {
+            askQuestion();
+        });
+        
+        resetBtn.addEventListener('click', () => {
+            resetSimulation();
+        });
+        
+        // Functions
+        function updateVisuals() {
+            // Calculate bubble size based on curiosity
+            const baseSize = 80;
+            const maxSize = 120;
+            const size = baseSize + (curiosityLevel / 100) * (maxSize - baseSize);
+            
+            // Update wonder bubble size
+            wonderCircle.setAttribute('r', size);
+            
+            // Update position to keep centered
+            const svg = document.getElementById('main-visual');
+            const viewBox = svg.getAttribute('viewBox').split(' ').map(Number);
+            const centerX = viewBox[2] / 2;
+            const centerY = viewBox[3] / 2 + 20; // Slightly lower
+            wonderCircle.setAttribute('cx', centerX);
+            wonderCircle.setAttribute('cy', centerY);
+            wonderQuestion.setAttribute('x', centerX);
+            wonderQuestion.setAttribute('y', centerY + 10);
+            wonderSparkle.setAttribute('cx', centerX + 60);
+            wonderSparkle.setAttribute('cy', centerY - 60);
+            
+            // Update brightness/glow based on curiosity
+            const glowIntensity = curiosityLevel / 100;
+            if (glowIntensity > 0.5) {
+                wonderBubble.classList.add('glow');
+                wonderSparkle.style.opacity = glowIntensity;
+                wonderCircle.style.opacity = 0.8 + (glowIntensity * 0.2);
+            } else {
+                wonderBubble.classList.remove('glow');
+                wonderSparkle.style.opacity = 0.3 + glowIntensity * 0.4;
+                wonderCircle.style.opacity = 0.8;
+            }
+            
+            // Update question mark rotation based on curiosity
+            const rotation = curiosityLevel * 3.6; // 0 to 360 degrees
+            wonderQuestion.style.transform = `rotate(${rotation}deg)`;
+            
+            // Update info
+            infoSize.textContent = `${Math.round(size)}px`;
+            infoBrightness.textContent = glowIntensity > 0.7 ? 'Bright' : glowIntensity > 0.3 ? 'Medium' : 'Dim';
+        }
+        
+        function askQuestion() {
+            questionsAsked++;
+            
+            // Create question bubble
+            const bubble = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            bubble.classList.add('question-bubble');
+            bubble.style.transform = 'translateY(0)';
+            bubble.style.opacity = '1';
+            
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('r', 30);
+            circle.setAttribute('fill', 'url(#questionGradient)');
+            circle.setAttribute('stroke', '#7ED321');
+            circle.setAttribute('stroke-width', '2');
+            circle.setAttribute('opacity', '0.9');
+            
+            const questionMark = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            questionMark.textContent = '?';
+            questionMark.setAttribute('text-anchor', 'middle');
+            questionMark.setAttribute('font-size', '24');
+            questionMark.setAttribute('fill', '#7ED321');
+            
+            bubble.appendChild(circle);
+            bubble.appendChild(questionMark);
+            questionBubblesContainer.appendChild(bubble);
+            
+            // Position bubble at wonder bubble center
+            const svg = document.getElementById('main-visual');
+            const viewBox = svg.getAttribute('viewBox').split(' ').map(Number);
+            const centerX = viewBox[2] / 2;
+            const centerY = viewBox[3] / 2 + 20;
+            
+            circle.setAttribute('cx', centerX);
+            circle.setAttribute('cy', centerY);
+            questionMark.setAttribute('x', centerX);
+            questionMark.setAttribute('y', centerY + 8);
+            
+            // Animate bubble floating up
+            setTimeout(() => {
+                bubble.style.transform = 'translateY(-120px) scale(0.8)';
+                bubble.style.opacity = '0';
+            }, 50);
+            
+            // Remove bubble after animation
+            setTimeout(() => {
+                bubble.remove();
+            }, 1500);
+            
+            // Slight pulse on wonder bubble
+            wonderBubble.style.transform = 'scale(1.05)';
+            setTimeout(() => {
+                wonderBubble.style.transform = 'scale(1)';
+            }, 200);
+            
+            // Update info
+            infoQuestions.textContent = questionsAsked;
+            
+            // Increase curiosity slightly when asking questions
+            if (curiosityLevel < 100) {
+                curiosityLevel = Math.min(100, curiosityLevel + 5);
+                curiositySlider.value = curiosityLevel;
+                curiosityValue.textContent = curiosityLevel;
+                updateVisuals();
+                updateInfo();
+            }
+        }
+        
+        function resetSimulation() {
+            // Reset state
+            curiosityLevel = 50;
+            questionIntensity = 3;
+            questionsAsked = 0;
+            
+            // Reset UI
+            curiositySlider.value = curiosityLevel;
+            questionSlider.value = questionIntensity;
+            curiosityValue.textContent = curiosityLevel;
+            questionValue.textContent = questionIntensity;
+            
+            // Clear question bubbles
+            questionBubblesContainer.innerHTML = '';
+            
+            // Reset visuals
+            updateVisuals();
+            updateInfo();
+        }
+        
+        function updateInfo() {
+            infoCuriosity.textContent = `${curiosityLevel}%`;
+            infoQuestions.textContent = questionsAsked;
+        }
+        
+        // Accessibility: keyboard support for buttons
+        askQuestionBtn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                askQuestion();
+            }
+        });
+        
+        resetBtn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                resetSimulation();
+            }
+        });
+    </script>
+</body>
+</html>

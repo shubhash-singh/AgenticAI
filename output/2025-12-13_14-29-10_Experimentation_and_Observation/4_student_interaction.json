@@ -1,0 +1,50 @@
+{
+  "intro": "Welcome, young scientists! Get ready to explore the exciting world of experimentation and observation. In this interactive adventure, you'll use your detective skills to uncover how different changes work in the real world. Remember, every great scientist started by asking questions and making careful observations!",
+  "questions": [
+    {
+      "question": "In the virtual lab, you see two beakers: Beaker A has saltwater and Beaker B is empty. Which of these is an example of careful observation?",
+      "type": "mcq",
+      "options": [
+        "A) Pouring the saltwater from Beaker A into Beaker B",
+        "B) Noticing that the salt crystals disappear when mixed with water",
+        "C) Guessing that the water will evaporate faster with heat",
+        "D) Concluding that salt and water can never be separated"
+      ],
+      "correct_index": 1,
+      "hint": "Look for the option that describes what you actually see or notice during the experiment",
+      "explanation": "Observation means carefully watching and noticing what happens during an experiment. Noticing that salt crystals disappear when mixed with water is an observation because you're using your senses to see what actually occurs."
+    },
+    {
+      "question": "You're conducting an experiment with the saltwater in Beaker A. After heating it with the virtual heat lamp, what would you predict will happen to the salt?",
+      "type": "mcq",
+      "options": [
+        "A) The salt will disappear completely and be gone forever",
+        "B) The salt will evaporate with the water into Beaker B",
+        "C) The salt will be left behind in Beaker A after water evaporates",
+        "D) The salt will turn into sugar crystals"
+      ],
+      "correct_index": 2,
+      "hint": "Think about what happens to dissolved substances when water is heated and evaporates",
+      "explanation": "When saltwater is heated, the water evaporates but the salt remains behind because salt has a much higher boiling point than water. This is why you'll see salt crystals left in Beaker A after the water evaporates."
+    },
+    {
+      "question": "Where in real life would you see a similar process to what happens in our virtual experiment?",
+      "type": "mcq",
+      "options": [
+        "A) Making lemonade by mixing sugar and water",
+        "B) Drying wet clothes in the sun",
+        "C) Making salt from seawater in salt pans",
+        "D) Melting ice cream in a bowl"
+      ],
+      "correct_index": 2,
+      "hint": "Think about how salt is actually produced in nature using the sun's heat",
+      "explanation": "Salt pans use the sun's heat to evaporate seawater, leaving behind salt crystals - just like our virtual experiment! This is how most of the salt we use in cooking is actually made in real life."
+    }
+  ],
+  "followups": [
+    "Try setting the heat lamp to maximum and observe what happens to the water level in both beakers",
+    "Can you figure out which change (salt dissolving or water evaporating) can be reversed easily?",
+    "Challenge: Predict what will happen if you add more salt to the beaker before heating"
+  ],
+  "summary": "Great job exploring experimentation and observation! Remember: experimentation means setting up tests to answer questions, while observation means carefully watching and recording what happens. These detective skills help us understand the world around us, from making salt to growing plants!"
+}

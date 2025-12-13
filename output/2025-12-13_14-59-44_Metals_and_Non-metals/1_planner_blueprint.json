@@ -1,0 +1,10 @@
+{
+  "main_display": "Two side-by-side material samples (left: metal, right: non-metal) showing real-time property changes. Metal sample is a shiny silver bar that can be hammered flat or stretched into wire. Non-metal sample is a dull gray rock that cracks when stressed. Each sample has animated heat/electricity flow indicators.",
+  "color_scheme": [
+    "#4A90E2",
+    "#7ED321",
+    "#F5A623"
+  ],
+  "animation_style": "smooth",
+  "visual_metaphor": "Metal as flexible steel beam vs non-metal as brittle chalk"
+}

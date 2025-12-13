@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earth's Seasons - Interactive Simulation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f9f9f9;
+        }
+        #app { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 16px; 
+            background: white;
+            min-height: 100vh;
+        }
+        header {
+            padding: 16px 0;
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        h1 { font-size: 24px; margin-bottom: 8px; }
+        .subtitle { font-size: 14px; color: #666; }
+        
+        #visual-area {
+            position: relative;
+            height: 50vh;
+            min-height: 300px;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #0f0f1a 100%);
+            border-radius: 8px;
+            margin: 16px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.3);
+        }
+        
+        svg {
+            width: 90%;
+            max-width: 400px;
+            height: auto;
+            transition: all 0.3s ease;
+        }
+        
+        .sun {
+            fill: url(#sunGradient);
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6));
+        }
+        
+        .orbit {
+            stroke: rgba(255, 255, 255, 0.3);
+            stroke-width: 2;
+            fill: none;
+        }
+        
+        .earth-group {
+            transition: transform 0.3s ease;
+        }
+        
+        .earth {
+            fill: url(#earthGradient);
+            stroke: rgba(255, 255, 255, 0.5);
+            stroke-width: 2;
+        }
+        
+        .axis {
+            stroke: rgba(255, 255, 255, 0.7);
+            stroke-width: 2;
+            stroke-dasharray: 2 4;
+        }
+        
+        .day-night {
+            fill: rgba(0, 0, 0, 0.35);
+            transition: transform 0.3s ease;
+        }
+        
+        .season-label {
+            font-size: 12px;
+            fill: white;
+            text-anchor: middle;
+            pointer-events: none;
+        }
+        
+        .controls {
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .control-group {
+            margin: 16px 0;
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 44px;
+            cursor: pointer;
+        }
+        
+        button {
+            width: 100%;
+            min-height: 48px;
+            padding: 12px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 8px 0;
+        }
+        
+        button.secondary {
+            background: #2196F3;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        #info {
+            padding: 16px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 12px;
+            font-size: 12px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.7);
+        }
+        
+        .hemisphere {
+            transition: fill 0.3s ease;
+        }
+        
+        .summer-hemisphere {
+            fill: rgba(255, 107, 107, 0.6);
+        }
+        
+        .winter-hemisphere {
+            fill: rgba(78, 205, 202, 0.6);
+        }
+        
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            pointer-events: none;
+            transform: translate(-50%, -120%);
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Earth's Seasons</h1>
+            <p class="subtitle">Interactive simulation showing Earth's rotation, orbit, and seasonal changes</p>
+        </header>
+        
+        <div id="visual-area">
+            <svg viewBox="0 0 400 400" id="main-svg">
+                <defs>
+                    <radialGradient id="sunGradient" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#FFD700"/>
+                        <stop offset="70%" stop-color="#FFA500"/>
+                        <stop offset="100%" stop-color="#FF4500"/>
+                    </radialGradient>
+                    <radialGradient id="earthGradient" cx="30%" cy="30%" r="70%">
+                        <stop offset="0%" stop-color="#95E1D3"/>
+                        <stop offset="100%" stop-color="#4169E1"/>
+                    </radialGradient>
+                </defs>
+                
+                <!-- Sun at center -->
+                <circle cx="200" cy="200" r="30" class="sun" id="sun"></circle>
+                
+                <!-- Orbit path -->
+                <circle cx="200" cy="200" r="120" class="orbit" id="orbit"></circle>
+                
+                <!-- Earth group -->
+                <g class="earth-group" id="earth-group">
+                    <!-- Earth -->
+                    <circle cx="320" cy="200" r="18" class="earth" id="earth"></circle>
+                    
+                    <!-- Axis line -->
+                    <line x1="320" y1="182" x2="320" y2="218" class="axis" id="axis"></line>
+                    
+                    <!-- Day/night shading -->
+                    <rect x="302" y="182" width="36" height="36" class="day-night" id="day-night"></rect>
+                    
+                    <!-- Hemisphere indicators -->
+                    <path class="hemisphere summer-hemisphere" id="summer-hemisphere" d=""></path>
+                    <path class="hemisphere winter-hemisphere" id="winter-hemisphere" d=""></path>
+                    
+                    <!-- Season label -->
+                    <text x="320" y="240" class="season-label" id="season-label">Summer</text>
+                </g>
+                
+                <!-- Tooltip -->
+                <foreignObject x="0" y="0" width="0" height="0">
+                    <div class="tooltip" id="tooltip" style="display: none;"></div>
+                </foreignObject>
+            </svg>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Earth's Orbit Position</span>
+                    <span id="orbit-value">0°</span>
+                </div>
+                <input type="range" id="orbit-slider" min="0" max="360" value="0">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Earth's Axial Tilt</span>
+                    <span id="tilt-value">23.5°</span>
+                </div>
+                <input type="range" id="tilt-slider" min="0" max="45" step="0.1" value="23.5">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Rotation Speed</span>
+                    <span id="speed-value">1.0x</span>
+                </div>
+                <input type="range" id="speed-slider" min="0" max="2" step="0.1" value="1">
+            </div>
+            
+            <button id="toggle-orbit">Start Orbit</button>
+            <button class="secondary" id="toggle-rotation">Start Rotation</button>
+        </div>
+        
+        <div id="info">
+            <div class="info-row">
+                <span>Current Season:</span>
+                <span id="current-season">Summer</span>
+            </div>
+            <div class="info-row">
+                <span>Hemisphere Tilt:</span>
+                <span id="hemisphere-tilt">Toward Sun</span>
+            </div>
+            <div class="info-row">
+                <span>Day/Night:</span>
+                <span id="day-night-info">Day: 12h, Night: 12h</span>
+            </div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: rgba(255, 107, 107, 0.6);"></div>
+                    <span>Summer Hemisphere</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: rgba(78, 205, 202, 0.6);"></div>
+                    <span>Winter Hemisphere</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: rgba(0, 0, 0, 0.35);"></div>
+                    <span>Night Side</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Elements
+        const svg = document.getElementById('main-svg');
+        const earthGroup = document.getElementById('earth-group');
+        const earth = document.getElementById('earth');
+        const axis = document.getElementById('axis');
+        const dayNight = document.getElementById('day-night');
+        const summerHemisphere = document.getElementById('summer-hemisphere');
+        const winterHemisphere = document.getElementById('winter-hemisphere');
+        const seasonLabel = document.getElementById('season-label');
+        const sun = document.getElementById('sun');
+        
+        // Controls
+        const orbitSlider = document.getElementById('orbit-slider');
+        const tiltSlider = document.getElementById('tilt-slider');
+        const speedSlider = document.getElementById('speed-slider');
+        const toggleOrbitBtn = document.getElementById('toggle-orbit');
+        const toggleRotationBtn = document.getElementById('toggle-rotation');
+        
+        // Info displays
+        const orbitValue = document.getElementById('orbit-value');
+        const tiltValue = document.getElementById('tilt-value');
+        const speedValue = document.getElementById('speed-value');
+        const currentSeason = document.getElementById('current-season');
+        const hemisphereTilt = document.getElementById('hemisphere-tilt');
+        const dayNightInfo = document.getElementById('day-night-info');
+        
+        // State
+        let orbitAngle = 0;
+        let axialTilt = 23.5;
+        let rotationSpeed = 1;
+        let orbitRunning = false;
+        let rotationRunning = false;
+        let lastTime = 0;
+        let rotationAngle = 0;
+        
+        // Animation
+        function animate(time) {
+            if (!lastTime) lastTime = time;
+            const delta = time - lastTime;
+            lastTime = time;
+            
+            if (orbitRunning) {
+                orbitAngle += 0.02 * rotationSpeed * delta;
+                if (orbitAngle >= 360) orbitAngle = 0;
+                orbitSlider.value = Math.round(orbitAngle);
+                orbitValue.textContent = Math.round(orbitAngle) + '°';
+            }
+            
+            if (rotationRunning) {
+                rotationAngle += 0.1 * rotationSpeed * delta;
+                if (rotationAngle >= 360) rotationAngle = 0;
+            }
+            
+            updateVisuals();
+            requestAnimationFrame(animate);
+        }
+        
+        // Update visuals
+        function updateVisuals() {
+            // Position Earth on orbit
+            const orbitRadius = 120;
+            const centerX = 200;
+            const centerY = 200;
+            
+            const earthX = centerX + orbitRadius * Math.cos(orbitAngle * Math.PI / 180);
+            const earthY = centerY + orbitRadius * Math.sin(orbitAngle * Math.PI / 180);
+            
+            // Update Earth position
+            earthGroup.setAttribute('transform', `translate(${earthX - 320}, ${earthY - 200})`);
+            
+            // Update axis rotation (axial tilt relative to vertical)
+            const axisAngle = orbitAngle + axialTilt;
+            axis.setAttribute('transform', `rotate(${axisAngle} 320 200)`);
+            
+            // Update day/night rotation
+            dayNight.setAttribute('transform', `rotate(${rotationAngle} 320 200)`);
+            
+            // Update hemispheres
+            updateHemispheres(earthX, earthY);
+            
+            // Update season label
+            updateSeason(earthX, earthY);
+            
+            // Update info panel
+            updateInfo();
+        }
+        
+        function updateHemispheres(earthX, earthY) {
+            const earthRadius = 18;
+            const tiltRadians = (axialTilt * Math.PI) / 180;
+            
+            // Calculate hemisphere paths based on tilt
+            const tiltX = earthRadius * Math.sin(tiltRadians);
+            const tiltY = earthRadius * Math.cos(tiltRadians);
+            
+            // Create semicircle paths
+            const summerPath = `M ${earthX} ${earthY - earthRadius} 
+                               A ${earthRadius} ${earthRadius} 0 0 1 ${earthX} ${earthY + earthRadius} 
+                               L ${earthX + tiltX} ${earthY + tiltY} 
+                               A ${earthRadius} ${earthRadius} 0 0 0 ${earthX - tiltX} ${earthY - tiltY} Z`;
+            
+            const winterPath = `M ${earthX} ${earthY - earthRadius} 
+                               A ${earthRadius} ${earthRadius} 0 0 0 ${earthX} ${earthY + earthRadius} 
+                               L ${earthX - tiltX} ${earthY + tiltY} 
+                               A ${earthRadius} ${earthRadius} 0 0 1 ${earthX + tiltX} ${earthY - tiltY} Z`;
+            
+            summerHemisphere.setAttribute('d', summerPath);
+            winterHemisphere.setAttribute('d', winterPath);
+        }
+        
+        function updateSeason(earthX, earthY) {
+            // Determine season based on orbit position
+            const seasonAngle = orbitAngle % 360;
+            let season = '';
+            let seasonText = '';
+            
+            if (seasonAngle >= 315 || seasonAngle < 45) {
+                season = 'Summer';
+                seasonText = 'Summer';
+            } else if (seasonAngle >= 45 && seasonAngle < 135) {
+                season = 'Autumn';
+                seasonText = 'Autumn';
+            } else if (seasonAngle >= 135 && seasonAngle < 225) {
+                season = 'Winter';
+                seasonText = 'Winter';
+            } else {
+                season = 'Spring';
+                seasonText = 'Spring';
+            }
+            
+            seasonLabel.textContent = seasonText;
+            currentSeason.textContent = seasonText;
+        }
+        
+        function updateInfo() {
+            // Hemisphere tilt direction
+            const tiltDirection = (orbitAngle % 360 < 180) ? 'Toward Sun' : 'Away from Sun';
+            hemisphereTilt.textContent = tiltDirection;
+            
+            // Day/night duration (simplified)
+            const dayHours = 12 + Math.round((axialTilt / 23.5) * 6 * Math.cos((orbitAngle * Math.PI) / 180)) / 10;
+            const nightHours = 24 - dayHours;
+            dayNightInfo.textContent = `Day: ${dayHours}h, Night: ${nightHours}h`;
+        }
+        
+        // Event listeners
+        orbitSlider.addEventListener('input', (e) => {
+            orbitAngle = parseFloat(e.target.value);
+            orbitValue.textContent = orbitAngle + '°';
+            updateVisuals();
+        });
+        
+        tiltSlider.addEventListener('input', (e) => {
+            axialTilt = parseFloat(e.target.value);
+            tiltValue.textContent = axialTilt + '°';
+            updateVisuals();
+        });
+        
+        speedSlider.addEventListener('input', (e) => {
+            rotationSpeed = parseFloat(e.target.value);
+            speedValue.textContent = rotationSpeed.toFixed(1) + 'x';
+        });
+        
+        toggleOrbitBtn.addEventListener('click', () => {
+            orbitRunning = !orbitRunning;
+            toggleOrbitBtn.textContent = orbitRunning ? 'Stop Orbit' : 'Start Orbit';
+        });
+        
+        toggleRotationBtn.addEventListener('click', () => {
+            rotationRunning = !rotationRunning;
+            toggleRotationBtn.textContent = rotationRunning ? 'Stop Rotation' : 'Start Rotation';
+        });
+        
+        // Touch interactions
+        earthGroup.addEventListener('click', () => {
+            // Toggle rotation on Earth click
+            rotationRunning = !rotationRunning;
+            toggleRotationBtn.textContent = rotationRunning ? 'Stop Rotation' : 'Start Rotation';
+        });
+        
+        sun.addEventListener('click', () => {
+            // Toggle orbit on Sun click
+            orbitRunning = !orbitRunning;
+            toggleOrbitBtn.textContent = orbitRunning ? 'Stop Orbit' : 'Start Orbit';
+        });
+        
+        // Initialize
+        orbitValue.textContent = orbitAngle + '°';
+        tiltValue.textContent = axialTilt + '°';
+        speedValue.textContent = rotationSpeed.toFixed(1) + 'x';
+        updateVisuals();
+        requestAnimationFrame(animate);
+    </script>
+</body>
+</html>

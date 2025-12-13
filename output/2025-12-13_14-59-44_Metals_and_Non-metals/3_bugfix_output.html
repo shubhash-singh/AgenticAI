@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metal vs Non-Metal Properties - Interactive Simulation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f9f9f9;
+        }
+        #app { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 16px; 
+            background: white;
+            min-height: 100vh;
+        }
+        header {
+            padding: 16px 0;
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        h1 { font-size: 24px; margin-bottom: 8px; }
+        .subtitle { font-size: 14px; color: #666; }
+        
+        #visual-area {
+            position: relative;
+            height: 50vh;
+            min-height: 300px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin: 16px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .samples-container {
+            display: flex;
+            gap: 24px;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .sample {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            width: 45%;
+            max-width: 250px;
+        }
+        
+        .sample-title {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .property-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+        
+        .material-svg {
+            width: 100%;
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .metal-bar {
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(180deg, #4A90E2, #2E7D32);
+            border-radius: 8px;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 0 20px rgba(255,255,255,0.3);
+        }
+        
+        .metal-bar.stressed {
+            transform: scaleX(1.2);
+            background: linear-gradient(180deg, #7ED321, #519F1A);
+        }
+        
+        .metal-bar.stretched {
+            transform: scaleX(1.5);
+            background: linear-gradient(180deg, #F5A623, #D98A00);
+        }
+        
+        .non-metal-rock {
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(180deg, #9E9E9E, #757575);
+            border-radius: 12px 8px 8px 12px;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+        }
+        
+        .non-metal-rock.cracked {
+            background: linear-gradient(180deg, #BDBDBD, #9E9E9E);
+        }
+        
+        .crack {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 2px;
+            background: #616161;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .crack.show {
+            opacity: 1;
+        }
+        
+        .heat-flow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4A90E2, #F5A623);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .heat-flow.active {
+            opacity: 1;
+        }
+        
+        .electric-flow {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #7ED321, #4A90E2);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .electric-flow.active {
+            opacity: 1;
+        }
+        
+        #controls {
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .control-group {
+            margin: 16px 0;
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 44px;
+            cursor: pointer;
+        }
+        
+        button {
+            width: 100%;
+            min-height: 48px;
+            padding: 12px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 8px 0;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        #info {
+            padding: 16px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        
+        .legend {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 12px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+        }
+        
+        .legend-metal {
+            background: linear-gradient(180deg, #4A90E2, #2E7D32);
+        }
+        
+        .legend-nonmetal {
+            background: linear-gradient(180deg, #9E9E9E, #757575);
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Metal vs Non-Metal Properties</h1>
+            <p class="subtitle">Explore malleability, ductility, thermal and electrical conductivity</p>
+        </header>
+        
+        <div id="visual-area">
+            <div class="samples-container">
+                <div class="sample">
+                    <div class="sample-title">Metal Sample</div>
+                    <div class="material-svg">
+                        <div class="metal-bar" id="metal-bar">
+                            <div class="heat-flow" id="metal-heat"></div>
+                            <div class="electric-flow" id="metal-electric"></div>
+                        </div>
+                    </div>
+                    <div class="property-label">Malleable & Ductile</div>
+                </div>
+                
+                <div class="sample">
+                    <div class="sample-title">Non-Metal Sample</div>
+                    <div class="material-svg">
+                        <div class="non-metal-rock" id="nonmetal-rock">
+                            <div class="crack" id="crack"></div>
+                            <div class="heat-flow" id="nonmetal-heat"></div>
+                            <div class="electric-flow" id="nonmetal-electric"></div>
+                        </div>
+                    </div>
+                    <div class="property-label">Brittle</div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="controls">
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Temperature (°C)</span>
+                    <span id="temp-value">25</span>
+                </div>
+                <input type="range" id="temperature" min="0" max="200" value="25">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Electrical Current</span>
+                    <span id="current-value">0%</span>
+                </div>
+                <input type="range" id="current" min="0" max="100" value="0">
+            </div>
+            
+            <div class="control-group">
+                <button id="hammer-btn">Apply Hammer (Malleability Test)</button>
+                <button id="stretch-btn">Apply Stretch (Ductility Test)</button>
+                <button id="reset-btn">Reset</button>
+            </div>
+        </div>
+        
+        <div id="info">
+            <div class="info-row">
+                <span>Metal Conductivity:</span>
+                <span id="metal-conductivity">Low</span>
+            </div>
+            <div class="info-row">
+                <span>Non-Metal Conductivity:</span>
+                <span id="nonmetal-conductivity">Very Low</span>
+            </div>
+            <div class="info-row">
+                <span>Metal State:</span>
+                <span id="metal-state">Normal</span>
+            </div>
+            <div class="info-row">
+                <span>Non-Metal State:</span>
+                <span id="nonmetal-state">Normal</span>
+            </div>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color legend-metal"></div>
+                    <span>Metal (Flexible)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color legend-nonmetal"></div>
+                    <span>Non-Metal (Brittle)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Get DOM elements
+        const metalBar = document.getElementById('metal-bar');
+        const nonmetalRock = document.getElementById('nonmetal-rock');
+        const crack = document.getElementById('crack');
+        const metalHeat = document.getElementById('metal-heat');
+        const metalElectric = document.getElementById('metal-electric');
+        const nonmetalHeat = document.getElementById('nonmetal-heat');
+        const nonmetalElectric = document.getElementById('nonmetal-electric');
+        
+        const temperatureSlider = document.getElementById('temperature');
+        const currentSlider = document.getElementById('current');
+        const tempValue = document.getElementById('temp-value');
+        const currentValue = document.getElementById('current-value');
+        
+        const hammerBtn = document.getElementById('hammer-btn');
+        const stretchBtn = document.getElementById('stretch-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        
+        const metalConductivity = document.getElementById('metal-conductivity');
+        const nonmetalConductivity = document.getElementById('nonmetal-conductivity');
+        const metalState = document.getElementById('metal-state');
+        const nonmetalState = document.getElementById('nonmetal-state');
+        
+        // State variables
+        let isMetalStressed = false;
+        let isMetalStretched = false;
+        let isNonmetalCracked = false;
+        
+        // Update functions
+        function updateTemperature() {
+            const temp = parseInt(temperatureSlider.value);
+            tempValue.textContent = temp;
+            
+            // Update heat flow intensity
+            const heatIntensity = Math.min(1, temp / 200);
+            metalHeat.style.opacity = heatIntensity;
+            nonmetalHeat.style.opacity = heatIntensity * 0.5;
+            
+            // Update conductivity based on temperature
+            updateConductivity();
+        }
+        
+        function updateCurrent() {
+            const current = parseInt(currentSlider.value);
+            currentValue.textContent = current + '%';
+            
+            // Update electrical flow intensity
+            const electricIntensity = current / 100;
+            metalElectric.style.opacity = electricIntensity;
+            nonmetalElectric.style.opacity = electricIntensity * 0.3;
+            
+            // Update conductivity display
+            updateConductivity();
+        }
+        
+        function updateConductivity() {
+            const temp = parseInt(temperatureSlider.value);
+            const current = parseInt(currentSlider.value);
+            
+            // Metal conductivity increases with temperature and current
+            const metalCond = Math.min(100, temp * 0.3 + current * 0.7);
+            if (metalCond < 30) {
+                metalConductivity.textContent = 'Low';
+            } else if (metalCond < 70) {
+                metalConductivity.textContent = 'Medium';
+            } else {
+                metalConductivity.textContent = 'High';
+            }
+            
+            // Non-metal conductivity is much lower
+            const nonmetalCond = Math.min(50, temp * 0.1 + current * 0.2);
+            if (nonmetalCond < 15) {
+                nonmetalConductivity.textContent = 'Very Low';
+            } else if (nonmetalCond < 35) {
+                nonmetalConductivity.textContent = 'Low';
+            } else {
+                nonmetalConductivity.textContent = 'Medium';
+            }
+        }
+        
+        function applyHammer() {
+            // Metal becomes malleable (flattens)
+            isMetalStressed = true;
+            metalBar.classList.add('stressed');
+            metalState.textContent = 'Malleable (Flattened)';
+            
+            // Non-metal cracks
+            isNonmetalCracked = true;
+            nonmetalRock.classList.add('cracked');
+            crack.classList.add('show');
+            nonmetalState.textContent = 'Brittle (Cracked)';
+        }
+        
+        function applyStretch() {
+            // Metal becomes ductile (stretches)
+            isMetalStretched = true;
+            metalBar.classList.add('stretched');
+            metalState.textContent = 'Ductile (Elongated)';
+            
+            // Non-metal would break more
+            isNonmetalCracked = true;
+            nonmetalRock.classList.add('cracked');
+            crack.classList.add('show');
+            nonmetalState.textContent = 'Brittle (Fractured)';
+        }
+        
+        function reset() {
+            // Reset all visual states
+            isMetalStressed = false;
+            isMetalStretched = false;
+            isNonmetalCracked = false;
+            
+            metalBar.classList.remove('stressed', 'stretched');
+            nonmetalRock.classList.remove('cracked');
+            crack.classList.remove('show');
+            
+            metalState.textContent = 'Normal';
+            nonmetalState.textContent = 'Normal';
+            
+            // Reset flows
+            metalHeat.style.opacity = 0;
+            metalElectric.style.opacity = 0;
+            nonmetalHeat.style.opacity = 0;
+            nonmetalElectric.style.opacity = 0;
+            
+            // Reset sliders
+            temperatureSlider.value = 25;
+            currentSlider.value = 0;
+            tempValue.textContent = '25';
+            currentValue.textContent = '0%';
+            
+            updateConductivity();
+        }
+        
+        // Event listeners
+        temperatureSlider.addEventListener('input', () => {
+            updateTemperature();
+        });
+        
+        currentSlider.addEventListener('input', () => {
+            updateCurrent();
+        });
+        
+        hammerBtn.addEventListener('click', applyHammer);
+        stretchBtn.addEventListener('click', applyStretch);
+        resetBtn.addEventListener('click', reset);
+        
+        // Initialize
+        updateTemperature();
+        updateCurrent();
+    </script>
+</body>
+</html>

@@ -11,7 +11,7 @@ import argparse
 from pathlib import Path
 from dotenv import load_dotenv
 
-# imports for langchain-style chains (same as original)
+# imports for langchain-style chains
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 

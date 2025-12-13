@@ -1,0 +1,50 @@
+{
+  "intro": "Welcome, young scientists! Get ready to explore the fascinating world of light and shadows. In this interactive journey, you'll discover how shadows form, what makes them change, and how different materials interact with light. Click the 'Play' button to begin your exploration!",
+  "questions": [
+    {
+      "question": "You're standing outside on a sunny day and notice your shadow on the ground. What will happen to your shadow when the Sun moves higher in the sky?",
+      "type": "mcq",
+      "options": [
+        "A) Your shadow will get longer and thinner",
+        "B) Your shadow will get shorter and fatter",
+        "C) Your shadow will disappear completely",
+        "D) Your shadow will stay exactly the same"
+      ],
+      "correct_index": 1,
+      "hint": "Think about what happens to your shadow at different times of day - morning, noon, and afternoon",
+      "explanation": "As the Sun moves higher in the sky, the angle of light changes. When the Sun is directly overhead, the light hits you from above, making your shadow shorter and more concentrated on the ground directly beneath you."
+    },
+    {
+      "question": "You have a flashlight and three objects: a wooden block, a clear glass, and a frosted plastic sheet. Which object will create the clearest, darkest shadow when you shine the flashlight on it?",
+      "type": "mcq",
+      "options": [
+        "A) The wooden block",
+        "B) The clear glass",
+        "C) The frosted plastic sheet",
+        "D) All three will create the same type of shadow"
+      ],
+      "correct_index": 0,
+      "hint": "Consider whether each object allows light to pass through it or blocks the light completely",
+      "explanation": "The wooden block is an opaque object that blocks all light, creating a clear, dark shadow. The clear glass is transparent and lets all light through, so it won't create a shadow. The frosted plastic is translucent and lets some light through, creating a faint, blurry shadow."
+    },
+    {
+      "question": "If you want to make a shadow puppet show for your friends, which of these materials would be best for making the puppets?",
+      "type": "mcq",
+      "options": [
+        "A) Clear plastic wrap",
+        "B) Thick cardboard",
+        "C) Thin white tissue paper",
+        "D) Colored cellophane"
+      ],
+      "correct_index": 1,
+      "hint": "Think about what makes a good shadow - light passing through or light being blocked?",
+      "explanation": "Thick cardboard is opaque and will block light completely, creating clear, dark shadows perfect for a puppet show. The other materials are either transparent or translucent, which would let light through and create faint or no shadows."
+    }
+  ],
+  "followups": [
+    "Try experimenting with different objects around your house. Can you find items that create interesting shadow shapes?",
+    "Play with the angle of your flashlight or lamp. How does changing the angle affect the size and shape of shadows?",
+    "Challenge: Can you make your shadow disappear by changing where you stand or how the light shines?"
+  ],
+  "summary": "Great job exploring light and shadows! Remember: shadows form when light is blocked by opaque objects, the angle of light changes shadow size, and different materials (opaque, transparent, translucent) interact with light in unique ways. These concepts help explain everyday phenomena from sundials to photography!"
+}

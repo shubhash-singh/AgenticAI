@@ -1,0 +1,50 @@
+{
+  "intro": "Welcome, young scientists! Today we're going to explore the amazing world of metals and non-metals through an interactive simulation. Get ready to discover how these materials behave differently when we test their properties!",
+  "questions": [
+    {
+      "question": "When you look at the metal sample in the simulation, what do you notice about its appearance compared to the non-metal sample?",
+      "type": "mcq",
+      "options": [
+        "A) The metal appears dull while the non-metal looks shiny",
+        "B) Both samples look equally dull and rough",
+        "C) The metal appears shiny and lustrous while the non-metal looks dull",
+        "D) Both samples look equally shiny and smooth"
+      ],
+      "correct_index": 2,
+      "hint": "Look closely at the left and right samples in the simulation. Which one reflects light more brightly?",
+      "explanation": "Metals are typically lustrous (shiny) because they reflect light well, while non-metals usually have a dull appearance. This is one of the key physical properties that helps us identify them!"
+    },
+    {
+      "question": "What happens when you try to hammer the metal sample flat in the simulation?",
+      "type": "mcq",
+      "options": [
+        "A) It cracks and breaks into pieces",
+        "B) It flattens into a thin sheet without breaking",
+        "C) It melts and becomes liquid",
+        "D) It stays exactly the same shape"
+      ],
+      "correct_index": 1,
+      "hint": "Try clicking the hammer button on the metal sample. Does it bend or break?",
+      "explanation": "This demonstrates malleability - the ability of metals to be hammered into thin sheets without breaking. This property is why we can make aluminum foil from metal!"
+    },
+    {
+      "question": "Where in everyday life would you most likely use a metal's ability to conduct electricity?",
+      "type": "mcq",
+      "options": [
+        "A) Making window glass",
+        "B) Creating electrical wires in your house",
+        "C) Building wooden furniture",
+        "D) Making plastic water bottles"
+      ],
+      "correct_index": 1,
+      "hint": "Think about what materials carry electricity to power your lights and devices",
+      "explanation": "Metals like copper are excellent conductors of electricity, which is why they're used in electrical wiring throughout homes and buildings. This allows electricity to flow safely and efficiently!"
+    }
+  ],
+  "followups": [
+    "Try setting both the hammer and wire-stretching tools on the metal sample. What do you notice about how it behaves differently from the non-metal?",
+    "Can you find which sample conducts heat better by watching the animated flow indicators?",
+    "Challenge: Predict which sample will break when you try to bend it, then test your prediction!"
+  ],
+  "summary": "Great job exploring the properties of metals and non-metals! Remember, metals are typically shiny, can be hammered flat (malleable), stretched into wires (ductile), and conduct electricity well. Non-metals are usually dull, brittle, and poor conductors. These properties help us choose the right materials for different jobs!"
+}

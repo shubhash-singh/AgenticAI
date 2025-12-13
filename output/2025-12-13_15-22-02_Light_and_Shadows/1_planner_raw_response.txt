@@ -1,0 +1,69 @@
+{
+  "learning_objectives": [
+    "Students will be able to identify and classify objects as opaque, transparent, or translucent based on how light passes through them",
+    "Students will be able to explain and demonstrate how shadows are formed when light is blocked by an opaque object",
+    "Students will be able to create and observe a pin-hole camera effect and understand that light travels in straight lines"
+  ],
+  "key_concepts": [
+    "Light travels in straight lines",
+    "Opaque, transparent, and translucent objects",
+    "Shadow formation and pin-hole camera"
+  ],
+  "visual_design": {
+    "main_display": "A vertical scene showing a light source (sun), an object (shape), and a screen/wall where the shadow appears. The object and shadow are SVG elements that change based on controls",
+    "color_scheme": ["#4A90E2", "#F5A623", "#7ED321", "#D0021B", "#FFFFFF", "#000000"],
+    "animation_style": "smooth",
+    "visual_metaphor": "A stage with a spotlight, an object, and a screen, like a shadow puppet show"
+  },
+  "variables_to_simulate": [
+    {
+      "name": "Object Type",
+      "control_type": "toggle",
+      "options": ["Opaque", "Transparent", "Translucent"],
+      "default": "Opaque",
+      "visual_effect": "Changes the object's fill and opacity: Opaque shows solid fill and full shadow, Transparent shows clear fill and no shadow, Translucent shows semi-transparent fill and faint shadow"
+    },
+    {
+      "name": "Object Size",
+      "control_type": "slider",
+      "min": 20,
+      "max": 120,
+      "default": 60,
+      "unit": "px",
+      "visual_effect": "Changes the size of the object (circle or square) and the size of the shadow proportionally"
+    },
+    {
+      "name": "Distance from Light",
+      "control_type": "slider",
+      "min": 50,
+      "max": 250,
+      "default": 150,
+      "unit": "px",
+      "visual_effect": "Moves the object horizontally; as distance increases, the shadow becomes larger and fainter (for opaque), or changes for translucent"
+    }
+  ],
+  "layout_structure": {
+    "sections": [
+      {"id": "header", "height": "60px", "content": "Title and brief description"},
+      {"id": "visual-area", "height": "50vh", "content": "Main interactive visualization"},
+      {"id": "controls", "height": "auto", "content": "Sliders and buttons"},
+      {"id": "info", "height": "auto", "content": "Current values and observations"}
+    ],
+    "spacing": "16px between sections"
+  },
+  "simulation_logic": [
+    "Step 1: Initialize visual with default values (Opaque, Size 60px, Distance 150px)",
+    "Step 2: When a control changes, update the object's visual properties and shadow",
+    "Step 3: Animate visual changes over 300ms for smooth transitions",
+    "Step 4: Update the info section with current values and a simple observation"
+  ],
+  "text_instructions": "Explore how light interacts with objects to form shadows.",
+  "misconceptions_to_address": [
+    "Shadows are always black and sharp",
+    "Transparent objects can form clear shadows"
+  ],
+  "safety_constraints": [
+    "Age-appropriate content",
+    "No external resources"
+  ]
+}

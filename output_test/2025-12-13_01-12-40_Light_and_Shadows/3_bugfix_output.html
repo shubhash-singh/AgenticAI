@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Light & Shadow - Interactive Simulation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f9f9f9;
+        }
+        #app { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 16px; 
+            background: white;
+            min-height: 100vh;
+        }
+        header {
+            padding: 16px 0;
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        h1 { font-size: 24px; margin-bottom: 8px; }
+        .subtitle { font-size: 14px; color: #666; }
+        
+        #visual-area {
+            position: relative;
+            height: 50vh;
+            min-height: 300px;
+            background: linear-gradient(180deg, #e8f4ff 0%, #f5f5f5 100%);
+            border-radius: 8px;
+            margin: 16px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: inset 0 0 0 1px #e0e0e0;
+        }
+        
+        #scene-container {
+            width: 90%;
+            max-width: 500px;
+            height: 80%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #scene-svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .light-source {
+            fill: #FFD700;
+            transition: all 0.3s ease;
+        }
+        
+        .object {
+            transition: all 0.3s ease;
+        }
+        
+        .screen {
+            fill: #9e9e9e;
+            transition: all 0.3s ease;
+        }
+        
+        .shadow {
+            fill: rgba(0, 0, 0, 0.6);
+            transition: all 0.3s ease;
+        }
+        
+        .ray {
+            stroke: rgba(255, 215, 0, 0.6);
+            stroke-width: 2;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+        
+        #controls {
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .control-group {
+            margin: 16px 0;
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 44px;
+            cursor: pointer;
+        }
+        
+        button {
+            width: 100%;
+            min-height: 48px;
+            padding: 12px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 8px 0;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        #info {
+            padding: 16px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        
+        .legend {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-top: 12px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Light & Shadow</h1>
+            <p class="subtitle">Explore how light creates shadows and images</p>
+        </header>
+        
+        <div id="visual-area">
+            <div id="scene-container">
+                <svg id="scene-svg" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet">
+                    <defs>
+                        <filter id="shadow-blur" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur"/>
+                            <feOffset in="blur" dx="0" dy="2" result="offsetBlur"/>
+                            <feComponentTransfer in="offsetBlur">
+                                <feFuncA type="linear" slope="0.6"/>
+                            </feComponentTransfer>
+                            <feMerge>
+                                <feMergeNode in="offsetBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    
+                    <!-- Light rays group -->
+                    <g id="rays-group">
+                        <line class="ray" x1="50" y1="150" x2="200" y2="100"/>
+                        <line class="ray" x1="50" y1="150" x2="200" y2="150"/>
+                        <line class="ray" x1="50" y1="150" x2="200" y2="200"/>
+                    </g>
+                    
+                    <!-- Light source -->
+                    <circle id="light-source" class="light-source" cx="50" cy="150" r="25" stroke="#FFA500" stroke-width="3"/>
+                    
+                    <!-- Object -->
+                    <rect id="object" class="object" x="180" y="120" width="40" height="60" fill="#4A90E2" stroke="#2E6DA4" stroke-width="2"/>
+                    
+                    <!-- Screen -->
+                    <rect id="screen" class="screen" x="320" y="80" width="20" height="160" rx="3"/>
+                    
+                    <!-- Shadow on screen -->
+                    <rect id="shadow" class="shadow" x="320" y="120" width="20" height="60" filter="url(#shadow-blur)"/>
+                    
+                    <!-- Ground shadow -->
+                    <ellipse id="ground-shadow" cx="200" cy="260" rx="30" ry="8" fill="rgba(0,0,0,0.4)"/>
+                </svg>
+            </div>
+        </div>
+        
+        <div id="controls">
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Light Distance</span>
+                    <span id="distance-value">200 px</span>
+                </div>
+                <input type="range" id="distance-slider" min="100" max="300" value="200">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Object Size</span>
+                    <span id="size-value">40 px</span>
+                </div>
+                <input type="range" id="size-slider" min="20" max="80" value="40">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Light Intensity</span>
+                    <span id="intensity-value">100%</span>
+                </div>
+                <input type="range" id="intensity-slider" min="30" max="100" value="100">
+            </div>
+            
+            <button id="reset-btn">Reset</button>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #FFD700;"></div>
+                    <span>Light Source</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4A90E2;"></div>
+                    <span>Object</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #9e9e9e;"></div>
+                    <span>Screen</span>
+                </div>
+            </div>
+        </div>
+        
+        <div id="info">
+            <div class="info-row">
+                <span>Shadow Height:</span>
+                <span id="shadow-height">60 px</span>
+            </div>
+            <div class="info-row">
+                <span>Shadow Type:</span>
+                <span id="shadow-type">Sharp Shadow</span>
+            </div>
+            <div class="info-row">
+                <span>Observation:</span>
+                <span id="observation">Move the sliders to see how shadows change</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Get DOM elements
+        const lightSource = document.getElementById('light-source');
+        const object = document.getElementById('object');
+        const screen = document.getElementById('screen');
+        const shadow = document.getElementById('shadow');
+        const groundShadow = document.getElementById('ground-shadow');
+        const raysGroup = document.getElementById('rays-group');
+        const rays = raysGroup.querySelectorAll('.ray');
+        
+        // Controls
+        const distanceSlider = document.getElementById('distance-slider');
+        const sizeSlider = document.getElementById('size-slider');
+        const intensitySlider = document.getElementById('intensity-slider');
+        const resetBtn = document.getElementById('reset-btn');
+        
+        // Info displays
+        const distanceValue = document.getElementById('distance-value');
+        const sizeValue = document.getElementById('size-value');
+        const intensityValue = document.getElementById('intensity-value');
+        const shadowHeight = document.getElementById('shadow-height');
+        const shadowType = document.getElementById('shadow-type');
+        const observation = document.getElementById('observation');
+        
+        // Scene constants
+        const sceneWidth = 400;
+        const sceneHeight = 300;
+        const lightY = 150;
+        const screenX = 320;
+        const screenY = 80;
+        const screenHeight = 160;
+        
+        // State
+        let state = {
+            distance: parseInt(distanceSlider.value),
+            objectSize: parseInt(sizeSlider.value),
+            intensity: parseInt(intensitySlider.value)
+        };
+        
+        // Initialize
+        function init() {
+            updateDisplay();
+            updateVisuals();
+            
+            // Event listeners
+            distanceSlider.addEventListener('input', (e) => {
+                state.distance = parseInt(e.target.value);
+                updateDisplay();
+                updateVisuals();
+            });
+            
+            sizeSlider.addEventListener('input', (e) => {
+                state.objectSize = parseInt(e.target.value);
+                updateDisplay();
+                updateVisuals();
+            });
+            
+            intensitySlider.addEventListener('input', (e) => {
+                state.intensity = parseInt(e.target.value);
+                updateDisplay();
+                updateVisuals();
+            });
+            
+            resetBtn.addEventListener('click', () => {
+                distanceSlider.value = 200;
+                sizeSlider.value = 40;
+                intensitySlider.value = 100;
+                state.distance = 200;
+                state.objectSize = 40;
+                state.intensity = 100;
+                updateDisplay();
+                updateVisuals();
+            });
+        }
+        
+        function updateDisplay() {
+            distanceValue.textContent = state.distance + ' px';
+            sizeValue.textContent = state.objectSize + ' px';
+            intensityValue.textContent = state.intensity + '%';
+        }
+        
+        function updateVisuals() {
+            try {
+                // Calculate positions
+                const lightX = 50;
+                const objectX = lightX + state.distance;
+                const objectY = 150 - (state.objectSize / 2);
+                const objectWidth = state.objectSize;
+                const objectHeight = state.objectSize * 1.5;
+                
+                // Update light source
+                lightSource.setAttribute('cx', lightX);
+                lightSource.setAttribute('cy', lightY);
+                lightSource.setAttribute('r', 20 + (state.intensity / 10));
+                lightSource.style.opacity = (state.intensity / 100);
+                
+                // Update object
+                object.setAttribute('x', objectX - (objectWidth / 2));
+                object.setAttribute('y', objectY);
+                object.setAttribute('width', objectWidth);
+                object.setAttribute('height', objectHeight);
+                object.style.opacity = 1;
+                
+                // Update rays
+                const topRay = rays[0];
+                const middleRay = rays[1];
+                const bottomRay = rays[2];
+                
+                topRay.setAttribute('x1', lightX);
+                topRay.setAttribute('y1', lightY);
+                topRay.setAttribute('x2', objectX);
+                topRay.setAttribute('y2', objectY);
+                
+                middleRay.setAttribute('x1', lightX);
+                middleRay.setAttribute('y1', lightY);
+                middleRay.setAttribute('x2', objectX);
+                middleRay.setAttribute('y2', objectY + (objectHeight / 2));
+                
+                bottomRay.setAttribute('x1', lightX);
+                bottomRay.setAttribute('y1', lightY);
+                bottomRay.setAttribute('x2', objectX);
+                bottomRay.setAttribute('y2', objectY + objectHeight);
+                
+                // Update rays opacity based on intensity
+                rays.forEach(ray => {
+                    ray.style.opacity = (state.intensity / 100) * 0.7;
+                });
+                
+                // Calculate shadow on screen
+                const objectCenterY = objectY + (objectHeight / 2);
+                const shadowY = objectCenterY - (objectHeight / 2);
+                const shadowH = objectHeight;
+                
+                shadow.setAttribute('x', screenX);
+                shadow.setAttribute('y', shadowY);
+                shadow.setAttribute('width', 20);
+                shadow.setAttribute('height', shadowH);
+                
+                // Update shadow opacity based on intensity
+                shadow.style.opacity = 0.6 * (state.intensity / 100);
+                
+                // Update ground shadow
+                groundShadow.setAttribute('cx', objectX);
+                groundShadow.setAttribute('cy', 260);
+                groundShadow.setAttribute('rx', objectWidth * 0.75);
+                groundShadow.setAttribute('ry', 8 + (80 - state.intensity) / 10);
+                groundShadow.style.opacity = 0.4 * (state.intensity / 100);
+                
+                // Update info
+                shadowHeight.textContent = Math.round(shadowH) + ' px';
+                
+                // Determine shadow type
+                let type = 'Sharp Shadow';
+                let obs = '';
+                
+                if (state.intensity < 50) {
+                    type = 'Faint Shadow';
+                    obs = 'Lower light intensity makes the shadow less visible';
+                } else if (state.intensity > 80) {
+                    type = 'Sharp Shadow';
+                    obs = 'High intensity creates a clear, sharp shadow';
+                }
+                
+                if (state.distance < 150) {
+                    type = 'Magnified Shadow';
+                    obs = 'Closer light makes the shadow larger and more spread out';
+                } else if (state.distance > 250) {
+                    type = 'Diminished Shadow';
+                    obs = 'Farther light makes the shadow smaller and sharper';
+                }
+                
+                if (state.objectSize > 60) {
+                    obs = 'Larger objects create bigger shadows';
+                } else if (state.objectSize < 30) {
+                    obs = 'Smaller objects create smaller, sharper shadows';
+                }
+                
+                shadowType.textContent = type;
+                observation.textContent = obs || 'Move the sliders to see how shadows change';
+                
+            } catch (error) {
+                console.error('Error updating visuals:', error);
+            }
+        }
+        
+        // Initialize the simulation
+        init();
+    </script>
+</body>
+</html>

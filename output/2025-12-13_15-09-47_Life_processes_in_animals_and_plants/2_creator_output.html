@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photosynthesis vs Cellular Respiration - Interactive Simulation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f9f9f9;
+        }
+        #app { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 16px; 
+            background: white;
+            min-height: 100vh;
+        }
+        header {
+            padding: 16px 0;
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        h1 { font-size: 24px; margin-bottom: 8px; }
+        .subtitle { font-size: 14px; color: #666; }
+        
+        #visual-area {
+            position: relative;
+            height: 50vh;
+            min-height: 300px;
+            background: linear-gradient(180deg, #e8f5e9 0%, #f1f8e9 100%);
+            border-radius: 8px;
+            margin: 16px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .factory-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            padding: 16px;
+        }
+        
+        .factory {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        
+        .factory-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .factory-box {
+            width: 90%;
+            max-width: 250px;
+            height: 70%;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            border: 3px solid;
+        }
+        
+        .plant-factory {
+            border-color: #4CAF50;
+        }
+        
+        .animal-factory {
+            border-color: #2196F3;
+        }
+        
+        .conveyor-belt {
+            position: absolute;
+            bottom: 20px;
+            left: 10px;
+            right: 10px;
+            height: 8px;
+            background: linear-gradient(90deg, #9E9E9E, #616161);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .conveyor-belt::after {
+            content: '';
+            position: absolute;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: conveyor 2s linear infinite;
+        }
+        
+        @keyframes conveyor {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .worker {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+            animation: work 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes work {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+        
+        .worker-plant {
+            background: #4CAF50;
+        }
+        
+        .worker-animal {
+            background: #2196F3;
+        }
+        
+        .pipe {
+            position: absolute;
+            height: 6px;
+            background: #9E9E9E;
+            border-radius: 3px;
+            animation: flow 2s ease-in-out infinite;
+        }
+        
+        @keyframes flow {
+            0% { background-position: 0 0; }
+            100% { background-position: 20px 0; }
+        }
+        
+        .molecule {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+            animation: float 2s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+        
+        .co2 {
+            background: #FFC107;
+        }
+        
+        .o2 {
+            background: #2196F3;
+        }
+        
+        .glucose {
+            background: #FF5722;
+        }
+        
+        .h2o {
+            background: #00BCD4;
+        }
+        
+        .atp {
+            background: #9C27B0;
+        }
+        
+        #controls {
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .control-group {
+            margin: 16px 0;
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 44px;
+            cursor: pointer;
+        }
+        
+        button {
+            width: 100%;
+            min-height: 48px;
+            padding: 12px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 8px 0;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        #info {
+            padding: 16px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 4px 8px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        
+        .legend-dot.co2 { background: #FFC107; }
+        .legend-dot.o2 { background: #2196F3; }
+        .legend-dot.glucose { background: #FF5722; }
+        .legend-dot.h2o { background: #00BCD4; }
+        .legend-dot.atp { background: #9C27B0; }
+        
+        .rate-display {
+            font-size: 14px;
+            color: #333;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Photosynthesis vs Cellular Respiration</h1>
+            <p class="subtitle">Interactive factory metaphor showing how plants and animals process energy</p>
+        </header>
+        
+        <div id="visual-area">
+            <div class="factory-container">
+                <div class="factory">
+                    <div class="factory-title">Plant Factory (Photosynthesis)</div>
+                    <div class="factory-box plant-factory" id="plant-factory">
+                        <div class="worker worker-plant" style="top: 20%; left: 15%;">P</div>
+                        <div class="worker worker-plant" style="top: 40%; left: 25%;">P</div>
+                        <div class="worker worker-plant" style="top: 60%; left: 15%;">P</div>
+                        
+                        <div class="pipe" style="top: 10%; left: 0; width: 100%;"></div>
+                        <div class="pipe" style="top: 80%; left: 0; width: 100%;"></div>
+                        
+                        <div class="molecule co2" style="top: 15%; left: 5%;">CO₂</div>
+                        <div class="molecule h2o" style="top: 15%; left: 20%;">H₂O</div>
+                        <div class="molecule glucose" style="top: 50%; left: 50%;">C₆H₁₂O₆</div>
+                        <div class="molecule o2" style="top: 70%; left: 70%;">O₂</div>
+                        
+                        <div class="conveyor-belt"></div>
+                    </div>
+                </div>
+                
+                <div class="factory">
+                    <div class="factory-title">Animal Factory (Cellular Respiration)</div>
+                    <div class="factory-box animal-factory" id="animal-factory">
+                        <div class="worker worker-animal" style="top: 20%; left: 15%;">A</div>
+                        <div class="worker worker-animal" style="top: 40%; left: 25%;">A</div>
+                        <div class="worker worker-animal" style="top: 60%; left: 15%;">A</div>
+                        
+                        <div class="pipe" style="top: 10%; left: 0; width: 100%;"></div>
+                        <div class="pipe" style="top: 80%; left: 0; width: 100%;"></div>
+                        
+                        <div class="molecule glucose" style="top: 15%; left: 5%;">C₆H₁₂O₆</div>
+                        <div class="molecule o2" style="top: 15%; left: 20%;">O₂</div>
+                        <div class="molecule co2" style="top: 50%; left: 50%;">CO₂</div>
+                        <div class="molecule h2o" style="top: 70%; left: 70%;">H₂O</div>
+                        <div class="molecule atp" style="top: 60%; left: 30%;">ATP</div>
+                        
+                        <div class="conveyor-belt"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="controls">
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Light Intensity</span>
+                    <span id="light-value">50%</span>
+                </div>
+                <input type="range" id="light-slider" min="0" max="100" value="50">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Temperature</span>
+                    <span id="temp-value">25°C</span>
+                </div>
+                <input type="range" id="temp-slider" min="0" max="40" value="25">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>CO₂ Concentration</span>
+                    <span id="co2-value">400 ppm</span>
+                </div>
+                <input type="range" id="co2-slider" min="200" max="800" value="400">
+            </div>
+            
+            <button id="reset-btn">Reset to Default</button>
+        </div>
+        
+        <div id="info">
+            <h3>Current Rates:</h3>
+            <div class="rate-display">Photosynthesis Rate: <span id="photo-rate">50</span> molecules/min</div>
+            <div class="rate-display">Respiration Rate: <span id="resp-rate">50</span> molecules/min</div>
+            <div class="rate-display">Net O₂ Production: <span id="o2-net">0</span> molecules/min</div>
+            <div class="rate-display">ATP Production: <span id="atp-rate">50</span> molecules/min</div>
+            
+            <div class="legend">
+                <div class="legend-item"><div class="legend-dot co2"></div>CO₂</div>
+                <div class="legend-item"><div class="legend-dot o2"></div>O₂</div>
+                <div class="legend-item"><div class="legend-dot glucose"></div>Glucose</div>
+                <div class="legend-item"><div class="legend-dot h2o"></div>H₂O</div>
+                <div class="legend-item"><div class="legend-dot atp"></div>ATP</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const lightSlider = document.getElementById('light-slider');
+        const tempSlider = document.getElementById('temp-slider');
+        const co2Slider = document.getElementById('co2-slider');
+        const resetBtn = document.getElementById('reset-btn');
+        
+        const lightValue = document.getElementById('light-value');
+        const tempValue = document.getElementById('temp-value');
+        const co2Value = document.getElementById('co2-value');
+        
+        const photoRate = document.getElementById('photo-rate');
+        const respRate = document.getElementById('resp-rate');
+        const o2Net = document.getElementById('o2-net');
+        const atpRate = document.getElementById('atp-rate');
+        
+        const plantFactory = document.getElementById('plant-factory');
+        const animalFactory = document.getElementById('animal-factory');
+        
+        function updateValues() {
+            const light = parseInt(lightSlider.value);
+            const temp = parseInt(tempSlider.value);
+            const co2 = parseInt(co2Slider.value);
+            
+            lightValue.textContent = light + '%';
+            tempValue.textContent = temp + '°C';
+            co2Value.textContent = co2 + ' ppm';
+            
+            // Calculate photosynthesis rate based on light, temperature, and CO2
+            let photoRateValue = Math.max(0, Math.min(100, 
+                light * 0.5 + (temp > 10 && temp < 35 ? (temp - 10) * 2 : 0) + (co2 - 200) * 0.1
+            ));
+            
+            // Calculate respiration rate (less dependent on light)
+            let respRateValue = Math.max(20, Math.min(80, 
+                30 + (temp > 10 && temp < 35 ? (temp - 10) * 1.5 : 0) + (co2 - 200) * 0.05
+            ));
+            
+            // Net O2 production (photosynthesis produces O2, respiration consumes it)
+            const netO2 = Math.max(0, photoRateValue - respRateValue * 0.5);
+            
+            // ATP production from respiration
+            const atpProduction = Math.max(0, respRateValue * 1.2);
+            
+            photoRate.textContent = Math.round(photoRateValue);
+            respRate.textContent = Math.round(respRateValue);
+            o2Net.textContent = Math.round(netO2);
+            atpRate.textContent = Math.round(atpProduction);
+            
+            // Update visual feedback
+            updateVisuals(photoRateValue, respRateValue);
+        }
+        
+        function updateVisuals(photoRateValue, respRateValue) {
+            // Adjust factory brightness based on photosynthesis rate
+            const plantBrightness = 100 + (photoRateValue * 2);
+            plantFactory.style.filter = `brightness(${plantBrightness}%)`;
+            
+            // Adjust animal factory glow based on respiration rate
+            const animalGlow = respRateValue * 2;
+            animalFactory.style.boxShadow = `0 4px 8px rgba(33, 150, 243, ${animalGlow/200})`;
+            
+            // Update worker animation speed
+            const plantSpeed = 1.5 - (photoRateValue / 200);
+            const animalSpeed = 1.5 - (respRateValue / 200);
+            
+            const plantWorkers = plantFactory.querySelectorAll('.worker');
+            const animalWorkers = animalFactory.querySelectorAll('.worker');
+            
+            plantWorkers.forEach(worker => {
+                worker.style.animationDuration = plantSpeed + 's';
+            });
+            
+            animalWorkers.forEach(worker => {
+                worker.style.animationDuration = animalSpeed + 's';
+            });
+            
+            // Update conveyor belt speed
+            const plantConveyor = plantFactory.querySelector('.conveyor-belt::after');
+            const animalConveyor = animalFactory.querySelector('.conveyor-belt::after');
+            
+            // We can't directly update pseudo-elements, so we'll use a different approach
+            plantFactory.style.setProperty('--conveyor-speed', (2 - photoRateValue/100) + 's');
+            animalFactory.style.setProperty('--conveyor-speed', (2 - respRateValue/100) + 's');
+        }
+        
+        // Add event listeners
+        lightSlider.addEventListener('input', updateValues);
+        tempSlider.addEventListener('input', updateValues);
+        co2Slider.addEventListener('input', updateValues);
+        resetBtn.addEventListener('click', () => {
+            lightSlider.value = 50;
+            tempSlider.value = 25;
+            co2Slider.value = 400;
+            updateValues();
+        });
+        
+        // Initialize
+        updateValues();
+        
+        // Add some dynamic molecule movement
+        function animateMolecules() {
+            const molecules = document.querySelectorAll('.molecule');
+            molecules.forEach((molecule, index) => {
+                const randomX = Math.random() * 40 - 20;
+                const randomY = Math.random() * 40 - 20;
+                molecule.style.transform = `translate(${randomX}px, ${randomY}px)`;
+            });
+        }
+        
+        setInterval(animateMolecules, 1000);
+    </script>
+</body>
+</html>

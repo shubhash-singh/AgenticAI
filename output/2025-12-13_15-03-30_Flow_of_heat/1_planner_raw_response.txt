@@ -1,0 +1,69 @@
+{
+  "learning_objectives": [
+    "Students will be able to demonstrate that heat flows from hotter objects to colder objects",
+    "Students will be able to identify and explain the direction of heat flow in everyday scenarios",
+    "Students will be able to predict how temperature differences affect the rate of heat transfer"
+  ],
+  "key_concepts": [
+    "Heat flow direction (hot to cold)",
+    "Temperature difference as the driving force",
+    "Thermal equilibrium"
+  ],
+  "visual design": {
+    "main_display": "Two adjacent circles (hot object on left, cold object on right) with animated arrows showing heat flow direction. Heat intensity is represented by color gradient (red = hot, blue = cold) and arrow speed.",
+    "color_scheme": ["#FF4D4D", "#4D4DFF", "#FFD166"],
+    "animation_style": "smooth",
+    "visual_metaphor": "Water flowing downhill - heat flows 'downhill' from hot to cold"
+  },
+  "variables_to_simulate": [
+    {
+      "name": "Temperature Difference",
+      "control_type": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 50,
+      "unit": "°C difference",
+      "visual_effect": "Changes left circle color from dark red to bright red, right circle from dark blue to light blue, and arrow speed from slow to fast"
+    },
+    {
+      "name": "Contact Time",
+      "control_type": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 0,
+      "unit": "seconds",
+      "visual_effect": "Moves a progress bar and gradually equalizes circle colors as time passes"
+    },
+    {
+      "name": "Material Type",
+      "control_type": "toggle",
+      "options": ["Metal", "Wood"],
+      "default": "Metal",
+      "visual_effect": "Changes arrow thickness and speed - metal shows thick fast arrows, wood shows thin slow arrows"
+    }
+  ],
+  "layout_structure": {
+    "sections": [
+      {"id": "header", "height": "60px", "content": "Heat Flow Simulation"},
+      {"id": "visual-area", "height": "50vh", "content": "Two animated circles with heat flow arrows"},
+      {"id": "controls", "height": "auto", "content": "Three interactive controls with labels"},
+      {"id": "info", "height": "auto", "content": "Current temperature values and equilibrium status"}
+    ],
+    "spacing": "16px between sections"
+  },
+  "simulation_logic": [
+    "Step 1: Initialize with default temperature difference and material type",
+    "Step 2: When temperature slider moves, update circle colors and arrow speed immediately",
+    "Step 3: When contact time slider moves, animate color equalization and update equilibrium status",
+    "Step 4: When material toggle changes, adjust arrow thickness and speed with 200ms transition"
+  ],
+  "text_instructions": "Watch heat flow from hot to cold objects",
+  "misconceptions_to_address": [
+    "Heat flows from cold to hot objects",
+    "Temperature and heat are the same thing"
+  ],
+  "safety_constraints": [
+    "Age-appropriate content",
+    "No external resources"
+  ]
+}

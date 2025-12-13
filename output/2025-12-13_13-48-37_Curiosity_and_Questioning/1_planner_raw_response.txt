@@ -1,0 +1,71 @@
+{
+  "learning_objectives": [
+    "Students will be able to identify and articulate their own curiosity about a phenomenon",
+    "Students will demonstrate how to transform curiosity into specific, answerable questions",
+    "Students will understand the relationship between curiosity and questioning as a learning process"
+  ],
+  "key_concepts": [
+    "Curiosity as an inner drive to know",
+    "Questioning as the tool to satisfy curiosity",
+    "The observation → wonder → question → answer learning cycle"
+  ],
+  "visual_design": {
+    "main_display": "A central 'Wonder Bubble' (large, semi-transparent circle) that grows brighter and larger when curiosity is sparked, with a question mark icon inside. When a question is asked, a smaller 'Question Bubble' (smaller circle with a question mark) pops out from the main bubble and floats upward.",
+    "color_scheme": ["#4A90E2", "#7ED321", "#F5A623"],
+    "animation_style": "smooth",
+    "visual_metaphor": "A balloon that inflates and lights up with curiosity, and smaller balloons (questions) that float away to be answered."
+  },
+  "variables_to_simulate": [
+    {
+      "name": "Curiosity_Level",
+      "control_type": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 50,
+      "unit": "",
+      "visual_effect": "Changes the size and glow intensity of the main Wonder Bubble"
+    },
+    {
+      "name": "Question_Type",
+      "control_type": "toggle",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "unit": "",
+      "visual_effect": "Changes the icon inside the Question Bubble from a '?' to a '!' to represent a new question being asked"
+    },
+    {
+      "name": "Answer_Found",
+      "control_type": "button",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "unit": "",
+      "visual_effect": "Makes the Question Bubble sparkle and then pop, with a small 'ding' animation, and the Wonder Bubble grows slightly to show learning has occurred"
+    }
+  ],
+  "layout_structure": {
+    "sections": [
+      {"id": "header", "height": "60px", "content": "Title and brief description"},
+      {"id": "visual-area", "height": "50vh", "content": "Main interactive visualization"},
+      {"id": "controls", "height": "auto", "content": "Sliders and buttons"},
+      {"id": "info", "height": "auto", "content": "Current values and observations"}
+    ],
+    "spacing": "16px between sections"
+  },
+  "simulation_logic": [
+    "Step 1: Initialize visual with default values",
+    "Step 2: When slider moves, calculate new value",
+    "Step 3: Animate visual change over 300ms",
+    "Step 4: Update display text with new values"
+  ],
+  "text_instructions": "Use the slider to spark curiosity, then ask a question and find an answer!",
+  "misconceptions_to_address": [
+    "Curiosity is a sign of weakness or not knowing",
+    "Asking questions is a waste of time"
+  ],
+  "safety_constraints": [
+    "Age-appropriate content",
+    "No external resources"
+  ]
+}

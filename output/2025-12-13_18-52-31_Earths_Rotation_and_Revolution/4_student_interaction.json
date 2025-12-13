@@ -1,0 +1,50 @@
+{
+  "intro": "Welcome, young scientists! Get ready to explore Earth's amazing movements through our interactive simulation. You'll discover how our planet spins like a top and dances around the Sun, creating day and night, and the beautiful changing seasons. Let's dive in and see what you can learn!",
+  "questions": [
+    {
+      "question": "In the simulation, you can see Earth spinning around its invisible axis line. When the part of Earth where you live faces the Sun, what time of day is it?",
+      "type": "mcq",
+      "options": [
+        "A) Night time with stars and moon",
+        "B) Day time with bright sunlight",
+        "C) Early morning with sunrise",
+        "D) Evening with sunset colors"
+      ],
+      "correct_index": 1,
+      "hint": "Look at which half of the Earth is lit up when facing the Sun in the simulation",
+      "explanation": "When your part of Earth faces the Sun, it's daytime! The Sun's light reaches that side of Earth, making it bright and warm. The other side, facing away from the Sun, experiences nighttime with darkness."
+    },
+    {
+      "question": "What would happen if Earth stopped spinning on its axis but still traveled around the Sun once a year?",
+      "type": "mcq",
+      "options": [
+        "A) One side would have constant day and the other constant night for months",
+        "B) Days and nights would become much shorter",
+        "C) Seasons would change more quickly",
+        "D) Nothing would be different from now"
+      ],
+      "correct_index": 0,
+      "hint": "Think about what causes day and night in the simulation, and imagine the Earth stopping its spin",
+      "explanation": "If Earth stopped spinning, the side facing the Sun would have continuous daylight for about 6 months, while the opposite side would have continuous night. This would make one very long day and one very long night each year!"
+    },
+    {
+      "question": "In the simulation, you can see different colored hemispheres - red for summer and blue for winter. In real life, which of these is caused by Earth's tilt and revolution around the Sun?",
+      "type": "mcq",
+      "options": [
+        "A) The Moon appearing to change shape",
+        "B) Trees losing their leaves and snow in winter",
+        "C) The Sun rising in the east and setting in the west",
+        "D) Ocean waves crashing on the shore"
+      ],
+      "correct_index": 1,
+      "hint": "Think about what changes throughout the year and why - is it related to temperature and daylight?",
+      "explanation": "The changing seasons with different weather patterns, like snow in winter and warm weather in summer, are caused by Earth's tilted axis and its revolution around the Sun. As Earth orbits, different parts receive more or less direct sunlight, creating the seasons."
+    }
+  ],
+  "followups": [
+    "Try pausing the simulation at different points to see how Earth's position changes throughout the year",
+    "Notice how the colored hemispheres change as Earth moves around the Sun - this shows the seasons changing",
+    "Challenge: Can you identify which position in the orbit represents your current season where you live?"
+  ],
+  "summary": "Great job exploring Earth's movements! Remember that Earth's rotation (spinning like a top) creates our daily cycle of day and night, while Earth's revolution (orbiting the Sun) combined with its tilted axis creates the beautiful changing seasons throughout the year."
+}

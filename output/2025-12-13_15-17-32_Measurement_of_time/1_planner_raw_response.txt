@@ -1,0 +1,70 @@
+{
+  "learning_objectives": [
+    "Students will be able to measure time using a simple pendulum and calculate its time period",
+    "Students will be able to identify and convert between units of time (seconds, minutes, hours)",
+    "Students will be able to analyze the relationship between the number of oscillations and the total time to determine the time period"
+  ],
+  "key_concepts": [
+    "Measurement of time",
+    "Simple pendulum and time period",
+    "Units of time and conversions"
+  ],
+  "visual_design": {
+    "main_display": "SVG pendulum with a bob that swings back and forth, with a timeline bar below showing elapsed time",
+    "color_scheme": ["#4A90E2", "#7ED321", "#F5A623"],
+    "animation_style": "smooth",
+    "visual_metaphor": "A playground swing representing a pendulum, with a stopwatch showing time"
+  },
+  "variables_to_simulate": [
+    {
+      "name": "Number of Oscillations",
+      "control_type": "slider",
+      "min": 1,
+      "max": 50,
+      "default": 10,
+      "unit": "oscillations",
+      "visual_effect": "Changes the number of swing cycles the pendulum completes"
+    },
+    {
+      "name": "Total Time",
+      "control_type": "slider",
+      "min": 1,
+      "max": 100,
+      "default": 20,
+      "unit": "seconds",
+      "visual_effect": "Adjusts the speed of the pendulum swing and updates the stopwatch display"
+    },
+    {
+      "name": "Time Period",
+      "control_type": "toggle",
+      "options": ["Calculate", "Display"],
+      "default": "Calculate",
+      "unit": "seconds",
+      "visual_effect": "Shows or hides the calculated time period on the screen"
+    }
+  ],
+  "layout_structure": {
+    "sections": [
+      {"id": "header", "height": "60px", "content": "Title and brief description"},
+      {"id": "visual-area", "height": "50vh", "content": "Main interactive visualization"},
+      {"id": "controls", "height": "auto", "content": "Sliders and buttons"},
+      {"id": "info", "height": "auto", "content": "Current values and observations"}
+    ],
+    "spacing": "16px between sections"
+  },
+  "simulation_logic": [
+    "Step 1: Initialize pendulum with default values and start swinging animation",
+    "Step 2: When sliders are adjusted, recalculate the time period and update the pendulum speed",
+    "Step 3: Animate the pendulum swing and stopwatch over 300ms to reflect new values",
+    "Step 4: Display the calculated time period when the toggle is set to 'Display'"
+  ],
+  "text_instructions": "Use the sliders to change the number of oscillations and total time, then observe the pendulum and stopwatch.",
+  "misconceptions_to_address": [
+    "Time period is the same as total time",
+    "More oscillations always mean a longer time period"
+  ],
+  "safety_constraints": [
+    "Age-appropriate content",
+    "No external resources"
+  ]
+}

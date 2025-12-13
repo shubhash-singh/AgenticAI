@@ -1,0 +1,50 @@
+{
+  "intro": "Welcome, young scientists! Get ready to explore the fascinating world of time measurement. In this simulation, you'll discover how pendulums work and how they help us keep time. Don't be afraid to experiment and make mistakes - that's how we learn!",
+  "questions": [
+    {
+      "question": "Look at the swinging pendulum in the simulation. As the pendulum bob moves from one side to the other and back to the starting side, what do we call this complete motion?",
+      "type": "mcq",
+      "options": [
+        "A) One oscillation",
+        "B) One swing",
+        "C) One vibration",
+        "D) One period"
+      ],
+      "correct_index": 0,
+      "hint": "Watch the bob carefully as it moves. Count how many times it goes back and forth to complete one full cycle of motion.",
+      "explanation": "One complete oscillation means the pendulum bob moves from its starting point, goes to one side, swings to the other side, and returns to the starting point. This is the fundamental unit of measurement for pendulum motion."
+    },
+    {
+      "question": "In the simulation, if you increase the length of the pendulum string to its maximum, what will happen to the time it takes for one complete oscillation?",
+      "type": "mcq",
+      "options": [
+        "A) The time period will increase (slower oscillations)",
+        "B) The time period will decrease (faster oscillations)",
+        "C) The time period will stay the same",
+        "D) The pendulum will stop moving"
+      ],
+      "correct_index": 0,
+      "hint": "Try adjusting the string length slider and watch the stopwatch. Does the pendulum swing faster or slower with a longer string?",
+      "explanation": "A longer pendulum string means the bob has to travel a greater distance during each swing. This makes the oscillations slower, increasing the time period. Shorter strings make the pendulum swing faster."
+    },
+    {
+      "question": "Your grandfather has a tall clock with a swinging pendulum inside. How does this pendulum help keep accurate time in the clock?",
+      "type": "mcq",
+      "options": [
+        "A) The regular swinging motion controls the gears that move the clock hands",
+        "B) The pendulum generates electricity to power the clock",
+        "C) The pendulum measures the temperature inside the clock",
+        "D) The pendulum reflects light to show the time on the clock face"
+      ],
+      "correct_index": 0,
+      "hint": "Think about how the steady, predictable motion of a pendulum could be connected to making clock hands move at just the right speed.",
+      "explanation": "In grandfather clocks, the pendulum's regular, predictable oscillations control the movement of gears inside the clock. Each swing allows the gears to advance by a precise amount, making the clock hands move at a steady, accurate pace."
+    }
+  ],
+  "followups": [
+    "Try setting the pendulum length to different values and count how many oscillations happen in 10 seconds. What pattern do you notice?",
+    "Can you find the pendulum length that makes exactly one oscillation per second? This would be called a 'seconds pendulum'.",
+    "Challenge: Predict whether a longer or shorter pendulum will have a faster swing before you change the setting!"
+  ],
+  "summary": "Great job exploring pendulums and time measurement! You discovered that one complete back-and-forth motion is called an oscillation, and longer pendulums swing more slowly than shorter ones. Real clocks use this regular motion to keep accurate time. Keep experimenting with the simulation to deepen your understanding!"
+}

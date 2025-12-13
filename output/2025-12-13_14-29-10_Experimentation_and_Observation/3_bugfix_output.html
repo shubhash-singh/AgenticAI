@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reversible vs Irreversible Changes - Interactive Simulation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f9f9f9;
+        }
+        #app { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 16px; 
+            background: white;
+            min-height: 100vh;
+        }
+        header {
+            padding: 16px 0;
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        h1 { font-size: 24px; margin-bottom: 8px; }
+        .subtitle { font-size: 14px; color: #666; }
+        
+        #visual-area {
+            position: relative;
+            height: 50vh;
+            min-height: 300px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin: 16px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .lab-bench {
+            width: 95%;
+            max-width: 500px;
+            height: 80%;
+            background: #e8e8e8;
+            border-radius: 8px;
+            position: relative;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 16px;
+        }
+        
+        .beaker-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .beaker-label {
+            font-weight: 600;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .beaker {
+            width: 120px;
+            height: 200px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .beaker-glass {
+            width: 100%;
+            height: 100%;
+            border: 4px solid #999;
+            border-bottom-width: 6px;
+            border-radius: 0 0 50% 50%;
+            position: relative;
+            background: linear-gradient(180deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+        }
+        
+        .water {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, #4A90E2, #2E74B5);
+            border-radius: 0 0 50% 50%;
+            transition: height 0.5s ease;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+        }
+        
+        .salt {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, #F5A623, #D98A00);
+            border-radius: 0 0 50% 50%;
+            transition: height 0.5s ease;
+            opacity: 0;
+        }
+        
+        .salt-crystals {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 0;
+            background: #F5A623;
+            border-radius: 0 0 50% 50%;
+            transition: height 0.5s ease;
+        }
+        
+        .steam {
+            position: absolute;
+            top: -20px;
+            left: 0;
+            right: 0;
+            height: 0;
+            transition: height 0.5s ease;
+        }
+        
+        .steam-circle {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+        
+        .heat-lamp {
+            position: absolute;
+            top: -60px;
+            right: 20px;
+            width: 80px;
+            height: 60px;
+            background: #333;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+        
+        .heat-lamp:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 10px;
+            right: 10px;
+            height: 10px;
+            background: linear-gradient(180deg, #F5A623, #D98A00);
+            border-radius: 0 0 10px 10px;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .magnifying-glass {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border: 3px solid #333;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.5s ease;
+            pointer-events: none;
+            opacity: 0;
+        }
+        
+        .magnifying-glass:after {
+            content: '';
+            position: absolute;
+            right: -15px;
+            bottom: -15px;
+            width: 25px;
+            height: 10px;
+            background: #333;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        #controls {
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .control-group {
+            margin: 16px 0;
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 44px;
+            cursor: pointer;
+        }
+        
+        button {
+            width: 100%;
+            min-height: 48px;
+            padding: 12px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 8px 0;
+        }
+        
+        button.secondary {
+            background: #7ED321;
+        }
+        
+        button.tertiary {
+            background: #F5A623;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        #info {
+            padding: 16px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        
+        .legend {
+            display: flex;
+            gap: 16px;
+            margin-top: 8px;
+            font-size: 12px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+        
+        .status {
+            font-weight: 600;
+            color: #333;
+            margin-top: 8px;
+        }
+        
+        .status.reversible {
+            color: #7ED321;
+        }
+        
+        .status.irreversible {
+            color: #F5A623;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Reversible vs Irreversible Changes</h1>
+            <p class="subtitle">Interactive science lab simulation with detective's magnifying glass</p>
+        </header>
+        
+        <div id="visual-area">
+            <div class="lab-bench">
+                <div class="beaker-container">
+                    <div class="beaker-label">Beaker A</div>
+                    <div class="beaker" id="beaker-a">
+                        <div class="beaker-glass"></div>
+                        <div class="water" id="water-a"></div>
+                        <div class="salt" id="salt-a"></div>
+                        <div class="salt-crystals" id="salt-crystals-a"></div>
+                        <div class="steam" id="steam-a">
+                            <div class="steam-circle" style="left: 20%;"></div>
+                            <div class="steam-circle" style="left: 50%;"></div>
+                            <div class="steam-circle" style="left: 80%;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="beaker-container">
+                    <div class="beaker-label">Beaker B</div>
+                    <div class="beaker" id="beaker-b">
+                        <div class="beaker-glass"></div>
+                        <div class="water" id="water-b"></div>
+                    </div>
+                </div>
+                
+                <div class="heat-lamp" id="heat-lamp"></div>
+                <div class="magnifying-glass" id="magnifying-glass"></div>
+            </div>
+        </div>
+        
+        <div id="controls">
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Salt Amount</span>
+                    <span id="salt-value">0 g</span>
+                </div>
+                <input type="range" id="salt-slider" min="0" max="50" value="0">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Heat Intensity</span>
+                    <span id="heat-value">0%</span>
+                </div>
+                <input type="range" id="heat-slider" min="0" max="100" value="0">
+            </div>
+            
+            <button id="dissolve-btn">Dissolve Salt in Beaker A</button>
+            <button class="secondary" id="evaporate-btn">Evaporate Water to Beaker B</button>
+            <button class="tertiary" id="reset-btn">Reset Experiment</button>
+        </div>
+        
+        <div id="info">
+            <div class="info-row">
+                <span>Change Type:</span>
+                <span id="change-type">None</span>
+            </div>
+            <div class="info-row">
+                <span>Beaker A - Water:</span>
+                <span id="water-a-level">100%</span>
+            </div>
+            <div class="info-row">
+                <span>Beaker A - Salt:</span>
+                <span id="salt-a-level">0%</span>
+            </div>
+            <div class="info-row">
+                <span>Beaker B - Water:</span>
+                <span id="water-b-level">0%</span>
+            </div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4A90E2;"></div>
+                    <span>Water</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #7ED321;"></div>
+                    <span>Reversible</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #F5A623;"></div>
+                    <span>Irreversible</span>
+                </div>
+            </div>
+            <div class="status" id="status">Observe the changes with your detective's magnifying glass</div>
+        </div>
+    </div>
+    
+    <script>
+        // State variables
+        let currentState = {
+            saltAmount: 0,
+            waterALevel: 100,
+            waterBLevel: 0,
+            saltADissolved: 0,
+            saltACrystals: 0,
+            heatIntensity: 0,
+            changeType: 'None'
+        };
+        
+        // DOM elements
+        const saltSlider = document.getElementById('salt-slider');
+        const heatSlider = document.getElementById('heat-slider');
+        const saltValue = document.getElementById('salt-value');
+        const heatValue = document.getElementById('heat-value');
+        const dissolveBtn = document.getElementById('dissolve-btn');
+        const evaporateBtn = document.getElementById('evaporate-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        
+        const waterA = document.getElementById('water-a');
+        const saltA = document.getElementById('salt-a');
+        const saltCrystalsA = document.getElementById('salt-crystals-a');
+        const steamA = document.getElementById('steam-a');
+        const waterB = document.getElementById('water-b');
+        const heatLamp = document.getElementById('heat-lamp');
+        const magnifyingGlass = document.getElementById('magnifying-glass');
+        
+        const changeType = document.getElementById('change-type');
+        const waterALevel = document.getElementById('water-a-level');
+        const saltALevel = document.getElementById('salt-a-level');
+        const waterBLevel = document.getElementById('water-b-level');
+        const status = document.getElementById('status');
+        
+        // Initialize visuals
+        function initVisuals() {
+            updateWaterA();
+            updateSaltA();
+            updateSaltCrystalsA();
+            updateSteamA();
+            updateWaterB();
+            updateHeatLamp();
+            updateMagnifyingGlass();
+            updateDisplayValues();
+        }
+        
+        // Update functions
+        function updateWaterA() {
+            waterA.style.height = currentState.waterALevel + '%';
+        }
+        
+        function updateSaltA() {
+            saltA.style.height = currentState.saltADissolved + '%';
+            saltA.style.opacity = currentState.saltADissolved > 0 ? '0.8' : '0';
+        }
+        
+        function updateSaltCrystalsA() {
+            saltCrystalsA.style.height = currentState.saltACrystals + '%';
+            saltCrystalsA.style.opacity = currentState.saltACrystals > 0 ? '1' : '0';
+        }
+        
+        function updateSteamA() {
+            const steamHeight = currentState.heatIntensity * 0.5;
+            steamA.style.height = steamHeight + 'px';
+            
+            const steamCircles = steamA.querySelectorAll('.steam-circle');
+            steamCircles.forEach((circle, index) => {
+                circle.style.opacity = currentState.heatIntensity > 0 ? '0.7' : '0';
+                circle.style.transform = currentState.heatIntensity > 0 ? 
+                    'translateY(' + (steamHeight - 20 - index * 10) + 'px)' : 'translateY(0)';
+            });
+        }
+        
+        function updateWaterB() {
+            waterB.style.height = currentState.waterBLevel + '%';
+        }
+        
+        function updateHeatLamp() {
+            heatLamp.style.opacity = currentState.heatIntensity > 0 ? '1' : '0';
+            heatLamp.style.transform = currentState.heatIntensity > 0 ? 'translateY(-10px)' : 'translateY(0)';
+            heatLamp.style.filter = currentState.heatIntensity > 0 ? 
+                'brightness(' + (1 + currentState.heatIntensity / 100) + ')' : 'brightness(1)';
+        }
+        
+        function updateMagnifyingGlass() {
+            // Position magnifying glass over Beaker A
+            const beakerA = document.getElementById('beaker-a');
+            const rect = beakerA.getBoundingClientRect();
+            const appRect = document.getElementById('app').getBoundingClientRect();
+            
+            magnifyingGlass.style.left = (rect.left - appRect.left + rect.width / 2 - 30) + 'px';
+            magnifyingGlass.style.top = (rect.top - appRect.top + rect.height / 2 - 30) + 'px';
+            magnifyingGlass.style.opacity = '1';
+            magnifyingGlass.style.transform = 'scale(1.2)';
+        }
+        
+        function updateDisplayValues() {
+            saltValue.textContent = currentState.saltAmount + ' g';
+            heatValue.textContent = currentState.heatIntensity + '%';
+            waterALevel.textContent = currentState.waterALevel + '%';
+            saltALevel.textContent = currentState.saltADissolved + '%';
+            waterBLevel.textContent = currentState.waterBLevel + '%';
+            changeType.textContent = currentState.changeType;
+            
+            // Update status color
+            if (currentState.changeType === 'Reversible') {
+                status.className = 'status reversible';
+                status.textContent = 'Reversible Change: Salt dissolving in water can be undone by evaporating the water.';
+            } else if (currentState.changeType === 'Irreversible') {
+                status.className = 'status irreversible';
+                status.textContent = 'Irreversible Change: Water evaporation changes the state permanently.';
+            } else {
+                status.className = 'status';
+                status.textContent = 'Observe the changes with your detective\'s magnifying glass';
+            }
+        }
+        
+        // Animation functions
+        function animateSaltDissolving() {
+            currentState.changeType = 'Reversible';
+            currentState.saltACrystals = currentState.saltAmount;
+            updateSaltCrystalsA();
+            
+            // Animate dissolving
+            let progress = 0;
+            const dissolveInterval = setInterval(() => {
+                progress += 5;
+                currentState.saltACrystals = currentState.saltAmount * (1 - progress / 100);
+                currentState.saltADissolved = currentState.saltAmount * (progress / 100);
+                
+                updateSaltCrystalsA();
+                updateSaltA();
+                updateMagnifyingGlass();
+                
+                if (progress >= 100) {
+                    clearInterval(dissolveInterval);
+                    status.textContent = 'Salt has dissolved! This is a reversible change.';
+                }
+            }, 100);
+        }
+        
+        function animateEvaporation() {
+            currentState.changeType = 'Irreversible';
+            
+            let evaporated = 0;
+            const totalToEvaporate = 30; // 30% of water
+            
+            const evapInterval = setInterval(() => {
+                if (currentState.waterALevel <= 0 || evaporated >= totalToEvaporate) {
+                    clearInterval(evapInterval);
+                    currentState.heatIntensity = 0;
+                    updateHeatLamp();
+                    updateSteamA();
+                    status.textContent = 'Water has evaporated to Beaker B! This is an irreversible change.';
+                    return;
+                }
+                
+                currentState.waterALevel -= 2;
+                currentState.waterBLevel += 2;
+                evaporated += 2;
+                
+                updateWaterA();
+                updateWaterB();
+                updateSteamA();
+                updateMagnifyingGlass();
+                updateDisplayValues();
+            }, 200);
+        }
+        
+        // Event listeners
+        saltSlider.addEventListener('input', (e) => {
+            currentState.saltAmount = parseInt(e.target.value);
+            updateDisplayValues();
+            
+            // Update salt crystals if not dissolved
+            if (currentState.saltADissolved === 0) {
+                currentState.saltACrystals = currentState.saltAmount;
+                updateSaltCrystalsA();
+            }
+        });
+        
+        heatSlider.addEventListener('input', (e) => {
+            currentState.heatIntensity = parseInt(e.target.value);
+            updateHeatLamp();
+            updateSteamA();
+            updateDisplayValues();
+        });
+        
+        dissolveBtn.addEventListener('click', () => {
+            if (currentState.saltAmount > 0) {
+                animateSaltDissolving();
+                updateDisplayValues();
+            }
+        });
+        
+        evaporateBtn.addEventListener('click', () => {
+            if (currentState.waterALevel > 0) {
+                currentState.heatIntensity = 100;
+                updateHeatLamp();
+                animateEvaporation();
+                updateDisplayValues();
+            }
+        });
+        
+        resetBtn.addEventListener('click', () => {
+            currentState = {
+                saltAmount: 0,
+                waterALevel: 100,
+                waterBLevel: 0,
+                saltADissolved: 0,
+                saltACrystals: 0,
+                heatIntensity: 0,
+                changeType: 'None'
+            };
+            
+            saltSlider.value = '0';
+            heatSlider.value = '0';
+            
+            updateVisuals();
+            updateDisplayValues();
+        });
+        
+        // Window resize handler for magnifying glass
+        window.addEventListener('resize', updateMagnifyingGlass);
+        
+        // Initialize
+        function updateVisuals() {
+            updateWaterA();
+            updateSaltA();
+            updateSaltCrystalsA();
+            updateSteamA();
+            updateWaterB();
+            updateHeatLamp();
+            updateMagnifyingGlass();
+        }
+        
+        initVisuals();
+    </script>
+</body>
+</html>

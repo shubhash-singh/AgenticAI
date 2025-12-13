@@ -1,0 +1,50 @@
+{
+  "intro": "Welcome, young scientists! Get ready to explore the amazing life processes that keep plants and animals alive and thriving. Think of this as your chance to be a detective of life - observe, experiment, and discover how living things work!",
+  "questions": [
+    {
+      "question": "In the plant factory, what happens when you increase sunlight to maximum? What do you notice about the food production line?",
+      "type": "mcq",
+      "options": [
+        "A) Food production stops completely",
+        "B) Food production increases rapidly",
+        "C) Food production remains the same",
+        "D) Plants start producing oxygen bubbles"
+      ],
+      "correct_index": 1,
+      "hint": "Watch the conveyor belt carrying food from the leaves - notice how fast it moves with more sunlight!",
+      "explanation": "When plants get more sunlight, their food production (photosynthesis) speeds up! The 'conveyor belt' (phloem tubes) carries more food from the leaves to other parts of the plant. Sunlight is like the power source for their food factory."
+    },
+    {
+      "question": "What would happen if you blocked the xylem pipes in the plant factory simulation? What will you observe?",
+      "type": "mcq",
+      "options": [
+        "A) The plant will grow faster",
+        "B) Leaves will turn yellow and wilt",
+        "C) Food production will increase",
+        "D) The plant will produce more flowers"
+      ],
+      "correct_index": 1,
+      "hint": "Remember, xylem tubes are like water pipes carrying water from roots to leaves. What happens when water pipes are blocked?",
+      "explanation": "Xylem tubes carry water and minerals from roots to leaves. If these pipes are blocked, leaves won't get water and will wilt and turn yellow. This shows why water transport is crucial for plant survival!"
+    },
+    {
+      "question": "In the animal factory, where does most of the food digestion happen - where the food is broken down into tiny pieces the body can use?",
+      "type": "mcq",
+      "options": [
+        "A) The mouth (chewing station)",
+        "B) The stomach (mixing chamber)",
+        "C) The small intestine (sorting room)",
+        "D) The large intestine (water recovery)"
+      ],
+      "correct_index": 2,
+      "hint": "Look for the part where food gets broken down into nutrients that can be absorbed into the bloodstream",
+      "explanation": "Most digestion happens in the small intestine! This is where food gets broken down into tiny nutrients that can be absorbed into the bloodstream. Think of it as the factory's quality control and packaging department where the 'raw materials' are prepared for use throughout the body."
+    }
+  ],
+  "followups": [
+    "Try setting both sunlight and water to maximum in the plant factory. What do you notice about the plant's health and food production?",
+    "Can you find the perfect balance of oxygen and food in the animal factory to make the energy level highest?",
+    "Challenge: Predict what will happen to the plant if you remove all sunlight for 3 days, then test your prediction!"
+  ],
+  "summary": "Great job exploring life processes! Remember: plants are amazing food factories using sunlight, water, and air to make their own food through photosynthesis. Animals need to eat food and digest it to get energy. Both plants and animals need transportation systems (xylem/phloem in plants, blood in animals) to move essential materials, and both must remove waste to stay healthy!"
+}

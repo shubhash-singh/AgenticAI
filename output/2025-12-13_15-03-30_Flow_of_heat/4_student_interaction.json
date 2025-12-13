@@ -1,0 +1,50 @@
+{
+  "intro": "Welcome to our heat flow exploration! Get ready to discover how heat moves from place to place. Click and drag the temperature sliders to see heat in action, then test your understanding with these fun questions!",
+  "questions": [
+    {
+      "question": "If you touch a metal spoon that's been sitting in a hot cup of tea, what happens to the heat energy?",
+      "type": "mcq",
+      "options": [
+        "A) Heat flows from the spoon to your hand",
+        "B) Heat flows from your hand to the spoon",
+        "C) Heat flows both ways equally",
+        "D) No heat flows at all"
+      ],
+      "correct_index": 0,
+      "hint": "Remember: heat always moves from hotter to colder objects",
+      "explanation": "Heat flows from the hot spoon to your cooler hand. This is why the spoon feels hot to touch - heat energy is transferring from the hotter object (spoon) to the colder object (your hand)."
+    },
+    {
+      "question": "What would happen if you place a cold ice pack on a warm sore muscle?",
+      "type": "mcq",
+      "options": [
+        "A) Heat flows from ice pack to muscle",
+        "B) Heat flows from muscle to ice pack",
+        "C) Heat stays trapped in the muscle",
+        "D) Temperature stays the same everywhere"
+      ],
+      "correct_index": 1,
+      "hint": "Think about which object is hotter and which is colder",
+      "explanation": "Heat flows from the warm muscle to the cold ice pack. This is why ice packs help reduce swelling - they absorb heat energy from the injured area, cooling it down."
+    },
+    {
+      "question": "Which everyday situation shows heat flowing from hot to cold?",
+      "type": "mcq",
+      "options": [
+        "A) A fan blowing warm air around a room",
+        "B) Boiling water making steam rise",
+        "C) Chocolate melting in your hand",
+        "D) A blanket keeping you warm"
+      ],
+      "correct_index": 2,
+      "hint": "Look for where something hot is touching something cold",
+      "explanation": "Chocolate melting in your hand shows heat flowing from your warm hand to the cold chocolate. The heat transfer causes the chocolate to change from solid to liquid state."
+    }
+  ],
+  "followups": [
+    "Try setting both temperature sliders to the same value. What happens to the heat flow?",
+    "Can you find the combination that creates the fastest heat flow?",
+    "Challenge: Predict which direction heat will flow before moving the sliders"
+  ],
+  "summary": "Great job exploring heat flow! Remember, heat always moves from hotter objects to colder objects until they reach the same temperature. This concept explains why we feel cold or hot when touching things, and it's essential for understanding how temperature changes work in our everyday lives."
+}

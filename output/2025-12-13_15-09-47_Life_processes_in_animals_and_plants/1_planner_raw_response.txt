@@ -1,0 +1,71 @@
+{
+  "learning_objectives": [
+    "Identify and explain the four main life processes in living organisms",
+    "Compare and contrast how plants and animals perform each life process",
+    "Predict how changes in one life process affect others in the same organism"
+  ],
+  "key_concepts": [
+    "Life processes: Nutrition, Respiration, Transportation, Excretion",
+    "Plant vs animal adaptations for each process",
+    "Interconnectedness of life processes"
+  ],
+  "visual_design": {
+    "main_display": "Split-screen animated factory metaphor showing plant and animal 'factories' with pipes, conveyor belts, and workers",
+    "color_scheme": ["#4CAF50", "#2196F3", "#FFC107"],
+    "animation_style": "smooth with continuous flow",
+    "visual_metaphor": "Living organisms as factories with production lines"
+  },
+  "variables_to_simulate": [
+    {
+      "name": "Sunlight",
+      "control_type": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 70,
+      "unit": "brightness",
+      "visual_effect": "Changes plant factory's solar panels glow intensity and food production rate"
+    },
+    {
+      "name": "Water",
+      "control_type": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 60,
+      "unit": "amount",
+      "visual_effect": "Adjusts water pipe flow rate in both plant and animal factories"
+    },
+    {
+      "name": "Oxygen",
+      "control_type": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 80,
+      "unit": "level",
+      "visual_effect": "Changes breathing rate of animal factory workers and plant respiration bubbles"
+    }
+  ],
+  "layout_structure": {
+    "sections": [
+      {"id": "header", "height": "60px", "content": "Title and brief description"},
+      {"id": "visual-area", "height": "50vh", "content": "Main interactive visualization"},
+      {"id": "controls", "height": "auto", "content": "Sliders and buttons"},
+      {"id": "info", "height": "auto", "content": "Current values and observations"}
+    ],
+    "spacing": "16px between sections"
+  },
+  "simulation_logic": [
+    "Step 1: Initialize both factories with default variable values",
+    "Step 2: When any slider moves, update corresponding visual elements",
+    "Step 3: Animate food production, breathing, and waste removal in real-time",
+    "Step 4: Show interconnected effects across all processes"
+  ],
+  "text_instructions": "Adjust sliders to see how life processes work in plants and animals",
+  "misconceptions_to_address": [
+    "Plants don't breathe (they do - they respire)",
+    "Photosynthesis is the same as respiration"
+  ],
+  "safety_constraints": [
+    "Age-appropriate content",
+    "No external resources"
+  ]
+}

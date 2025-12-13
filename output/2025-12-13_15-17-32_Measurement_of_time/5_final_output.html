@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pendulum Physics - Interactive Simulation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f9f9f9;
+        }
+        #app { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 16px; 
+            background: white;
+            min-height: 100vh;
+        }
+        header {
+            padding: 16px 0;
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        h1 { font-size: 24px; margin-bottom: 8px; }
+        .subtitle { font-size: 14px; color: #666; }
+        
+        #visual-area {
+            position: relative;
+            height: 50vh;
+            min-height: 300px;
+            background: linear-gradient(180deg, #e8f4f8 0%, #f5f5f5 100%);
+            border-radius: 8px;
+            margin: 16px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        #controls {
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .control-group {
+            margin: 16px 0;
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 44px;
+            cursor: pointer;
+        }
+        
+        button {
+            width: 100%;
+            min-height: 48px;
+            padding: 12px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 8px 0;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        #info {
+            padding: 16px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        
+        .legend {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .timeline-container {
+            margin-top: 16px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .timeline-bar {
+            height: 12px;
+            background: #f0f0f0;
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .timeline-progress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #4A90E2, #7ED321);
+            transition: width 0.1s linear;
+        }
+        
+        .timeline-marker {
+            position: absolute;
+            top: -8px;
+            width: 2px;
+            height: 28px;
+            background: #F5A623;
+        }
+        
+        .timeline-label {
+            position: absolute;
+            top: 20px;
+            font-size: 12px;
+            color: #666;
+            transform: translateX(-50%);
+        }
+        
+        .stopwatch {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 12px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            background: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .swing-arc {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-left: 2px dashed rgba(74, 144, 226, 0.3);
+            border-bottom: 2px dashed rgba(74, 144, 226, 0.3);
+            border-radius: 50% 0 0 0;
+            transform: translate(-50%, -50%);
+            transform-origin: 0 0;
+        }
+        
+        .pivot {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #333;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .rope {
+            position: absolute;
+            width: 2px;
+            background: #333;
+            transform-origin: top center;
+            transition: transform 0.05s linear;
+        }
+        
+        .bob {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            background: #4A90E2;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: background 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .bob.playground {
+            background: radial-gradient(circle at 30% 30%, #7ED321, #4A90E2);
+            border: 3px solid #F5A623;
+        }
+        
+        .bob.paused {
+            background: #ccc;
+        }
+        
+        .bob.fast {
+            background: #F5A623;
+        }
+        
+        .bob.slow {
+            background: #7ED321;
+        }
+        
+        .ground-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ccc, transparent);
+        }
+        
+        .hint {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Pendulum Physics</h1>
+            <p class="subtitle">Interactive playground swing simulation with real-time stopwatch</p>
+        </header>
+        
+        <div id="visual-area">
+            <div class="ground-line"></div>
+            <div class="pivot" id="pivot"></div>
+            <div class="rope" id="rope"></div>
+            <div class="bob playground" id="bob"></div>
+            <div class="swing-arc" id="arc"></div>
+        </div>
+        
+        <div id="controls">
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Length (m)</span>
+                    <span id="lengthValue">1.00</span>
+                </div>
+                <input type="range" id="lengthSlider" min="0.5" max="3.0" step="0.01" value="1.00">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Amplitude (°)</span>
+                    <span id="amplitudeValue">30</span>
+                </div>
+                <input type="range" id="amplitudeSlider" min="5" max="80" step="1" value="30">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Damping</span>
+                    <span id="dampingValue">0.01</span>
+                </div>
+                <input type="range" id="dampingSlider" min="0" max="0.1" step="0.001" value="0.01">
+            </div>
+            
+            <button id="playPauseBtn">Pause</button>
+            <button id="resetBtn">Reset</button>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #4A90E2;"></span>
+                    <span>Normal speed</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #7ED321;"></span>
+                    <span>Slow motion</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #F5A623;"></span>
+                    <span>Fast motion</span>
+                </div>
+            </div>
+            
+            <div class="hint">Tip: Adjust length and amplitude to see how they affect the swing period</div>
+        </div>
+        
+        <div id="info">
+            <div class="info-row">
+                <span>Period (T):</span>
+                <span id="periodValue">2.01 s</span>
+            </div>
+            <div class="info-row">
+                <span>Frequency (f):</span>
+                <span id="frequencyValue">0.50 Hz</span>
+            </div>
+            <div class="info-row">
+                <span>Max Speed:</span>
+                <span id="speedValue">1.68 m/s</span>
+            </div>
+            <div class="info-row">
+                <span>Energy:</span>
+                <span id="energyValue">1.41 J</span>
+            </div>
+            
+            <div class="stopwatch">
+                <span id="stopwatch">0.00 s</span>
+            </div>
+            
+            <div class="timeline-container">
+                <div class="control-label">
+                    <span>Timeline</span>
+                    <span id="timelineValue">0.00 s</span>
+                </div>
+                <div class="timeline-bar">
+                    <div class="timeline-progress" id="timelineProgress"></div>
+                    <div class="timeline-marker" id="timelineMarker" style="left: 0%;"></div>
+                    <div class="timeline-label" id="timelineLabel">0.00 s</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Physics constants
+        const g = 9.81; // gravity (m/s^2)
+        const bobMass = 1.0; // kg
+        
+        // State variables
+        let length = 1.0; // meters
+        let amplitude = 30; // degrees
+        let damping = 0.01; // damping coefficient
+        let angle = amplitude * Math.PI / 180; // radians
+        let angularVelocity = 0; // rad/s
+        let isRunning = true;
+        let lastTime = 0;
+        let elapsedTime = 0;
+        let timelineMax = 10; // seconds
+        
+        // DOM elements
+        const visualArea = document.getElementById('visual-area');
+        const pivot = document.getElementById('pivot');
+        const rope = document.getElementById('rope');
+        const bob = document.getElementById('bob');
+        const arc = document.getElementById('arc');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        
+        const lengthSlider = document.getElementById('lengthSlider');
+        const amplitudeSlider = document.getElementById('amplitudeSlider');
+        const dampingSlider = document.getElementById('dampingSlider');
+        
+        const lengthValue = document.getElementById('lengthValue');
+        const amplitudeValue = document.getElementById('amplitudeValue');
+        const dampingValue = document.getElementById('dampingValue');
+        
+        const periodValue = document.getElementById('periodValue');
+        const frequencyValue = document.getElementById('frequencyValue');
+        const speedValue = document.getElementById('speedValue');
+        const energyValue = document.getElementById('energyValue');
+        const stopwatch = document.getElementById('stopwatch');
+        
+        const timelineProgress = document.getElementById('timelineProgress');
+        const timelineMarker = document.getElementById('timelineMarker');
+        const timelineLabel = document.getElementById('timelineLabel');
+        const timelineValue = document.getElementById('timelineValue');
+        
+        // Initialize positions
+        function initializePositions() {
+            const areaRect = visualArea.getBoundingClientRect();
+            const pivotX = areaRect.width / 2;
+            const pivotY = 60; // distance from top
+            
+            pivot.style.left = pivotX + 'px';
+            pivot.style.top = pivotY + 'px';
+            
+            // Calculate rope length in pixels (scale: 1m = 200px)
+            const ropeLength = length * 200;
+            
+            rope.style.width = '2px';
+            rope.style.height = ropeLength + 'px';
+            rope.style.left = pivotX + 'px';
+            rope.style.top = (pivotY + 6) + 'px';
+            
+            // Position bob at end of rope
+            const bobX = pivotX + ropeLength * Math.sin(angle);
+            const bobY = pivotY + 6 + ropeLength * Math.cos(angle);
+            
+            bob.style.left = bobX + 'px';
+            bob.style.top = bobY + 'px';
+            
+            // Position arc
+            arc.style.left = (pivotX - ropeLength) + 'px';
+            arc.style.top = (pivotY + 6 - ropeLength) + 'px';
+            arc.style.width = (ropeLength * 2) + 'px';
+            arc.style.height = (ropeLength * 2) + 'px';
+            arc.style.transform = 'translate(0, 0) rotate(' + amplitude + 'deg)';
+        }
+        
+        // Update physics
+        function updatePhysics(deltaTime) {
+            if (!isRunning) return;
+            
+            // Simple pendulum differential equation
+            const angularAcceleration = -(g / length) * Math.sin(angle) - damping * angularVelocity;
+            
+            // Update velocity and position using Euler method
+            angularVelocity += angularAcceleration * deltaTime;
+            angle += angularVelocity * deltaTime;
+            
+            // Update elapsed time
+            elapsedTime += deltaTime;
+            
+            // Update timeline
+            const timelinePercent = Math.min((elapsedTime % timelineMax) / timelineMax, 1);
+            timelineProgress.style.width = (timelinePercent * 100) + '%';
+            timelineMarker.style.left = (timelinePercent * 100) + '%';
+            timelineLabel.style.left = (timelinePercent * 100) + '%';
+            timelineValue.textContent = (elapsedTime % timelineMax).toFixed(2) + ' s';
+            
+            // Update stopwatch
+            stopwatch.textContent = elapsedTime.toFixed(2) + ' s';
+        }
+        
+        // Update visual elements
+        function updateVisuals() {
+            const areaRect = visualArea.getBoundingClientRect();
+            const pivotX = areaRect.width / 2;
+            const pivotY = 60;
+            
+            // Calculate rope length in pixels
+            const ropeLength = length * 200;
+            
+            // Update rope rotation
+            rope.style.transform = 'rotate(' + (angle * 180 / Math.PI) + 'deg)';
+            
+            // Update bob position
+            const bobX = pivotX + ropeLength * Math.sin(angle);
+            const bobY = pivotY + 6 + ropeLength * Math.cos(angle);
+            
+            bob.style.left = bobX + 'px';
+            bob.style.top = bobY + 'px';
+            
+            // Update bob color based on speed
+            const speed = Math.abs(angularVelocity * ropeLength);
+            if (speed < 50) {
+                bob.classList.remove('fast', 'paused');
+                bob.classList.add('slow');
+            } else if (speed > 200) {
+                bob.classList.remove('slow', 'paused');
+                bob.classList.add('fast');
+            } else {
+                bob.classList.remove('fast', 'slow', 'paused');
+            }
+        }
+        
+        // Update calculations display
+        function updateCalculations() {
+            // Small angle approximation for period
+            const period = 2 * Math.PI * Math.sqrt(length / g);
+            const frequency = 1 / period;
+            
+            // Maximum speed (energy conservation)
+            const maxSpeed = Math.sqrt(2 * g * length * (1 - Math.cos(amplitude * Math.PI / 180)));
+            
+            // Maximum potential energy
+            const maxEnergy = bobMass * g * length * (1 - Math.cos(amplitude * Math.PI / 180));
+            
+            periodValue.textContent = period.toFixed(2) + ' s';
+            frequencyValue.textContent = frequency.toFixed(2) + ' Hz';
+            speedValue.textContent = maxSpeed.toFixed(2) + ' m/s';
+            energyValue.textContent = maxEnergy.toFixed(2) + ' J';
+        }
+        
+        // Animation loop
+        function animate(time) {
+            if (!lastTime) lastTime = time;
+            const deltaTime = Math.min((time - lastTime) / 1000, 0.033); // cap at 33ms
+            lastTime = time;
+            
+            updatePhysics(deltaTime);
+            updateVisuals();
+            
+            requestAnimationFrame(animate);
+        }
+        
+        // Event listeners
+        lengthSlider.addEventListener('input', (e) => {
+            length = parseFloat(e.target.value);
+            lengthValue.textContent = length.toFixed(2);
+            initializePositions();
+            updateCalculations();
+        });
+        
+        amplitudeSlider.addEventListener('input', (e) => {
+            amplitude = parseInt(e.target.value);
+            amplitudeValue.textContent = amplitude;
+            angle = amplitude * Math.PI / 180;
+            initializePositions();
+            updateCalculations();
+        });
+        
+        dampingSlider.addEventListener('input', (e) => {
+            damping = parseFloat(e.target.value);
+            dampingValue.textContent = damping.toFixed(3);
+        });
+        
+        playPauseBtn.addEventListener('click', () => {
+            isRunning = !isRunning;
+            playPauseBtn.textContent = isRunning ? 'Pause' : 'Play';
+            
+            if (isRunning) {
+                bob.classList.remove('paused');
+                lastTime = performance.now();
+            } else {
+                bob.classList.add('paused');
+            }
+        });
+        
+        resetBtn.addEventListener('click', () => {
+            angle = amplitude * Math.PI / 180;
+            angularVelocity = 0;
+            elapsedTime = 0;
+            initializePositions();
+            timelineProgress.style.width = '0%';
+            timelineMarker.style.left = '0%';
+            timelineLabel.style.left = '0%';
+            timelineValue.textContent = '0.00 s';
+            stopwatch.textContent = '0.00 s';
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            initializePositions();
+        });
+        
+        // Initialize
+        function init() {
+            try {
+                lengthValue.textContent = length.toFixed(2);
+                amplitudeValue.textContent = amplitude;
+                dampingValue.textContent = damping.toFixed(3);
+                
+                initializePositions();
+                updateCalculations();
+                
+                requestAnimationFrame(animate);
+            } catch (error) {
+                console.error('Initialization error:', error);
+            }
+        }
+        
+        // Start
+        init();
+    </script>
+</body>
+</html>

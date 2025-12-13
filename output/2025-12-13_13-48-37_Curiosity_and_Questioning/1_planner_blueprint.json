@@ -1,0 +1,10 @@
+{
+  "main_display": "A central 'Wonder Bubble' (large, semi-transparent circle) that grows brighter and larger when curiosity is sparked, with a question mark icon inside. When a question is asked, a smaller 'Question Bubble' (smaller circle with a question mark) pops out from the main bubble and floats upward.",
+  "color_scheme": [
+    "#4A90E2",
+    "#7ED321",
+    "#F5A623"
+  ],
+  "animation_style": "smooth",
+  "visual_metaphor": "A balloon that inflates and lights up with curiosity, and smaller balloons (questions) that float away to be answered."
+}

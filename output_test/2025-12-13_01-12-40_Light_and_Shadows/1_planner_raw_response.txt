@@ -1,0 +1,69 @@
+{
+  "learning_objectives": [
+    "Students will be able to identify and classify objects as opaque, transparent, or translucent based on how light passes through them",
+    "Students will be able to explain and demonstrate how shadows are formed when light is blocked by an opaque object",
+    "Students will be able to create a simple pin-hole camera image and understand that light travels in straight lines"
+  ],
+  "key_concepts": [
+    "Light travels in straight lines",
+    "Opaque, transparent, and translucent objects",
+    "Shadow formation and pin-hole camera principles"
+  ],
+  "visual_design": {
+    "main_display": "Interactive 2D scene showing a light source (sun/bulb), an adjustable object in the middle, and a screen/wall where the shadow or image appears. The scene uses clear visual elements: a bright yellow circle for light, a colored rectangle for the object, and a gray rectangle for the screen.",
+    "color_scheme": ["#FFD700", "#4A90E2", "#7ED321"],
+    "animation_style": "smooth",
+    "visual_metaphor": "A flashlight shining on objects to create shadows, like how the sun creates shadows during the day"
+  },
+  "variables_to_simulate": [
+    {
+      "name": "Object_Opacity",
+      "control_type": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 100,
+      "unit": "%",
+      "visual_effect": "Changes the object's transparency: 100% = opaque (solid color, clear shadow), 0% = transparent (invisible, no shadow), 50% = translucent (faded color, faint shadow)"
+    },
+    {
+      "name": "Light_Source_Distance",
+      "control_type": "slider",
+      "min": 1,
+      "max": 10,
+      "default": 5,
+      "unit": "units",
+      "visual_effect": "Moves the light source closer or farther from the object, changing the shadow size on the screen (closer = larger shadow, farther = smaller shadow)"
+    },
+    {
+      "name": "Pin_Hole_Mode",
+      "control_type": "toggle",
+      "default": false,
+      "unit": "",
+      "visual_effect": "Switches the scene to pin-hole camera mode: the object becomes a bright shape, and the screen shows an inverted image due to light traveling in straight lines through a tiny hole"
+    }
+  ],
+  "layout_structure": {
+    "sections": [
+      {"id": "header", "height": "60px", "content": "Title and brief description"},
+      {"id": "visual-area", "height": "50vh", "content": "Main interactive visualization"},
+      {"id": "controls", "height": "auto", "content": "Sliders and buttons"},
+      {"id": "info", "height": "auto", "content": "Current values and observations"}
+    ],
+    "spacing": "16px between sections"
+  },
+  "simulation_logic": [
+    "Step 1: Initialize visual with default values",
+    "Step 2: When slider moves, calculate new value",
+    "Step 3: Animate visual change over 300ms",
+    "Step 4: Update display text with new values"
+  ],
+  "text_instructions": "Explore how light creates shadows and images by adjusting the object and light.",
+  "misconceptions_to_address": [
+    "Shadows are always black",
+    "Light can bend around objects to form shadows"
+  ],
+  "safety_constraints": [
+    "Age-appropriate content",
+    "No external resources"
+  ]
+}

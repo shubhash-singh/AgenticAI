@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shadow Formation - Interactive Simulation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f9f9f9;
+        }
+        #app { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 16px; 
+            background: white;
+            min-height: 100vh;
+        }
+        header {
+            padding: 16px 0;
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        h1 { font-size: 24px; margin-bottom: 8px; }
+        .subtitle { font-size: 14px; color: #666; }
+        
+        #visual-area {
+            position: relative;
+            height: 50vh;
+            min-height: 300px;
+            background: linear-gradient(180deg, #87CEEB 0%, #E6F3FF 100%);
+            border-radius: 8px;
+            margin: 16px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .stage-container {
+            width: 90%;
+            max-width: 500px;
+            height: 80%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 16px;
+        }
+        
+        .sun {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #FFD54F 0%, #FFB300 60%, #F57C00 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(255, 181, 61, 0.6), 0 0 40px rgba(255, 181, 61, 0.3);
+            animation: sunGlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes sunGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 181, 61, 0.6), 0 0 40px rgba(255, 181, 61, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(255, 181, 61, 0.8), 0 0 60px rgba(255, 181, 61, 0.5); }
+        }
+        
+        .scene {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin: 20px 0;
+        }
+        
+        .object-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .object {
+            width: 80px;
+            height: 80px;
+            background: #333;
+            border-radius: 8px;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .object.circle { border-radius: 50%; }
+        .object.triangle {
+            width: 0;
+            height: 0;
+            background: transparent;
+            border-left: 40px solid transparent;
+            border-right: 40px solid transparent;
+            border-bottom: 80px solid #333;
+        }
+        
+        .object.polygon {
+            width: 0;
+            height: 0;
+            background: transparent;
+            border-left: 40px solid transparent;
+            border-right: 40px solid transparent;
+            border-bottom: 60px solid #333;
+            position: relative;
+        }
+        
+        .object.polygon::after {
+            content: '';
+            position: absolute;
+            left: -40px;
+            bottom: -20px;
+            width: 80px;
+            height: 20px;
+            background: #333;
+        }
+        
+        .shadow {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            filter: blur(1px);
+            z-index: -1;
+        }
+        
+        .shadow.circle { border-radius: 50%; }
+        
+        .screen {
+            width: 100%;
+            height: 40px;
+            background: #2C3E50;
+            border-radius: 6px;
+            position: relative;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+        
+        .screen::before {
+            content: 'SCREEN';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #7F8C8D;
+            font-size: 12px;
+            letter-spacing: 2px;
+        }
+        
+        #controls {
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .control-group {
+            margin: 16px 0;
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 44px;
+            cursor: pointer;
+        }
+        
+        select, input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+        }
+        
+        button {
+            width: 100%;
+            min-height: 48px;
+            padding: 12px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 8px 0;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        #info {
+            padding: 16px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .info-item {
+            background: white;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .info-item strong {
+            display: block;
+            color: #333;
+        }
+        
+        .legend {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-right: 12px;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            border: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Shadow Formation</h1>
+            <p class="subtitle">Explore how light, objects, and distance affect shadow size and shape</p>
+        </header>
+        
+        <div id="visual-area">
+            <div class="stage-container">
+                <div class="sun" id="sun"></div>
+                <div class="scene">
+                    <div class="object-container" id="objectContainer">
+                        <div class="object circle" id="object"></div>
+                        <div class="shadow circle" id="shadow"></div>
+                    </div>
+                </div>
+                <div class="screen"></div>
+            </div>
+        </div>
+        
+        <div id="controls">
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Object Shape</span>
+                    <select id="shapeSelect">
+                        <option value="circle">Circle</option>
+                        <option value="square">Square</option>
+                        <option value="triangle">Triangle</option>
+                        <option value="polygon">House</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Object Size: <span id="sizeValue">80</span>px</span>
+                </div>
+                <input type="range" id="sizeSlider" min="40" max="120" value="80">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Light Distance: <span id="lightDistanceValue">300</span>px</span>
+                </div>
+                <input type="range" id="lightDistanceSlider" min="150" max="450" value="300">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Object Distance: <span id="objectDistanceValue">150</span>px</span>
+                </div>
+                <input type="range" id="objectDistanceSlider" min="50" max="250" value="150">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Shadow Opacity: <span id="opacityValue">80</span>%</span>
+                </div>
+                <input type="range" id="opacitySlider" min="30" max="100" value="80">
+            </div>
+            
+            <button id="resetBtn">Reset</button>
+        </div>
+        
+        <div id="info">
+            <h3>Current Settings</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Shape:</strong>
+                    <span id="infoShape">Circle</span>
+                </div>
+                <div class="info-item">
+                    <strong>Object Size:</strong>
+                    <span id="infoSize">80px</span>
+                </div>
+                <div class="info-item">
+                    <strong>Light Distance:</strong>
+                    <span id="infoLightDistance">300px</span>
+                </div>
+                <div class="info-item">
+                    <strong>Object Distance:</strong>
+                    <span id="infoObjectDistance">150px</span>
+                </div>
+                <div class="info-item">
+                    <strong>Shadow Size:</strong>
+                    <span id="infoShadowSize">~160px</span>
+                </div>
+                <div class="info-item">
+                    <strong>Shadow Opacity:</strong>
+                    <span id="infoOpacity">80%</span>
+                </div>
+            </div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #333;"></div>
+                    <span>Object</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: rgba(0,0,0,0.8);"></div>
+                    <span>Shadow</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #FFD54F;"></div>
+                    <span>Light Source</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const state = {
+            shape: 'circle',
+            objectSize: 80,
+            lightDistance: 300,
+            objectDistance: 150,
+            shadowOpacity: 80
+        };
+        
+        const elements = {
+            object: document.getElementById('object'),
+            shadow: document.getElementById('shadow'),
+            objectContainer: document.getElementById('objectContainer'),
+            sun: document.getElementById('sun'),
+            
+            // Controls
+            shapeSelect: document.getElementById('shapeSelect'),
+            sizeSlider: document.getElementById('sizeSlider'),
+            lightDistanceSlider: document.getElementById('lightDistanceSlider'),
+            objectDistanceSlider: document.getElementById('objectDistanceSlider'),
+            opacitySlider: document.getElementById('opacitySlider'),
+            resetBtn: document.getElementById('resetBtn'),
+            
+            // Value displays
+            sizeValue: document.getElementById('sizeValue'),
+            lightDistanceValue: document.getElementById('lightDistanceValue'),
+            objectDistanceValue: document.getElementById('objectDistanceValue'),
+            opacityValue: document.getElementById('opacityValue'),
+            
+            // Info panel
+            infoShape: document.getElementById('infoShape'),
+            infoSize: document.getElementById('infoSize'),
+            infoLightDistance: document.getElementById('infoLightDistance'),
+            infoObjectDistance: document.getElementById('infoObjectDistance'),
+            infoShadowSize: document.getElementById('infoShadowSize'),
+            infoOpacity: document.getElementById('infoOpacity')
+        };
+        
+        function calculateShadowSize() {
+            const { objectSize, lightDistance, objectDistance } = state;
+            
+            // Simple geometric projection: shadow size increases with distance from light
+            const totalDistance = lightDistance + objectDistance;
+            const shadowSize = objectSize * (totalDistance / lightDistance);
+            
+            return Math.max(shadowSize, objectSize * 0.5);
+        }
+        
+        function updateVisuals() {
+            try {
+                // Update object
+                elements.object.className = `object ${state.shape}`;
+                elements.shadow.className = `shadow ${state.shape}`;
+                
+                // Object size
+                elements.object.style.width = state.objectSize + 'px';
+                elements.object.style.height = state.objectSize + 'px';
+                
+                // Object position (vertical distance from light)
+                const sceneHeight = document.querySelector('.scene').offsetHeight;
+                const objectTop = Math.max(20, sceneHeight - state.objectDistance - 40);
+                elements.objectContainer.style.top = objectTop + 'px';
+                
+                // Shadow size and position
+                const shadowSize = calculateShadowSize();
+                elements.shadow.style.width = shadowSize + 'px';
+                elements.shadow.style.height = shadowSize * 0.3 + 'px';
+                elements.shadow.style.opacity = (state.shadowOpacity / 100).toString();
+                
+                // Shadow blur increases with distance
+                const blur = Math.min(8, state.objectDistance / 50);
+                elements.shadow.style.filter = `blur(${blur}px)`;
+                
+                // Update info panel
+                elements.infoShape.textContent = state.shape.charAt(0).toUpperCase() + state.shape.slice(1);
+                elements.infoSize.textContent = state.objectSize + 'px';
+                elements.infoLightDistance.textContent = state.lightDistance + 'px';
+                elements.infoObjectDistance.textContent = state.objectDistance + 'px';
+                elements.infoShadowSize.textContent = `~${Math.round(shadowSize)}px`;
+                elements.infoOpacity.textContent = state.shadowOpacity + '%';
+                
+                // Update sun position based on light distance
+                const sunRight = Math.max(10, 50 - (state.lightDistance - 150) / 10);
+                elements.sun.style.right = sunRight + 'px';
+                
+            } catch (error) {
+                console.error('Error updating visuals:', error);
+            }
+        }
+        
+        function setupEventListeners() {
+            elements.shapeSelect.addEventListener('change', (e) => {
+                state.shape = e.target.value;
+                updateVisuals();
+            });
+            
+            elements.sizeSlider.addEventListener('input', (e) => {
+                state.objectSize = parseInt(e.target.value);
+                elements.sizeValue.textContent = state.objectSize;
+                updateVisuals();
+            });
+            
+            elements.lightDistanceSlider.addEventListener('input', (e) => {
+                state.lightDistance = parseInt(e.target.value);
+                elements.lightDistanceValue.textContent = state.lightDistance;
+                updateVisuals();
+            });
+            
+            elements.objectDistanceSlider.addEventListener('input', (e) => {
+                state.objectDistance = parseInt(e.target.value);
+                elements.objectDistanceValue.textContent = state.objectDistance;
+                updateVisuals();
+            });
+            
+            elements.opacitySlider.addEventListener('input', (e) => {
+                state.shadowOpacity = parseInt(e.target.value);
+                elements.opacityValue.textContent = state.shadowOpacity;
+                updateVisuals();
+            });
+            
+            elements.resetBtn.addEventListener('click', () => {
+                state.shape = 'circle';
+                state.objectSize = 80;
+                state.lightDistance = 300;
+                state.objectDistance = 150;
+                state.shadowOpacity = 80;
+                
+                elements.shapeSelect.value = 'circle';
+                elements.sizeSlider.value = '80';
+                elements.lightDistanceSlider.value = '300';
+                elements.objectDistanceSlider.value = '150';
+                elements.opacitySlider.value = '80';
+                
+                elements.sizeValue.textContent = '80';
+                elements.lightDistanceValue.textContent = '300';
+                elements.objectDistanceValue.textContent = '150';
+                elements.opacityValue.textContent = '80';
+                
+                updateVisuals();
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                updateVisuals();
+            });
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setupEventListeners();
+            updateVisuals();
+        });
+    </script>
+</body>
+</html>

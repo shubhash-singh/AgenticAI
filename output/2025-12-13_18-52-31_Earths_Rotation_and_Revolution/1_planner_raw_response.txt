@@ -1,0 +1,74 @@
+{
+  "learning_objectives": [
+    "Students will be able to identify and differentiate between Earth's rotation and revolution through visual observation",
+    "Students will be able to explain how Earth's tilted axis causes seasons by manipulating a visual model",
+    "Students will be able to predict changes in day/night length and seasonal patterns by adjusting rotation speed and axial tilt"
+  ],
+  "key_concepts": [
+    "Earth's Rotation (spinning on axis)",
+    "Earth's Revolution (orbiting the Sun)",
+    "Axial Tilt and its effect on seasons"
+  ],
+  "visual_design": {
+    "main_display": "Interactive SVG showing Earth as a 120px circle with visible axis line, rotating around a stationary Sun. Day/night shown with half-circle shading that rotates with Earth. Seasons indicated by colored hemispheres (red for summer, blue for winter)",
+    "color_scheme": ["#FFD700", "#4169E1", "#FF6B6B", "#4ECDC4", "#95E1D3"],
+    "animation_style": "smooth continuous rotation with 300ms easing for state changes",
+    "visual_metaphor": "Earth as a spinning top that also walks in a circle around a lamp (Sun)"
+  },
+  "variables_to_simulate": [
+    {
+      "name": "Rotation_Speed",
+      "control_type": "slider",
+      "min": 1,
+      "max": 10,
+      "default": 5,
+      "unit": "speed",
+      "visual_effect": "Changes Earth's spin rate - at speed 1, Earth completes one rotation in 10 seconds; at speed 10, completes in 1 second"
+    },
+    {
+      "name": "Axial_Tilt",
+      "control_type": "slider",
+      "min": 0,
+      "max": 45,
+      "default": 23.5,
+      "unit": "degrees",
+      "visual_effect": "Rotates the axis line through Earth's poles from vertical (0°) to extreme tilt (45°), with hemisphere colors changing to show seasonal effects"
+    },
+    {
+      "name": "Orbit_Position",
+      "control_type": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 0,
+      "unit": "position",
+      "visual_effect": "Moves Earth along its elliptical orbit path around the Sun, showing different seasonal positions"
+    }
+  ],
+  "layout_structure": {
+    "sections": [
+      {"id": "header", "height": "70px", "content": "Earth's Rotation & Revolution Simulator"},
+      {"id": "visual-area", "height": "55vh", "content": "Central SVG visualization with Sun, Earth, axis line, and orbit path"},
+      {"id": "controls", "height": "auto", "content": "Three horizontal sliders with large thumb controls and visual value indicators"},
+      {"id": "info", "height": "auto", "content": "Live readouts showing 'Rotation: 24h cycle', 'Tilt: 23.5°', 'Season: Summer/Winter'"}
+    ],
+    "spacing": "20px between sections"
+  },
+  "simulation_logic": [
+    "Step 1: Initialize Earth at default rotation speed with 23.5° tilt, showing day/night division and seasonal hemisphere colors",
+    "Step 2: When Rotation_Speed slider moves, calculate new rotation period and smoothly adjust animation duration",
+    "Step 3: When Axial_Tilt slider moves, rotate the axis line and update hemisphere colors to show which hemisphere receives more direct sunlight",
+    "Step 4: When Orbit_Position slider moves, animate Earth along its elliptical path while maintaining current tilt orientation",
+    "Step 5: Update all text labels with current values and season names within 100ms of user interaction"
+  ],
+  "text_instructions": "Adjust sliders to see how Earth's spin and tilt create day/night and seasons",
+  "misconceptions_to_address": [
+    "Seasons are caused by Earth's distance from the Sun (not true - it's the tilt)",
+    "Day and night are caused by the Sun moving around Earth (not true - it's Earth's rotation)"
+  ],
+  "safety_constraints": [
+    "Age-appropriate content",
+    "No external resources",
+    "All animations are smooth and not flashing",
+    "No personal data collection"
+  ]
+}

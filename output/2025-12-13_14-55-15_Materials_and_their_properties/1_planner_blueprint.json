@@ -1,0 +1,10 @@
+{
+  "main_display": "Interactive material testing station with three zones: water tank for float/sink test, electrical circuit for conductivity test, and magnifying glass for appearance/hardness test",
+  "color_scheme": [
+    "#4A90E2",
+    "#7ED321",
+    "#F5A623"
+  ],
+  "animation_style": "smooth",
+  "visual_metaphor": "A science lab testing station where students can examine different materials"
+}

@@ -1,0 +1,50 @@
+{
+  "intro": "Hello young scientists! Welcome to the Light and Shadows Adventure. Get ready to explore how light behaves and discover the secrets behind shadows. This is your chance to become a light detective!",
+  "questions": [
+    {
+      "question": "You have a bright flashlight and three different materials: a wooden block, a clear glass window, and a frosted glass panel. Which material will create the darkest, clearest shadow on the wall?",
+      "type": "mcq",
+      "options": [
+        "A) The clear glass window because it's shiny and bright",
+        "B) The frosted glass panel because it lets some light through",
+        "C) The wooden block because no light can pass through it",
+        "D) None of them will create a shadow"
+      ],
+      "correct_index": 2,
+      "hint": "Remember that a shadow forms when light is completely blocked. Think about which material stops all the light.",
+      "explanation": "The wooden block creates the darkest, clearest shadow because it is opaque - no light can pass through it. The clear glass is transparent (lets all light through), and the frosted glass is translucent (lets some light through), so they won't create clear shadows."
+    },
+    {
+      "question": "Imagine you're standing outside at noon when the sun is directly overhead. As the afternoon goes by and the sun moves toward the horizon, what happens to the length of your shadow?",
+      "type": "mcq",
+      "options": [
+        "A) Your shadow gets shorter as the sun goes down",
+        "B) Your shadow gets longer as the sun goes down",
+        "C) Your shadow stays exactly the same length all day",
+        "D) Your shadow disappears completely in the evening"
+      ],
+      "correct_index": 1,
+      "hint": "Think about how the angle of sunlight changes throughout the day. Try imagining the sun's rays hitting the ground at different angles.",
+      "explanation": "As the sun moves lower in the sky, its rays hit the ground at a more slanted angle. This means the shadow stretches out longer behind you. At noon, when the sun is directly overhead, shadows are shortest."
+    },
+    {
+      "question": "Your little brother wants to make cool animal shapes with his hands using a flashlight. Where should he stand to make the biggest, most dramatic shadow of his hand on the wall?",
+      "type": "mcq",
+      "options": [
+        "A) Stand very close to the wall with the flashlight behind him",
+        "B) Stand very close to the flashlight with the wall behind him",
+        "C) Stand in the middle between the flashlight and the wall",
+        "D) It doesn't matter where he stands - the shadow will always be the same size"
+      ],
+      "correct_index": 1,
+      "hint": "Think about what happens when you move closer to the light source. Try to imagine the light spreading out from the flashlight.",
+      "explanation": "When you stand close to the light source, the light rays spread out more, making your hand block a wider area and creating a larger shadow on the wall. This is why objects look bigger when they're closer to the light!"
+    }
+  ],
+  "followups": [
+    "Try experimenting with different objects around your house. Can you find something that makes a fuzzy shadow? What makes it different?",
+    "Create your own shadow puppet show! Use different hand positions and see how the shadows change when you move closer or farther from the light.",
+    "Challenge: Predict what will happen if you use two flashlights. Will you get two shadows? Try it and see!"
+  ],
+  "summary": "Great job exploring light and shadows! Remember: shadows form when light is blocked by opaque objects, the angle of light affects shadow size, and moving closer to a light source makes bigger shadows. Keep looking for shadows in your everyday life!"
+}

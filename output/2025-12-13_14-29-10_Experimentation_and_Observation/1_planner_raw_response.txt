@@ -1,0 +1,72 @@
+{
+  "learning_objectives": [
+    "Students will be able to identify and distinguish between experimentation and observation in scientific inquiry.",
+    "Students will conduct a simple virtual experiment to observe changes in materials and record their observations.",
+    "Students will analyze their observations to draw conclusions about the type of change that occurred."
+  ],
+  "key_concepts": [
+    "Experimentation and Observation",
+    "Observing changes in materials",
+    "Identifying different types of changes"
+  ],
+  "visual_design": {
+    "main_display": "Two large, clear beakers (Beaker A and Beaker B) placed side-by-side on a virtual lab bench. Beaker A contains water, and Beaker B is empty. A spoon with salt appears. Animations show the salt being poured into Beaker A, dissolving, and then water being evaporated from Beaker A into Beaker B using a virtual heat lamp. The process is visually distinct for reversible (salt dissolving) and irreversible (water evaporation) changes.",
+    "color_scheme": ["#4A90E2", "#7ED321", "#F5A623"],
+    "animation_style": "smooth",
+    "visual_metaphor": "A detective's magnifying glass observing clues in a science lab."
+  },
+  "variables_to_simulate": [
+    {
+      "name": "Amount of Salt",
+      "control_type": "slider",
+      "min": 0,
+      "max": 10,
+      "default": 5,
+      "unit": "spoons",
+      "visual_effect": "Changes the number of salt crystals visible in the spoon and the beaker, and the speed of dissolution animation."
+    },
+    {
+      "name": "Heat Intensity",
+      "control_type": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 50,
+      "unit": "%",
+      "visual_effect": "Changes the brightness of the heat lamp and the speed of water evaporation animation."
+    },
+    {
+      "name": "Start Experiment",
+      "control_type": "button",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "unit": "",
+      "visual_effect": "Triggers the sequence of animations (pouring salt, dissolving, heating, evaporation)."
+    }
+  ],
+  "layout_structure": {
+    "sections": [
+      {"id": "header", "height": "60px", "content": "Experimentation and Observation: A Science Detective Story"},
+      {"id": "visual-area", "height": "50vh", "content": "Animated beakers with salt and water"},
+      {"id": "controls", "height": "auto", "content": "Sliders and button for variables"},
+      {"id": "info", "height": "auto", "content": "Current values and observation checklist"}
+    ],
+    "spacing": "16px between sections"
+  },
+  "simulation_logic": [
+    "Step 1: Initialize visual with default values (5 spoons of salt, 50% heat, experiment not started).",
+    "Step 2: When 'Amount of Salt' slider moves, update the number of salt crystals and dissolution speed.",
+    "Step 3: When 'Heat Intensity' slider moves, update the heat lamp brightness and evaporation speed.",
+    "Step 4: When 'Start Experiment' button is pressed, animate the sequence: pouring salt, dissolving, heating, evaporation.",
+    "Step 5: After animation, update the observation checklist with visual cues (e.g., checkmarks for reversible change, crossed-out for irreversible)."
+  ],
+  "text_instructions": "Observe and record changes as you experiment with salt and water.",
+  "misconceptions_to_address": [
+    "Observation is just looking; it doesn't require careful attention to detail.",
+    "All changes in materials are reversible."
+  ],
+  "safety_constraints": [
+    "Age-appropriate content",
+    "No external resources"
+  ]
+}

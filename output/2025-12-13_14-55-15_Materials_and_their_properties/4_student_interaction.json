@@ -1,0 +1,50 @@
+{
+  "intro": "Welcome to the Material Science Lab! In this interactive simulation, you'll explore how different materials behave based on their special properties. Get ready to test, observe, and discover what makes each material unique!",
+  "questions": [
+    {
+      "question": "In the material testing station, you can see a piece of wood and a metal key. Using the magnifying glass to observe their appearance, which statement is most likely true?",
+      "type": "mcq",
+      "options": [
+        "A) Both materials are soft and easy to scratch",
+        "B) The metal key is shiny while the wood is dull",
+        "C) Both materials are transparent and see-through",
+        "D) The wood is a good conductor of electricity"
+      ],
+      "correct_index": 1,
+      "hint": "Think about how different materials look. What do you notice about metal objects you see every day?",
+      "explanation": "Metals are typically shiny and lustrous due to their metallic bonding, while wood has a dull, natural appearance. This difference in appearance is one of the key properties that helps us identify and classify materials."
+    },
+    {
+      "question": "You're testing materials in the water tank to see if they float or sink. You place a wooden block, a metal key, and a plastic spoon in the water. What will happen?",
+      "type": "mcq",
+      "options": [
+        "A) All three materials will sink to the bottom",
+        "B) The wooden block will float, but the metal key and plastic spoon will sink",
+        "C) The wooden block and plastic spoon will float, but the metal key will sink",
+        "D) All three materials will float on the surface"
+      ],
+      "correct_index": 2,
+      "hint": "Think about the density of these materials. Which ones are lighter than water?",
+      "explanation": "Wood and most plastics are less dense than water, so they float. Metals are typically more dense than water, so they sink. This property helps us understand why certain materials are used for boats (which need to float) while others are used for anchors (which need to sink)."
+    },
+    {
+      "question": "You're building a simple electrical circuit with a battery, bulb, and wires. You want to test if a material is a good conductor of electricity. Which material would make the bulb light up brightest?",
+      "type": "mcq",
+      "options": [
+        "A) A piece of wood",
+        "B) A plastic spoon",
+        "C) A metal key",
+        "D) A cotton cloth"
+      ],
+      "correct_index": 2,
+      "hint": "Remember that conductors allow electricity to flow through them easily. What materials around you conduct electricity?",
+      "explanation": "Metals are excellent conductors of electricity because their atoms have free electrons that can move easily. This is why electrical wires are made of metal (like copper) and covered with plastic, which is an insulator that prevents electric shocks."
+    }
+  ],
+  "followups": [
+    "Try testing different materials in the water tank and circuit. Can you find any materials that surprise you?",
+    "Challenge: Sort all the materials into two groups - those that float and those that conduct electricity. Do any materials belong to both groups?",
+    "Think about your daily life - what objects around you use these properties? How many can you find?"
+  ],
+  "summary": "Great job exploring materials and their properties! You learned that materials have special characteristics like appearance (shiny vs. dull), whether they float or sink based on density, and their ability to conduct electricity. These properties help us choose the right material for the right job - like using metal for electrical wires, wood for boats, and plastic for safe, non-conductive covers."
+}

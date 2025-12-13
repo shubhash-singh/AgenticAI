@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Testing Station - Interactive Simulation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f9f9f9;
+        }
+        #app { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 16px; 
+            background: white;
+            min-height: 100vh;
+        }
+        header {
+            padding: 16px 0;
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        h1 { font-size: 24px; margin-bottom: 8px; }
+        .subtitle { font-size: 14px; color: #666; }
+        
+        #visual-area {
+            position: relative;
+            height: 50vh;
+            min-height: 300px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin: 16px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .testing-station {
+            width: 90%;
+            max-width: 500px;
+            height: 80%;
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+        }
+        
+        .zone {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .zone:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .zone-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .water-tank {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .water-object {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #4A90E2;
+            position: absolute;
+            transition: all 0.5s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .circuit-board {
+            width: 100%;
+            height: 100%;
+            background: #f0f0f0;
+            border-radius: 6px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .circuit-line {
+            width: 80%;
+            height: 4px;
+            background: #7ED321;
+            position: absolute;
+            transition: all 0.3s ease;
+        }
+        
+        .circuit-line.off {
+            background: #ccc;
+        }
+        
+        .magnifying-glass {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            border-radius: 6px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .material-sample {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            background: #F5A623;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .material-sample.hard {
+            border: 3px solid #333;
+        }
+        
+        .material-sample.soft {
+            border: 1px solid #999;
+        }
+        
+        .magnifier {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border: 3px solid #333;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            transform: scale(1.5);
+            transition: all 0.3s ease;
+        }
+        
+        #controls {
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .control-group {
+            margin: 16px 0;
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 44px;
+            cursor: pointer;
+        }
+        
+        button {
+            width: 100%;
+            min-height: 48px;
+            padding: 12px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 8px 0;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        #info {
+            padding: 16px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        
+        .result {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .result.float {
+            color: #4CAF50;
+        }
+        
+        .result.sink {
+            color: #f44336;
+        }
+        
+        .result.conductive {
+            color: #4CAF50;
+        }
+        
+        .result.non-conductive {
+            color: #f44336;
+        }
+        
+        .result.hard {
+            color: #4CAF50;
+        }
+        
+        .result.soft {
+            color: #f44336;
+        }
+        
+        .legend {
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Material Testing Station</h1>
+            <p class="subtitle">Test materials for density, conductivity, and hardness</p>
+        </header>
+        
+        <div id="visual-area">
+            <div class="testing-station">
+                <div class="zone">
+                    <div class="zone-title">Float/Sink Test</div>
+                    <div class="water-tank">
+                        <div class="water-object" id="water-object"></div>
+                    </div>
+                </div>
+                
+                <div class="zone">
+                    <div class="zone-title">Conductivity Test</div>
+                    <div class="circuit-board">
+                        <div class="circuit-line" id="circuit-line"></div>
+                    </div>
+                </div>
+                
+                <div class="zone">
+                    <div class="zone-title">Appearance/Hardness Test</div>
+                    <div class="magnifying-glass">
+                        <div class="material-sample" id="material-sample"></div>
+                        <div class="magnifier"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="controls">
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Material Density</span>
+                    <span id="density-value">50</span>
+                </div>
+                <input type="range" id="density-slider" min="0" max="100" value="50">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Material Conductivity</span>
+                    <span id="conductivity-value">50</span>
+                </div>
+                <input type="range" id="conductivity-slider" min="0" max="100" value="50">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Material Hardness</span>
+                    <span id="hardness-value">50</span>
+                </div>
+                <input type="range" id="hardness-slider" min="0" max="100" value="50">
+            </div>
+            
+            <button id="reset-btn">Reset Tests</button>
+        </div>
+        
+        <div id="info">
+            <div class="info-row">
+                <span>Float/Sink Result:</span>
+                <span class="result" id="float-result">Neutral</span>
+            </div>
+            <div class="info-row">
+                <span>Conductivity Result:</span>
+                <span class="result" id="conductivity-result">Moderate</span>
+            </div>
+            <div class="info-row">
+                <span>Hardness Result:</span>
+                <span class="result" id="hardness-result">Medium</span>
+            </div>
+            <div class="legend">
+                Green = Positive result, Red = Negative result
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const densitySlider = document.getElementById('density-slider');
+        const conductivitySlider = document.getElementById('conductivity-slider');
+        const hardnessSlider = document.getElementById('hardness-slider');
+        
+        const densityValue = document.getElementById('density-value');
+        const conductivityValue = document.getElementById('conductivity-value');
+        const hardnessValue = document.getElementById('hardness-value');
+        
+        const waterObject = document.getElementById('water-object');
+        const circuitLine = document.getElementById('circuit-line');
+        const materialSample = document.getElementById('material-sample');
+        
+        const floatResult = document.getElementById('float-result');
+        const conductivityResult = document.getElementById('conductivity-result');
+        const hardnessResult = document.getElementById('hardness-result');
+        
+        const resetBtn = document.getElementById('reset-btn');
+        
+        function updateVisuals() {
+            const density = parseInt(densitySlider.value);
+            const conductivity = parseInt(conductivitySlider.value);
+            const hardness = parseInt(hardnessSlider.value);
+            
+            // Update density test (float/sink)
+            const waterTank = waterObject.parentElement;
+            const tankHeight = waterTank.clientHeight;
+            const objectSize = 60 + (density * 0.4); // Size changes with density
+            const objectY = 50 + (density * 2); // Position changes with density
+            
+            waterObject.style.width = objectSize + 'px';
+            waterObject.style.height = objectSize + 'px';
+            waterObject.style.top = Math.min(objectY, tankHeight - objectSize) + 'px';
+            waterObject.style.left = '50%';
+            waterObject.style.transform = 'translateX(-50%)';
+            
+            // Update float result
+            if (density < 30) {
+                floatResult.textContent = 'Floats';
+                floatResult.className = 'result float';
+                waterObject.style.background = '#7ED321';
+            } else if (density > 70) {
+                floatResult.textContent = 'Sinks';
+                floatResult.className = 'result sink';
+                waterObject.style.background = '#F5A623';
+            } else {
+                floatResult.textContent = 'Neutral';
+                floatResult.className = 'result';
+                waterObject.style.background = '#4A90E2';
+            }
+            
+            // Update conductivity test
+            const brightness = Math.floor(conductivity * 2.55);
+            const greenValue = Math.min(255, 100 + brightness);
+            circuitLine.style.background = `rgb(126, ${greenValue}, 33)`;
+            circuitLine.style.opacity = (conductivity / 100);
+            
+            if (conductivity > 60) {
+                conductivityResult.textContent = 'Conductive';
+                conductivityResult.className = 'result conductive';
+                circuitLine.classList.remove('off');
+            } else if (conductivity < 40) {
+                conductivityResult.textContent = 'Non-conductive';
+                conductivityResult.className = 'result non-conductive';
+                circuitLine.classList.add('off');
+            } else {
+                conductivityResult.textContent = 'Moderate';
+                conductivityResult.className = 'result';
+                circuitLine.classList.remove('off');
+            }
+            
+            // Update hardness test
+            const sampleSize = 60 + (hardness * 0.4);
+            materialSample.style.width = sampleSize + 'px';
+            materialSample.style.height = sampleSize + 'px';
+            
+            if (hardness > 60) {
+                hardnessResult.textContent = 'Hard';
+                hardnessResult.className = 'result hard';
+                materialSample.classList.add('hard');
+                materialSample.classList.remove('soft');
+                materialSample.style.background = '#4A90E2';
+            } else if (hardness < 40) {
+                hardnessResult.textContent = 'Soft';
+                hardnessResult.className = 'result soft';
+                materialSample.classList.add('soft');
+                materialSample.classList.remove('hard');
+                materialSample.style.background = '#F5A623';
+            } else {
+                hardnessResult.textContent = 'Medium';
+                hardnessResult.className = 'result';
+                materialSample.classList.remove('hard', 'soft');
+                materialSample.style.background = '#7ED321';
+            }
+        }
+        
+        function resetTests() {
+            densitySlider.value = '50';
+            conductivitySlider.value = '50';
+            hardnessSlider.value = '50';
+            
+            densityValue.textContent = '50';
+            conductivityValue.textContent = '50';
+            hardnessValue.textContent = '50';
+            
+            updateVisuals();
+        }
+        
+        // Event listeners
+        densitySlider.addEventListener('input', (e) => {
+            densityValue.textContent = e.target.value;
+            updateVisuals();
+        });
+        
+        conductivitySlider.addEventListener('input', (e) => {
+            conductivityValue.textContent = e.target.value;
+            updateVisuals();
+        });
+        
+        hardnessSlider.addEventListener('input', (e) => {
+            hardnessValue.textContent = e.target.value;
+            updateVisuals();
+        });
+        
+        resetBtn.addEventListener('click', resetTests);
+        
+        // Initialize
+        updateVisuals();
+    </script>
+</body>
+</html>

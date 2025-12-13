@@ -1,0 +1,13 @@
+{
+  "main_display": "A vertical scene showing a light source (sun), an object (shape), and a screen/wall where the shadow appears. The object and shadow are SVG elements that change based on controls",
+  "color_scheme": [
+    "#4A90E2",
+    "#F5A623",
+    "#7ED321",
+    "#D0021B",
+    "#FFFFFF",
+    "#000000"
+  ],
+  "animation_style": "smooth",
+  "visual_metaphor": "A stage with a spotlight, an object, and a screen, like a shadow puppet show"
+}

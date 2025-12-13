@@ -1,0 +1,10 @@
+{
+  "main_display": "Two large, clear beakers (Beaker A and Beaker B) placed side-by-side on a virtual lab bench. Beaker A contains water, and Beaker B is empty. A spoon with salt appears. Animations show the salt being poured into Beaker A, dissolving, and then water being evaporated from Beaker A into Beaker B using a virtual heat lamp. The process is visually distinct for reversible (salt dissolving) and irreversible (water evaporation) changes.",
+  "color_scheme": [
+    "#4A90E2",
+    "#7ED321",
+    "#F5A623"
+  ],
+  "animation_style": "smooth",
+  "visual_metaphor": "A detective's magnifying glass observing clues in a science lab."
+}

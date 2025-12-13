@@ -1,0 +1,12 @@
+{
+  "main_display": "Interactive SVG showing Earth as a 120px circle with visible axis line, rotating around a stationary Sun. Day/night shown with half-circle shading that rotates with Earth. Seasons indicated by colored hemispheres (red for summer, blue for winter)",
+  "color_scheme": [
+    "#FFD700",
+    "#4169E1",
+    "#FF6B6B",
+    "#4ECDC4",
+    "#95E1D3"
+  ],
+  "animation_style": "smooth continuous rotation with 300ms easing for state changes",
+  "visual_metaphor": "Earth as a spinning top that also walks in a circle around a lamp (Sun)"
+}

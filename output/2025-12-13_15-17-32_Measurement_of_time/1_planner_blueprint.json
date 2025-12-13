@@ -1,0 +1,10 @@
+{
+  "main_display": "SVG pendulum with a bob that swings back and forth, with a timeline bar below showing elapsed time",
+  "color_scheme": [
+    "#4A90E2",
+    "#7ED321",
+    "#F5A623"
+  ],
+  "animation_style": "smooth",
+  "visual_metaphor": "A playground swing representing a pendulum, with a stopwatch showing time"
+}

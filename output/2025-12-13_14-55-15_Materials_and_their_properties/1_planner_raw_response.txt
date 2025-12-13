@@ -1,0 +1,74 @@
+{
+  "learning_objectives": [
+    "Identify and classify materials based on their properties",
+    "Predict whether a material will float or sink in water",
+    "Determine if a material is a conductor or insulator of electricity"
+  ],
+  "key_concepts": [
+    "Properties of materials (appearance, hardness, solubility, float/sink, conductivity)",
+    "Classification of materials based on properties",
+    "Real-world applications of material properties"
+  ],
+  "visual_design": {
+    "main_display": "Interactive material testing station with three zones: water tank for float/sink test, electrical circuit for conductivity test, and magnifying glass for appearance/hardness test",
+    "color_scheme": ["#4A90E2", "#7ED321", "#F5A623"],
+    "animation_style": "smooth",
+    "visual_metaphor": "A science lab testing station where students can examine different materials"
+  },
+  "variables_to_simulate": [
+    {
+      "name": "Material_Density",
+      "control_type": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 50,
+      "unit": "density",
+      "visual_effect": "Changes material block size and weight indicator; affects float/sink animation in water tank"
+    },
+    {
+      "name": "Electrical_Conductivity",
+      "control_type": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 50,
+      "unit": "conductivity",
+      "visual_effect": "Changes circuit bulb brightness from dim to bright; shows electricity flow animation"
+    },
+    {
+      "name": "Material_Hardness",
+      "control_type": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 50,
+      "unit": "hardness",
+      "visual_effect": "Changes material surface texture and scratch resistance indicator under magnifying glass"
+    }
+  ],
+  "layout_structure": {
+    "sections": [
+      {"id": "header", "height": "60px", "content": "Title and brief description"},
+      {"id": "visual-area", "height": "60vh", "content": "Main interactive visualization with three testing zones"},
+      {"id": "controls", "height": "auto", "content": "Three sliders with visual feedback"},
+      {"id": "info", "height": "auto", "content": "Current values and material classification"}
+    ],
+    "spacing": "16px between sections"
+  },
+  "simulation_logic": [
+    "Step 1: Initialize material block with default density, conductivity, and hardness values",
+    "Step 2: When sliders move, update material properties and trigger corresponding visual tests",
+    "Step 3: Animate float/sink test: material rises or sinks in water tank based on density",
+    "Step 4: Animate conductivity test: bulb brightness changes based on conductivity value",
+    "Step 5: Animate hardness test: scratch resistance indicator shows material hardness level",
+    "Step 6: Update material classification labels (conductor/insulator, float/sink, hard/soft)"
+  ],
+  "text_instructions": "Test materials by adjusting their properties and observe the results",
+  "misconceptions_to_address": [
+    "All metals sink in water",
+    "Shiny materials are always good conductors"
+  ],
+  "safety_constraints": [
+    "Age-appropriate content",
+    "No external resources",
+    "Safe electrical circuit visualization"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "main_display": "Two adjacent circles (hot object on left, cold object on right) with animated arrows showing heat flow direction. Heat intensity is represented by color gradient (red = hot, blue = cold) and arrow speed.",
+  "color_scheme": [
+    "#FF4D4D",
+    "#4D4DFF",
+    "#FFD166"
+  ],
+  "animation_style": "smooth",
+  "visual_metaphor": "Water flowing downhill - heat flows 'downhill' from hot to cold"
+}
