@@ -1,0 +1,83 @@
+```json
+{
+  "learning_objectives": [
+    "Students will be able to explain that heat always flows from a hotter object to a colder object.",
+    "Students will be able to identify that a temperature difference is necessary for heat transfer to occur.",
+    "Students will be able to recognize that objects in contact eventually reach thermal equilibrium."
+  ],
+  "key_concepts": [
+    "Heat flow direction (Hot to Cold)",
+    "Temperature difference as the driving force",
+    "Thermal equilibrium"
+  ],
+  "visual_design": {
+    "main_display": "Two distinct rectangular 'objects' (Object A on left, Object B on right), each with a dynamic color fill representing its temperature and a digital temperature display (°C) above it. A small gap separates them. When 'Thermal Contact' is ON, a glowing, wavy heat path appears in the gap, and animated small red/orange heat particles flow from the currently hotter object towards the colder one. Colors and temperatures update continuously during heat flow.",
+    "color_scheme": ["#FF4500", "#FFD700", "#ADD8E6", "#4169E1", "#FFFFFF", "#333333"],
+    "animation_style": "smooth (particles move continuously, color changes transition gradually over 300ms)",
+    "visual_metaphor": "Imagine water flowing from a higher level (hotter) to a lower level (colder) until both levels are equal."
+  },
+  "variables_to_simulate": [
+    {
+      "name": "Initial Temperature of Object A",
+      "control_type": "slider",
+      "min": 50,
+      "max": 100,
+      "default": 90,
+      "unit": "°C",
+      "visual_effect": "Sets initial background color of Object A (from yellow-orange to bright red) and updates its digital temperature display. Limits Object B's max initial temperature to be lower than Object A, ensuring A starts hotter."
+    },
+    {
+      "name": "Initial Temperature of Object B",
+      "control_type": "slider",
+      "min": 0,
+      "max": 50,
+      "default": 10,
+      "unit": "°C",
+      "visual_effect": "Sets initial background color of Object B (from deep blue to light blue) and updates its digital temperature display. Limits Object A's min initial temperature to be higher than Object B, ensuring B starts colder."
+    },
+    {
+      "name": "Thermal Contact",
+      "control_type": "toggle",
+      "min": null,
+      "max": null,
+      "default": false,
+      "unit": null,
+      "visual_effect": "When ON: A glowing connection line appears between objects, and animated heat particles (red dots) flow from the hotter object to the colder one. Object colors and digital temperatures begin to gradually change. 'Info' text updates to 'Heat flowing...'. When OFF: Particle flow immediately stops, the connection line disappears, and objects' temperatures reset to their initial slider values. 'Info' text updates to 'Ready to connect'."
+    }
+  ],
+  "layout_structure": {
+    "sections": [
+      {"id": "header", "height": "60px", "content": "<h1 style='text-align: center; color: #333;'>Flow of Heat</h1><p style='text-align: center; font-size: 0.9em; color: #555;'>Explore how heat moves!</p>"},
+      {"id": "visual-area", "height": "50vh", "content": "<div style='display: flex; justify-content: space-around; align-items: center; height: 100%; position: relative;'><div id='objectA' style='width: 100px; height: 150px; background-color: #FFD700; border-radius: 8px; position: relative;'></div><div id='connection-path' style='width: 60px; height: 10px; background-color: transparent; position: absolute; left: calc(50% - 30px); display: none;'></div><div id='objectB' style='width: 100px; height: 150px; background-color: #ADD8E6; border-radius: 8px;'></div></div><div style='text-align: center; margin-top: 10px; color: #333;'><span id='tempA-display'>90°C</span> &nbsp;&nbsp;&nbsp;&nbsp; <span id='tempB-display'>10°C</span></div>"},
+      {"id": "controls", "height": "auto", "content": "<div style='padding: 16px;'><label for='tempA-slider' style='display: block; margin-bottom: 8px; color: #333;'>Initial Temperature of Object A:</label><input type='range' id='tempA-slider' min='50' max='100' value='90' style='width: 100%; height: 48px;'/><label for='tempB-slider' style='display: block; margin-top: 16px; margin-bottom: 8px; color: #333;'>Initial Temperature of Object B:</label><input type='range' id='tempB-slider' min='0' max='50' value='10' style='width: 100%; height: 48px;'/><label for='contact-toggle' style='display: block; margin-top: 24px; color: #333;'>Thermal Contact:</label><input type='checkbox' id='contact-toggle' style='width: 48px; height: 48px; margin-left: calc(50% - 24px);'/></div>"},
+      {"id": "info", "height": "auto", "content": "<p id='info-display' style='text-align: center; padding: 16px; font-weight: bold; color: #4169E1;'>Ready to connect</p>"}
+    ],
+    "spacing": "16px between sections"
+  },
+  "simulation_logic": [
+    "Step 1: Initialize Object A and B with default temperatures (90°C, 10°C), corresponding colors (orange, light blue) and text displays. 'Thermal Contact' toggle is OFF. Info displays 'Ready to connect'.",
+    "Step 2: User adjusts 'Initial Temperature of Object A' and 'Initial Temperature of Object B' sliders. Visuals (color, text display) for respective objects update instantly. The system ensures Object A's temperature slider cannot go below Object B's, and vice versa, to maintain clear hot/cold states for simplicity (or dynamically re-designate hot/cold if temperatures cross).",
+    "Step 3: When 'Thermal Contact' toggle is flipped ON:",
+    "   a. A 'connection' visual (glowing wavy line in the gap) appears between the two objects.",
+    "   b. Small red/orange heat particles (e.g., 5-10 particles at a time) animate, continuously flowing from the object with higher temperature to the object with lower temperature. The flow direction is determined dynamically.",
+    "   c. The temperature of the hotter object gradually decreases, and the colder object's temperature gradually increases. This is reflected in their changing background colors (e.g., hot object fades from red to yellow, cold object shifts from blue to green/yellow) and digital displays.",
+    "   d. The speed and quantity of heat particles flowing visually decrease as the temperature difference between objects lessens, simulating slower heat transfer.",
+    "   e. The simulation continues until both objects reach a similar temperature (within 1-2°C for thermal equilibrium). At this point, particle flow stops, the connection line fades away, object colors stabilize to an intermediate color, and the info text updates to 'Thermal Equilibrium reached'.",
+    "Step 4: When 'Thermal Contact' toggle is flipped OFF:",
+    "   a. Particle flow immediately stops, and the connection line disappears.",
+    "   b. Object temperatures reset instantly to the values set by their respective initial temperature sliders.",
+    "   c. The 'info' text updates to 'Not connected' or 'Ready to connect'."
+  ],
+  "text_instructions": "Set initial temperatures for two objects, then turn on 'Thermal Contact' to observe heat flow!",
+  "misconceptions_to_address": [
+    "Cold is not a substance that flows; it is the *absence* of heat energy. Heat always flows.",
+    "Heat is energy that flows, while temperature is a measure of how hot or cold something is (average kinetic energy).",
+    "Heat flow occurs even without direct touch (e.g., radiation), but this simulation focuses on contact-based transfer for clear visual demonstration."
+  ],
+  "safety_constraints": [
+    "Content is entirely digital and age-appropriate for CBSE Class 7 students.",
+    "No external links, advertisements, or non-academic content will be present.",
+    "User interface elements will have clear labels and be intuitive to prevent frustration."
+  ]
+}
+```

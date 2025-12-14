@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heat Flow Simulation - Interactive</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f9f9f9;
+        }
+        #app { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 16px; 
+            background: white;
+            min-height: 100vh;
+        }
+        header {
+            padding: 16px 0;
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        h1 { font-size: 24px; margin-bottom: 8px; }
+        .subtitle { font-size: 14px; color: #666; }
+        
+        #visual-area {
+            position: relative;
+            height: 50vh;
+            min-height: 300px;
+            background: linear-gradient(180deg, #f5f5f5 0%, #e8e8e8 100%);
+            border-radius: 8px;
+            margin: 16px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        #controls {
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .control-group {
+            margin: 16px 0;
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 44px;
+            cursor: pointer;
+        }
+        
+        button {
+            width: 100%;
+            min-height: 48px;
+            padding: 12px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 8px 0;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        #info {
+            padding: 16px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 16px;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 12px;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #333;
+        }
+        
+        .hot-legend { background: #FF4D4D; }
+        .cold-legend { background: #4DA6FF; }
+        .flow-legend { background: #FFD166; }
+        
+        .temperature-display {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .flow-direction {
+            font-size: 14px;
+            color: #666;
+            margin-top: 4px;
+            text-align: center;
+        }
+        
+        /* SVG styles */
+        .object-circle {
+            transition: all 0.3s ease;
+        }
+        
+        .arrow {
+            transition: all 0.3s ease;
+        }
+        
+        .arrow-head {
+            transition: all 0.3s ease;
+        }
+        
+        .water-level {
+            transition: all 0.3s ease;
+        }
+        
+        .water-flow {
+            transition: all 0.3s ease;
+        }
+        
+        .label {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            text-anchor: middle;
+            fill: #333;
+        }
+        
+        .temp-label {
+            font-size: 12px;
+            fill: #333;
+            text-anchor: middle;
+        }
+        
+        .flow-label {
+            font-size: 12px;
+            fill: #333;
+            text-anchor: middle;
+            font-weight: 600;
+        }
+        
+        .divider-line {
+            stroke: #999;
+            stroke-width: 2;
+            stroke-dasharray: 4 4;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Heat Flow Simulation</h1>
+            <p class="subtitle">Visualize heat transfer between hot and cold objects</p>
+        </header>
+        
+        <div id="visual-area">
+            <svg id="simulation-svg" viewBox="0 0 400 300" style="width: 95%; max-width: 500px; height: auto;">
+                <!-- Background gradient for water metaphor -->
+                <defs>
+                    <linearGradient id="waterGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#4DA6FF" stop-opacity="0.8"/>
+                        <stop offset="100%" stop-color="#4DA6FF" stop-opacity="0.2"/>
+                    </linearGradient>
+                    <linearGradient id="hotGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#FF4D4D" stop-opacity="0.9"/>
+                        <stop offset="100%" stop-color="#FF4D4D" stop-opacity="0.3"/>
+                    </linearGradient>
+                    <linearGradient id="flowGradient" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stop-color="#FFD166" stop-opacity="0.9"/>
+                        <stop offset="100%" stop-color="#FFD166" stop-opacity="0.3"/>
+                    </linearGradient>
+                </defs>
+                
+                <!-- Water level background (metaphor) -->
+                <rect id="water-bg" x="20" y="100" width="360" height="100" fill="url(#waterGradient)" opacity="0.3" rx="10" ry="10"/>
+                
+                <!-- Divider line -->
+                <line class="divider-line" x1="200" y1="80" x2="200" y2="220"/>
+                
+                <!-- Hot object (left) -->
+                <circle id="hot-circle" class="object-circle" cx="120" cy="150" r="50" fill="#FF4D4D" stroke="#CC3333" stroke-width="3"/>
+                <text id="hot-label" class="label" x="120" y="155">Hot Object</text>
+                <text id="hot-temp" class="temp-label" x="120" y="210">50°C</text>
+                
+                <!-- Cold object (right) -->
+                <circle id="cold-circle" class="object-circle" cx="280" cy="150" r="50" fill="#4DA6FF" stroke="#3385ff" stroke-width="3"/>
+                <text id="cold-label" class="label" x="280" y="155">Cold Object</text>
+                <text id="cold-temp" class="temp-label" x="280" y="210">10°C</text>
+                
+                <!-- Heat flow arrow (animated) -->
+                <g id="flow-group">
+                    <line id="flow-line" class="arrow" x1="170" y1="150" x2="230" y2="150" stroke="#FFD166" stroke-width="6" stroke-linecap="round"/>
+                    <polygon id="flow-head" class="arrow-head" points="230,150 220,145 220,155" fill="#FFD166"/>
+                    <text id="flow-text" class="flow-label" x="200" y="135">Heat Flow</text>
+                </g>
+                
+                <!-- Water flow visualization (metaphor) -->
+                <rect id="water-flow" class="water-flow" x="170" y="150" width="60" height="0" fill="url(#flowGradient)" rx="5" ry="5"/>
+                
+                <!-- Water levels (metaphor) -->
+                <rect id="hot-water" class="water-level" x="20" y="150" width="160" height="0" fill="url(#hotGradient)" rx="5" ry="5"/>
+                <rect id="cold-water" class="water-level" x="220" y="150" width="160" height="0" fill="url(#waterGradient)" rx="5" ry="5"/>
+            </svg>
+            
+            <div class="flow-direction" id="flow-direction">Heat flows from hot to cold</div>
+        </div>
+        
+        <div id="controls">
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Hot Object Temperature</span>
+                    <span id="hot-value">50°C</span>
+                </div>
+                <input type="range" id="hot-slider" min="0" max="100" value="50">
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Cold Object Temperature</span>
+                    <span id="cold-value">10°C</span>
+                </div>
+                <input type="range" id="cold-slider" min="0" max="100" value="10">
+            </div>
+            
+            <button id="reset-btn">Reset to Default</button>
+        </div>
+        
+        <div id="info">
+            <div class="info-row">
+                <span>Temperature Difference:</span>
+                <span class="temperature-display" id="temp-diff">40°C</span>
+            </div>
+            <div class="info-row">
+                <span>Heat Flow Rate:</span>
+                <span class="temperature-display" id="flow-rate">High</span>
+            </div>
+            <div class="info-row">
+                <span>Flow Direction:</span>
+                <span id="flow-dir">Hot → Cold</span>
+            </div>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color hot-legend"></div>
+                    <span>Hot Object</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color cold-legend"></div>
+                    <span>Cold Object</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color flow-legend"></div>
+                    <span>Heat Flow</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Get DOM elements
+        const hotSlider = document.getElementById('hot-slider');
+        const coldSlider = document.getElementById('cold-slider');
+        const resetBtn = document.getElementById('reset-btn');
+        
+        const hotValue = document.getElementById('hot-value');
+        const coldValue = document.getElementById('cold-value');
+        const tempDiff = document.getElementById('temp-diff');
+        const flowRate = document.getElementById('flow-rate');
+        const flowDir = document.getElementById('flow-dir');
+        const flowDirectionText = document.getElementById('flow-direction');
+        
+        // SVG elements
+        const hotCircle = document.getElementById('hot-circle');
+        const coldCircle = document.getElementById('cold-circle');
+        const hotLabel = document.getElementById('hot-label');
+        const coldLabel = document.getElementById('cold-label');
+        const hotTemp = document.getElementById('hot-temp');
+        const coldTemp = document.getElementById('cold-temp');
+        
+        const flowLine = document.getElementById('flow-line');
+        const flowHead = document.getElementById('flow-head');
+        const flowText = document.getElementById('flow-text');
+        const flowGroup = document.getElementById('flow-group');
+        
+        const waterFlow = document.getElementById('water-flow');
+        const hotWater = document.getElementById('hot-water');
+        const coldWater = document.getElementById('cold-water');
+        
+        // Animation state
+        let animationId = null;
+        let flowSpeed = 0;
+        let flowWidth = 0;
+        let flowOpacity = 0;
+        let isAnimating = false;
+        
+        function updateSimulation() {
+            try {
+                const hotTempValue = parseFloat(hotSlider.value);
+                const coldTempValue = parseFloat(coldSlider.value);
+                
+                // Calculate temperature difference
+                const diff = Math.abs(hotTempValue - coldTempValue);
+                
+                // Update displays
+                hotValue.textContent = hotTempValue + '°C';
+                coldValue.textContent = coldTempValue + '°C';
+                hotTemp.textContent = hotTempValue + '°C';
+                coldTemp.textContent = coldTempValue + '°C';
+                tempDiff.textContent = diff.toFixed(1) + '°C';
+                
+                // Determine flow direction
+                const isHotToCold = hotTempValue > coldTempValue;
+                const direction = isHotToCold ? 'Hot → Cold' : 'Cold → Hot';
+                flowDir.textContent = direction;
+                flowDirectionText.textContent = 'Heat flows from ' + (isHotToCold ? 'hot to cold' : 'cold to hot');
+                
+                // Calculate flow rate based on temperature difference
+                let rate = 'None';
+                if (diff < 5) {
+                    rate = 'Low';
+                } else if (diff < 20) {
+                    rate = 'Medium';
+                } else if (diff < 50) {
+                    rate = 'High';
+                } else {
+                    rate = 'Very High';
+                }
+                flowRate.textContent = rate;
+                
+                // Update circle colors based on temperature
+                const hotColor = getTemperatureColor(hotTempValue, true);
+                const coldColor = getTemperatureColor(coldTempValue, false);
+                
+                hotCircle.setAttribute('fill', hotColor);
+                coldCircle.setAttribute('fill', coldColor);
+                
+                // Update circle sizes based on temperature
+                const hotRadius = 40 + (hotTempValue / 100) * 30;
+                const coldRadius = 40 + (coldTempValue / 100) * 30;
+                
+                hotCircle.setAttribute('r', hotRadius);
+                coldCircle.setAttribute('r', coldRadius);
+                
+                // Update water levels (metaphor)
+                const hotWaterHeight = (hotTempValue / 100) * 60;
+                const coldWaterHeight = (coldTempValue / 100) * 60;
+                
+                hotWater.setAttribute('y', 210 - hotWaterHeight);
+                hotWater.setAttribute('height', hotWaterHeight);
+                coldWater.setAttribute('y', 210 - coldWaterHeight);
+                coldWater.setAttribute('height', coldWaterHeight);
+                
+                // Update flow visualization
+                updateFlowVisualization(diff, isHotToCold);
+                
+                // Update arrow direction
+                updateArrowDirection(isHotToCold);
+                
+            } catch (error) {
+                console.error('Error updating simulation:', error);
+            }
+        }
+        
+        function getTemperatureColor(temp, isHot) {
+            // Create color gradient from blue to red
+            const ratio = temp / 100;
+            const r = Math.round(255 * ratio);
+            const b = Math.round(255 * (1 - ratio));
+            const g = Math.round(100 * ratio);
+            
+            if (isHot) {
+                // Hot objects are more red
+                return `rgb(${Math.min(255, r + 50)}, ${g}, ${Math.max(0, b - 30)})`;
+            } else {
+                // Cold objects are more blue
+                return `rgb(${Math.max(0, r - 30)}, ${g}, ${Math.min(255, b + 50)})`;
+            }
+        }
+        
+        function updateFlowVisualization(diff, isHotToCold) {
+            // Calculate flow properties based on temperature difference
+            const maxDiff = 100;
+            const normalizedDiff = Math.min(diff / maxDiff, 1);
+            
+            // Flow speed (animation duration)
+            flowSpeed = Math.max(0.5, 3 - (normalizedDiff * 2.5)); // 0.5s to 3s
+            
+            // Flow width and opacity
+            flowWidth = 2 + (normalizedDiff * 10); // 2px to 12px
+            flowOpacity = 0.3 + (normalizedDiff * 0.7); // 0.3 to 1.0
+            
+            // Update flow line
+            flowLine.setAttribute('stroke-width', flowWidth);
+            flowLine.setAttribute('opacity', flowOpacity);
+            flowHead.setAttribute('opacity', flowOpacity);
+            flowText.setAttribute('opacity', flowOpacity);
+            
+            // Update water flow height
+            const flowHeight = normalizedDiff * 40;
+            waterFlow.setAttribute('y', 150);
+            waterFlow.setAttribute('height', flowHeight);
+            waterFlow.setAttribute('opacity', flowOpacity);
+            
+            // Start/stop animation based on flow
+            if (diff > 0.1 && !isAnimating) {
+                startAnimation();
+            } else if (diff <= 0.1 && isAnimating) {
+                stopAnimation();
+            }
+        }
+        
+        function updateArrowDirection(isHotToCold) {
+            if (isHotToCold) {
+                // Flow from left to right
+                flowLine.setAttribute('x1', '170');
+                flowLine.setAttribute('x2', '230');
+                flowHead.setAttribute('points', '230,150 220,145 220,155');
+                flowText.setAttribute('x', '200');
+                flowText.setAttribute('y', '135');
+            } else {
+                // Flow from right to left
+                flowLine.setAttribute('x1', '230');
+                flowLine.setAttribute('x2', '170');
+                flowHead.setAttribute('points', '170,150 180,145 180,155');
+                flowText.setAttribute('x', '200');
+                flowText.setAttribute('y', '165');
+            }
+        }
+        
+        function startAnimation() {
+            if (isAnimating) return;
+            isAnimating = true;
+            animateFlow();
+        }
+        
+        function stopAnimation() {
+            isAnimating = false;
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            // Reset flow position
+            waterFlow.setAttribute('x', '170');
+        }
+        
+        function animateFlow() {
+            if (!isAnimating) return;
+            
+            const currentX = parseFloat(waterFlow.getAttribute('x')) || 170;
+            const targetX = parseFloat(waterFlow.getAttribute('x')) === 170 ? 230 : 170;
+            
+            // Simple animation using requestAnimationFrame
+            const startTime = performance.now();
+            const duration = flowSpeed * 1000; // Convert to milliseconds
+            
+            function animate(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Ease in out
+                const easeProgress = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
+                
+                const newX = currentX + (targetX - currentX) * easeProgress;
+                waterFlow.setAttribute('x', newX);
+                
+                if (progress < 1) {
+                    animationId = requestAnimationFrame(animate);
+                } else {
+                    // Start next animation cycle
+                    animationId = requestAnimationFrame(animateFlow);
+                }
+            }
+            
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // Event listeners
+        hotSlider.addEventListener('input', updateSimulation);
+        coldSlider.addEventListener('input', updateSimulation);
+        
+        resetBtn.addEventListener('click', () => {
+            hotSlider.value = '50';
+            coldSlider.value = '10';
+            updateSimulation();
+        });
+        
+        // Initialize simulation
+        updateSimulation();
+        
+        // Handle window resize for responsiveness
+        window.addEventListener('resize', () => {
+            // Recalculate positions if needed
+            updateSimulation();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "main_display": "Two distinct rectangular 'objects' (Object A on left, Object B on right), each with a dynamic color fill representing its temperature and a digital temperature display (°C) above it. A small gap separates them. When 'Thermal Contact' is ON, a glowing, wavy heat path appears in the gap, and animated small red/orange heat particles flow from the currently hotter object towards the colder one. Colors and temperatures update continuously during heat flow.",
+  "color_scheme": [
+    "#FF4500",
+    "#FFD700",
+    "#ADD8E6",
+    "#4169E1",
+    "#FFFFFF",
+    "#333333"
+  ],
+  "animation_style": "smooth (particles move continuously, color changes transition gradually over 300ms)",
+  "visual_metaphor": "Imagine water flowing from a higher level (hotter) to a lower level (colder) until both levels are equal."
+}

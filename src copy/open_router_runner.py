@@ -11,9 +11,9 @@ import argparse
 from pathlib import Path
 from dotenv import load_dotenv
 
-# imports for langchain-style chains (same as original)
+# imports for langchain-style chains
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 
 # orchestrator import
 from sim_generator import generate_simulation_with_checks
@@ -26,41 +26,51 @@ def make_chain(prompt_template: str, llm_instance):
 
 
 def build_all_chains():
-    planner_llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash",
+
+    base_url = "https://openrouter.ai/api/v1"
+
+    planner_llm = ChatOpenAI(
+        model="kwaipilot/kat-coder-pro:free",
         temperature=0.3,
-        api_key=os.getenv("GOOGLE_API_KEY")
+        api_key=os.getenv("OPENROUTER_API_KEY"),
+        base_url=base_url,
     )
 
-    creation_llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash",
+    creation_llm = ChatOpenAI(
+        model="kwaipilot/kat-coder-pro:free",
         temperature=0,
-        api_key=os.getenv("GOOGLE_API_KEY"),
+        api_key=os.getenv("OPENROUTER_API_KEY"),
+        base_url=base_url,
     )
 
-    bugfix_llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash-lite",
+    bugfix_llm = ChatOpenAI(
+        model="kwaipilot/kat-coder-pro:free",
         temperature=0.2,
-        api_key=os.getenv("GOOGLE_API_KEY"),
+        api_key=os.getenv("OPENROUTER_API_KEY"),
+        base_url=base_url,
     )
 
-    student_interaction_llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash-lite",
+    student_interaction_llm = ChatOpenAI(
+        model="kwaipilot/kat-coder-pro:free",
         temperature=0.6,
-        api_key=os.getenv("GOOGLE_API_KEY"),
+        api_key=os.getenv("OPENROUTER_API_KEY"),
+        base_url=base_url,
     )
 
-    incorporate_feedback_llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash-lite",
+    incorporate_feedback_llm = ChatOpenAI(
+        model="kwaipilot/kat-coder-pro:free",
         temperature=0.2,
-        api_key=os.getenv("GOOGLE_API_KEY"),
+        api_key=os.getenv("OPENROUTER_API_KEY"),
+        base_url=base_url,
     )
 
-    review_llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash-lite",
+    review_llm = ChatOpenAI(
+        model="kwaipilot/kat-coder-pro:free",
         temperature=0.1,
-        api_key=os.getenv("GOOGLE_API_KEY"),
+        api_key=os.getenv("OPENROUTER_API_KEY"),
+        base_url=base_url,
     )
+
 
     planner_prompt = """
 You are an expert Simulation Planner for CBSE Class 7 students.

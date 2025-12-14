@@ -1,0 +1,72 @@
+{
+  "learning_objectives": [
+    "Students will be able to predict the direction of heat flow between two objects at different temperatures",
+    "Students will be able to explain how temperature difference drives heat transfer using visual analogies",
+    "Students will be able to identify real-life examples of heat flow and distinguish between heat and temperature"
+  ],
+  "key_concepts": [
+    "Heat flows from hotter to colder objects",
+    "Temperature difference drives heat transfer",
+    "Thermal equilibrium is reached when temperatures equalize"
+  ],
+  "visual_design": {
+    "main_display": "Two adjacent circles (hot object in red, cold object in blue) with animated arrows showing heat flow direction. Arrows change size and speed based on temperature difference",
+    "color_scheme": ["#FF4D4D", "#4DA6FF", "#FFD166"],
+    "animation_style": "smooth",
+    "visual_metaphor": "Water flowing from higher level to lower level - heat flows from higher temperature to lower temperature"
+  },
+  "variables_to_simulate": [
+    {
+      "name": "Hot Object Temperature",
+      "control_type": "slider",
+      "min": 20,
+      "max": 100,
+      "default": 80,
+      "unit": "°C",
+      "visual_effect": "Red circle changes size (smaller when cooler, larger when hotter) and color intensity (darker red = hotter)"
+    },
+    {
+      "name": "Cold Object Temperature",
+      "control_type": "slider",
+      "min": 0,
+      "max": 60,
+      "default": 20,
+      "unit": "°C",
+      "visual_effect": "Blue circle changes size (smaller when colder, larger when warmer) and color intensity (darker blue = colder)"
+    },
+    {
+      "name": "Contact Time",
+      "control_type": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 0,
+      "unit": "seconds",
+      "visual_effect": "Arrows between circles animate faster and become larger as heat flows, then gradually slow down as temperatures equalize"
+    }
+  ],
+  "layout_structure": {
+    "sections": [
+      {"id": "header", "height": "60px", "content": "Heat Flow Simulator - See how heat moves from hot to cold"},
+      {"id": "visual-area", "height": "50vh", "content": "Two animated circles showing heat transfer with directional arrows"},
+      {"id": "controls", "height": "auto", "content": "Three sliders for temperature and time controls"},
+      {"id": "info", "height": "auto", "content": "Current temperatures and heat flow status display"}
+    ],
+    "spacing": "16px between sections"
+  },
+  "simulation_logic": [
+    "Step 1: Initialize with default temperatures and show two circles with no arrows (objects not touching)",
+    "Step 2: When sliders change, update circle sizes and colors to reflect new temperatures",
+    "Step 3: When contact time increases, animate arrows appearing between circles and flowing from hot to cold",
+    "Step 4: Calculate temperature equalization over time and gradually reduce arrow animation speed",
+    "Step 5: Update temperature readings in real-time as heat flows"
+  ],
+  "text_instructions": "Adjust temperatures and watch heat flow from hot to cold objects",
+  "misconceptions_to_address": [
+    "Heat flows from cold to hot objects",
+    "Temperature and heat are the same thing"
+  ],
+  "safety_constraints": [
+    "Age-appropriate content",
+    "No external resources"
+  ]
+}

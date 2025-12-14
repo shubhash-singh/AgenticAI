@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thermal Equilibrium - Interactive Simulation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f9f9f9;
+        }
+        #app {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 16px;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+        header {
+            padding: 16px 0;
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        h1 { font-size: 24px; margin-bottom: 8px; color: #333333; }
+        .subtitle { font-size: 14px; color: #666; }
+
+        #visual-area {
+            position: relative;
+            height: 50vh;
+            min-height: 300px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin: 16px 0;
+            display: flex; /* Center SVG */
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+        }
+        #thermo-svg {
+            width: 90%;
+            max-width: 400px;
+            height: auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        #controls {
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+
+        .control-group {
+            margin: 16px 0;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 44px; /* Ensure sufficient touch target */
+            cursor: grab;
+            -webkit-appearance: none;
+            background: #e0e0e0;
+            border-radius: 5px;
+            outline: none;
+            transition: background 0.2s;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #4169E1;
+            cursor: grab;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+        input[type="range"]::-moz-range-thumb {
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #4169E1;
+            cursor: grab;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+        input[type="range"]:active::-webkit-slider-thumb {
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+        input[type="range"]:active::-moz-range-thumb {
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+
+        button {
+            width: 100%;
+            min-height: 48px; /* Increased touch target */
+            padding: 12px;
+            font-size: 16px;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 8px 0;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        button#toggleContact_button { background: #007bff; }
+        button#toggleContact_button.active { background: #dc3545; }
+        button#reset_button { background: #6c757d; }
+
+        button:hover {
+            opacity: 0.9;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+
+        #info {
+            padding: 16px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+        #info p {
+            margin-bottom: 4px;
+        }
+        #info p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Specific SVG styles */
+        #objectA, #objectB {
+            transition: fill 0.3s ease;
+        }
+        #heatPath {
+            transition: stroke 0.3s ease, stroke-opacity 0.3s ease;
+        }
+        text {
+            user-select: none;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Thermal Equilibrium</h1>
+            <p class="subtitle">Observe heat transfer between two objects until equilibrium.</p>
+        </header>
+
+        <div id="visual-area">
+            <svg id="thermo-svg" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
+                <!-- SVG Filters for glow -->
+                <defs>
+                    <filter id="glowFilter" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"></feGaussianBlur>
+                        <feFlood flood-color="#FFD700" flood-opacity="0.8" result="color"></feFlood>
+                        <feComposite in="color" in2="blur" operator="in" result="glow"></feComposite>
+                        <feMerge>
+                            <feMergeNode in="glow"></feMergeNode>
+                            <feMergeNode in="SourceGraphic"></feMergeNode>
+                        </feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Object A -->
+                <rect id="objectA" x="50" y="50" width="100" height="100" rx="10" ry="10" fill="#4169E1"></rect>
+                <text id="tempA_display" x="100" y="40" text-anchor="middle" font-size="20" fill="#333333">0°C</text>
+
+                <!-- Object B -->
+                <rect id="objectB" x="250" y="50" width="100" height="100" rx="10" ry="10" fill="#ADD8E6"></rect>
+                <text id="tempB_display" x="300" y="40" text-anchor="middle" font-size="20" fill="#333333">0°C</text>
+
+                <!-- Heat path (initially hidden) -->
+                <path id="heatPath" d="M150 100 C175 85, 225 85, 250 100 C225 115, 175 115, 150 100 Z" fill="none" stroke="transparent" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" style="filter: url(#glowFilter);"></path>
+
+                <!-- Particle container (for animation) -->
+                <g id="particleContainer"></g>
+            </svg>
+        </div>
+
+        <div id="controls">
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Initial Temperature A:</span>
+                    <span id="initialTempA_value">50°C</span>
+                </div>
+                <input type="range" id="initialTempA_slider" min="0" max="100" value="50">
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Initial Temperature B:</span>
+                    <span id="initialTempB_value">50°C</span>
+                </div>
+                <input type="range" id="initialTempB_slider" min="0" max="100" value="50">
+            </div>
+
+            <div class="control-group">
+                <button id="toggleContact_button">Establish Thermal Contact</button>
+            </div>
+
+            <div class="control-group">
+                <button id="reset_button">Reset Simulation</button>
+            </div>
+        </div>
+
+        <div id="info">
+            <p><strong>Simulation Status:</strong> <span id="simStatus">Ready</span></p>
+            <p><strong>Current Thermal Contact:</strong> <span id="currentContactStatus">OFF</span></p>
+            <p><strong>Equilibrium Reached:</strong> <span id="equilibriumStatus">No</span></p>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements
+        const objectA = document.getElementById('objectA');
+        const objectB = document.getElementById('objectB');
+        const tempA_display = document.getElementById('tempA_display');
+        const tempB_display = document.getElementById('tempB_display');
+        const heatPath = document.getElementById('heatPath');
+        const particleContainer = document.getElementById('particleContainer');
+
+        const initialTempA_slider = document.getElementById('initialTempA_slider');
+        const initialTempA_value = document.getElementById('initialTempA_value');
+        const initialTempB_slider = document.getElementById('initialTempB_slider');
+        const initialTempB_value = document.getElementById('initialTempB_value');
+        const toggleContact_button = document.getElementById('toggleContact_button');
+        const reset_button = document.getElementById('reset_button');
+
+        const simStatus = document.getElementById('simStatus');
+        const currentContactStatus = document.getElementById('currentContactStatus');
+        const equilibriumStatus = document.getElementById('equilibriumStatus');
+
+        // Simulation state variables
+        let tempA = 50;
+        let tempB = 50;
+        let initialTempA = 50;
+        let initialTempB = 50;
+        let thermalContact = false;
+        let isEquilibrium = false;
+        let animationFrameId = null;
+        let lastTime = 0; // For delta time calculation
+
+        // Simulation constants
+        const K_HEAT_TRANSFER = 0.08; // Heat transfer coefficient (arbitrary for visual effect)
+        const EQUILIBRIUM_THRESHOLD = 0.3; // Temperature difference to consider equilibrium
+        const MAX_PARTICLES = 30;
+        const PARTICLE_SPEED = 60; // SVG units per second
+        const PARTICLE_LIFETIME = 2; // Seconds
+        const PARTICLE_SIZE = 4; // Radius
+        let particles = [];
+
+        // Color scheme from blueprint
+        const COLORS = {
+            HOT: "#FF4500",      // OrangeRed
+            WARM: "#FFD700",    // Gold
+            COOL: "#ADD8E6",     // LightBlue
+            COLD: "#4169E1",     // RoyalBlue
+            WHITE: "#FFFFFF",
+            DARK: "#333333"
+        };
+
+        // Helper function to interpolate between two hex colors
+        function hexToRgb(hex) {
+            const r = parseInt(hex.substring(1, 3), 16);
+            const g = parseInt(hex.substring(3, 5), 16);
+            const b = parseInt(hex.substring(5, 7), 16);
+            return { r, g, b };
+        }
+
+        function rgbToHex(r, g, b) {
+            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+        }
+
+        function lerpColor(color1Hex, color2Hex, factor) {
+            const c1 = hexToRgb(color1Hex);
+            const c2 = hexToRgb(color2Hex);
+
+            const r = Math.round(c1.r + factor * (c2.r - c1.r));
+            const g = Math.round(c1.g + factor * (c2.g - c1.g));
+            const b = Math.round(c1.b + factor * (c2.b - c1.b));
+
+            return rgbToHex(r, g, b);
+        }
+
+        // Map temperature to a color from the scheme
+        function tempToColor(temp) {
+            // Clamp temp between 0 and 100 for consistent color mapping
+            temp = Math.max(0, Math.min(100, temp));
+
+            if (temp <= 25) { // 0-25°C: Cold to Cool
+                const factor = temp / 25;
+                return lerpColor(COLORS.COLD, COLORS.COOL, factor);
+            } else if (temp <= 75) { // 25-75°C: Cool to Warm
+                const factor = (temp - 25) / 50;
+                return lerpColor(COLORS.COOL, COLORS.WARM, factor);
+            } else { // 75-100°C: Warm to Hot
+                const factor = (temp - 75) / 25;
+                return lerpColor(COLORS.WARM, COLORS.HOT, factor);
+            }
+        }
+
+        // Update visual elements (colors, text)
+        function updateObjectVisuals() {
+            try {
+                objectA.style.fill = tempToColor(tempA);
+                objectB.style.fill = tempToColor(tempB);
+                tempA_display.textContent = `${tempA.toFixed(1)}°C`;
+                tempB_display.textContent = `${tempB.toFixed(1)}°C`;
+
+                // Update heat path stroke based on temperature difference
+                if (thermalContact && !isEquilibrium && Math.abs(tempA - tempB) > EQUILIBRIUM_THRESHOLD) {
+                    // Path color slightly towards hotter, and visible
+                    const pathFillColor = tempA > tempB ? COLORS.HOT : COLORS.WARM;
+                    heatPath.setAttribute('stroke', pathFillColor);
+                    heatPath.setAttribute('stroke-opacity', 0.7);
+                } else {
+                    heatPath.setAttribute('stroke', 'transparent');
+                    heatPath.setAttribute('stroke-opacity', 0);
+                }
+            } catch (error) {
+                console.error('Error updating object visuals:', error);
+            }
+        }
+
+        // Update info panel text
+        function updateInfoPanel() {
+            currentContactStatus.textContent = thermalContact ? 'ON' : 'OFF';
+            equilibriumStatus.textContent = isEquilibrium ? 'Yes' : 'No';
+        }
+
+        // Particle management and animation
+        function updateParticles(dt) {
+            if (!thermalContact || isEquilibrium) {
+                particles.forEach(p => { if (p.element) p.element.remove(); });
+                particles.length = 0;
+                particleContainer.innerHTML = ''; // Clear any remaining elements
+                return;
+            }
+
+            const direction = tempA > tempB ? 1 : -1; // 1: A to B, -1: B to A
+            const startX = direction === 1 ? 150 : 250;
+            const endX = direction === 1 ? 250 : 150;
+
+            // Generate new particles
+            if (particles.length < MAX_PARTICLES && Math.random() < 0.1) { // Random chance to spawn each frame
+                const particleColor = direction === 1 ? COLORS.HOT : COLORS.WARM; // From hotter object
+                const newParticle = {
+                    id: Date.now() + Math.random(),
+                    x: startX + direction * 5, // Start slightly into the gap
+                    y: 100 + (Math.random() - 0.5) * 15, // Vertical wiggle
+                    opacity: 1,
+                    element: null, 
+                    age: 0, // Age in seconds
+                    direction: direction
+                };
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('r', PARTICLE_SIZE / 2);
+                circle.setAttribute('fill', particleColor);
+                circle.setAttribute('opacity', newParticle.opacity);
+                particleContainer.appendChild(circle);
+                newParticle.element = circle;
+                particles.push(newParticle);
+            }
+
+            // Update existing particles
+            particles = particles.filter(p => {
+                p.age += dt;
+
+                // Move particle linearly and add wavy motion
+                p.x += p.direction * PARTICLE_SPEED * dt;
+                p.y += Math.sin(p.x / 15) * p.direction * 0.5; // Adjusted wavelength for smoother wave
+
+                // Fade out as it approaches destination or ages
+                const progress = Math.abs(p.x - startX) / Math.abs(endX - startX);
+                p.opacity = 1 - Math.pow(progress, 1.5); // Faster fade towards end
+                if (p.age > PARTICLE_LIFETIME * 0.75) { // Start fading out by age towards end of life
+                    p.opacity = Math.min(p.opacity, (PARTICLE_LIFETIME - p.age) / (PARTICLE_LIFETIME * 0.25));
+                }
+
+                if (p.element) {
+                    p.element.setAttribute('cx', p.x);
+                    p.element.setAttribute('cy', p.y);
+                    p.element.setAttribute('opacity', Math.max(0, p.opacity)); // Don't go below 0
+                }
+
+                // Remove if out of bounds or too old
+                const isOutOfBounds = (p.direction === 1 && p.x > endX + PARTICLE_SIZE) || (p.direction === -1 && p.x < endX - PARTICLE_SIZE);
+                const isTooOld = p.age > PARTICLE_LIFETIME;
+
+                if (isOutOfBounds || isTooOld) {
+                    if (p.element) {
+                        p.element.remove();
+                    }
+                    return false; // Remove from array
+                }
+                return true;
+            });
+        }
+
+        // Core simulation update loop
+        function updateSimulation(dt) {
+            try {
+                // Heat transfer (simplified model)
+                const tempDiff = tempA - tempB;
+
+                if (Math.abs(tempDiff) < EQUILIBRIUM_THRESHOLD) {
+                    isEquilibrium = true;
+                    simStatus.textContent = 'Equilibrium Reached';
+                    stopSimulation(); // Stops the animation frame loop
+                    return;
+                }
+
+                // Calculate heat flow and update temperatures
+                const heatFlow = K_HEAT_TRANSFER * tempDiff * dt; 
+                tempA -= heatFlow; 
+                tempB += heatFlow; 
+
+                // Clamp temperatures to visual bounds
+                tempA = Math.max(0, Math.min(100, tempA));
+                tempB = Math.max(0, Math.min(100, tempB));
+
+                updateObjectVisuals();
+                updateParticles(dt);
+                updateInfoPanel();
+            } catch (error) {
+                console.error('Error in updateSimulation:', error);
+                stopSimulation(); // Attempt to stop on error
+            }
+        }
+
+        // Animation frame handler
+        function simulateFrame(currentTime) {
+            const deltaTime = (currentTime - lastTime) / 1000; // Convert ms to seconds
+            lastTime = currentTime;
+
+            if (thermalContact && !isEquilibrium) {
+                updateSimulation(deltaTime);
+                animationFrameId = requestAnimationFrame(simulateFrame);
+            } else {
+                stopSimulation();
+            }
+        }
+
+        // Start the simulation loop
+        function startSimulation() {
+            if (!thermalContact || isEquilibrium) { // Only start if contact is ON and not in equilibrium
+                return; 
+            }
+            simStatus.textContent = 'Running';
+            lastTime = performance.now(); // Reset lastTime for smooth delta calculation
+            if (!animationFrameId) { // Prevent multiple requestAnimationFrame calls
+                animationFrameId = requestAnimationFrame(simulateFrame);
+            }
+        }
+
+        // Stop the simulation loop
+        function stopSimulation() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            if (!isEquilibrium) { // Don't overwrite if it says equilibrium reached
+                simStatus.textContent = 'Paused';
+            }
+            // Clear particles and hide heat path when contact is off or equilibrium reached
+            particles.forEach(p => { if (p.element) p.element.remove(); });
+            particles.length = 0;
+            heatPath.setAttribute('stroke', 'transparent');
+            heatPath.setAttribute('stroke-opacity', 0);
+        }
+
+        // Event Listeners
+        initialTempA_slider.addEventListener('input', (e) => {
+            initialTempA = parseFloat(e.target.value);
+            initialTempA_value.textContent = `${initialTempA}°C`;
+            if (!thermalContact || isEquilibrium) { // Only update current if not running or at equilibrium
+                tempA = initialTempA;
+                updateObjectVisuals();
+            }
+        });
+
+        initialTempB_slider.addEventListener('input', (e) => {
+            initialTempB = parseFloat(e.target.value);
+            initialTempB_value.textContent = `${initialTempB}°C`;
+            if (!thermalContact || isEquilibrium) { // Only update current if not running or at equilibrium
+                tempB = initialTempB;
+                updateObjectVisuals();
+            }
+        });
+
+        toggleContact_button.addEventListener('click', () => {
+            thermalContact = !thermalContact;
+            if (thermalContact) {
+                toggleContact_button.textContent = 'Break Thermal Contact';
+                toggleContact_button.classList.add('active');
+                isEquilibrium = false; // Reset equilibrium status when contact is established
+                startSimulation();
+            } else {
+                toggleContact_button.textContent = 'Establish Thermal Contact';
+                toggleContact_button.classList.remove('active');
+                stopSimulation();
+                simStatus.textContent = 'Ready';
+            }
+            updateInfoPanel();
+            updateObjectVisuals(); // Ensure path visibility is updated immediately
+        });
+
+        reset_button.addEventListener('click', () => {
+            try {
+                stopSimulation();
+                tempA = initialTempA;
+                tempB = initialTempB;
+                thermalContact = false;
+                isEquilibrium = false;
+
+                toggleContact_button.textContent = 'Establish Thermal Contact';
+                toggleContact_button.classList.remove('active');
+                
+                simStatus.textContent = 'Ready';
+                updateObjectVisuals();
+                updateInfoPanel();
+                particles.forEach(p => { if (p.element) p.element.remove(); });
+                particles.length = 0;
+            } catch (error) {
+                console.error('Error during reset:', error);
+            }
+        });
+
+        // Initial setup on page load
+        function init() {
+            tempA = parseFloat(initialTempA_slider.value);
+            tempB = parseFloat(initialTempB_slider.value);
+            initialTempA = tempA;
+            initialTempB = tempB;
+            initialTempA_value.textContent = `${initialTempA}°C`;
+            initialTempB_value.textContent = `${initialTempB}°C`;
+            updateObjectVisuals();
+            updateInfoPanel();
+        }
+
+        init();
+    </script>
+</body>
+</html>

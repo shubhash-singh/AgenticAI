@@ -1,0 +1,50 @@
+{
+  "intro": "Welcome to the world of heat flow! Get ready to experiment and discover how heat energy travels. Observe carefully as you interact with the simulation.",
+  "questions": [
+    {
+      "question": "Looking at the simulation, when Object A is hotter than Object B, which way is the heat particle flow directed?",
+      "type": "mcq",
+      "options": [
+        "A) From Object A to Object B",
+        "B) From Object B to Object A",
+        "C) Heat particles don't flow in this setup",
+        "D) Heat particles flow in both directions equally"
+      ],
+      "correct_index": 0,
+      "hint": "Pay close attention to the direction of the glowing, wavy path and the movement of the red/orange particles.",
+      "explanation": "The simulation shows that when one object is hotter, the heat energy naturally moves from that hotter object to the colder one, trying to even out the temperature."
+    },
+    {
+      "question": "If you set the temperature of Object A to its maximum and Object B to its minimum, what do you predict will happen to the heat flow?",
+      "type": "mcq",
+      "options": [
+        "A) The heat will flow from Object B to Object A.",
+        "B) The heat flow will stop immediately.",
+        "C) The heat flow from Object A to Object B will be very fast and intense.",
+        "D) The temperature of both objects will become exactly the same instantly."
+      ],
+      "correct_index": 2,
+      "hint": "Think about the 'visual metaphor' provided. If one object is much hotter than the other, how quickly would energy transfer?",
+      "explanation": "A larger temperature difference means a greater driving force for heat to flow. Therefore, when Object A is much hotter than Object B, the heat transfer from A to B will be rapid and significant."
+    },
+    {
+      "question": "Which everyday situation best demonstrates the flow of heat from a hotter object to a colder object?",
+      "type": "mcq",
+      "options": [
+        "A) A refrigerator making ice cubes.",
+        "B) Touching a hot stove burner.",
+        "C) Sunlight warming your face.",
+        "D) A battery powering a toy car."
+      ],
+      "correct_index": 1,
+      "hint": "Consider where the heat energy is originating from and where it is moving to in each scenario.",
+      "explanation": "When you touch a hot stove burner, the burner is much hotter than your hand. Heat energy flows from the burner (hotter) to your hand (colder), making your hand feel hot. While sunlight warming your face also involves heat flow, touching a hot object is a direct and immediate example of this principle."
+    }
+  ],
+  "followups": [
+    "Try setting the temperatures so that Object B is hotter than Object A. What changes?",
+    "Can you achieve a state where the heat flow stops completely? What needs to happen for that?",
+    "Experiment with slight temperature differences. How does the speed of heat flow compare to large differences?"
+  ],
+  "summary": "We've seen that heat always flows from hotter objects to colder objects. This flow continues until both objects reach the same temperature, a concept that explains many everyday phenomena like cooking and feeling hot or cold."
+}

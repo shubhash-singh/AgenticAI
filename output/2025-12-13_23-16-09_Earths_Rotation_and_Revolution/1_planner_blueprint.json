@@ -1,0 +1,14 @@
+{
+  "main_display": "A central, glowing yellow Sun. An Earth model (blue/green sphere with distinct day/night sides) orbiting the Sun. A transparent elliptical orbit path. A dashed white line representing Earth's tilted axis, always pointing in the same direction in space. A light source emanating from the Sun illuminates half of the Earth, showing the day side (bright) and night side (dark).",
+  "color_scheme": [
+    "#FFD700",
+    "#4CAF50",
+    "#2196F3",
+    "#2C3E50",
+    "#CCCCCC",
+    "#FFFFFF",
+    "#1A2C3A"
+  ],
+  "animation_style": "continuous and smooth for all movements (rotation, revolution, light changes). Stepped for axial tilt adjustments for clarity.",
+  "visual_metaphor": "Imagine a spinning top (Earth) walking in a circle around a bright lamp (Sun). The top's tilt (Earth's axis) determines which part gets more light as it walks around."
+}

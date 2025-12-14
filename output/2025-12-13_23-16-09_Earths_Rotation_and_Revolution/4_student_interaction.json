@@ -1,0 +1,50 @@
+{
+  "intro": "Hey future astronauts! Get ready to explore Earth's incredible journey around the Sun. Use the simulation to see how our planet moves and then test your knowledge!",
+  "questions": [
+    {
+      "question": "When you see one side of the Earth brightly lit by the Sun and the other side dark, what movement of the Earth is primarily causing this difference?",
+      "type": "mcq",
+      "options": [
+        "A) The Earth spinning on its axis (Rotation)",
+        "B) The Earth moving around the Sun (Revolution)",
+        "C) The Earth's axis being tilted",
+        "D) The Moon blocking the Sun"
+      ],
+      "correct_index": 0,
+      "hint": "Think about what makes a light turn on or off for different parts of an object. Imagine yourself standing on that spinning Earth!",
+      "explanation": "The Earth spins on its axis. As it spins, different parts of its surface face the Sun. The side facing the Sun experiences day, and the side facing away experiences night. This is called rotation."
+    },
+    {
+      "question": "If you could magically make the Earth's axis perfectly upright (not tilted at all) but it still revolved around the Sun, what would happen to the seasons?",
+      "type": "mcq",
+      "options": [
+        "A) We would have much hotter summers and colder winters.",
+        "B) The seasons would disappear, and every day would be the same temperature.",
+        "C) The Earth would stop revolving around the Sun.",
+        "D) We would have seasons, but they would be much shorter."
+      ],
+      "correct_index": 1,
+      "hint": "Observe how the tilt of the Earth's axis changes the amount of direct sunlight hitting different hemispheres. What happens if that tilt is removed?",
+      "explanation": "The tilt of the Earth's axis is what causes seasons. Without the tilt, both hemispheres would receive roughly the same amount of direct sunlight throughout the year, leading to a lack of distinct seasons."
+    },
+    {
+      "question": "Imagine you are a farmer planning to plant crops. Which Earth movement is most important for deciding when to plant seeds for a specific season like summer or winter?",
+      "type": "mcq",
+      "options": [
+        "A) Earth's rotation causing day and night",
+        "B) Earth's revolution around the Sun and its tilted axis",
+        "C) The shape of Earth's orbit being an ellipse",
+        "D) The speed at which Earth rotates"
+      ],
+      "correct_index": 1,
+      "hint": "Think about what causes different weather patterns and growing conditions throughout the year. Which movement is responsible for the changes we experience over a whole year?",
+      "explanation": "The Earth's revolution around the Sun, combined with the tilt of its axis, causes the cycle of seasons. This cycle directly impacts temperature and sunlight, which are crucial for deciding when to plant crops for different seasons."
+    }
+  ],
+  "followups": [
+    "Try setting the rotation speed very fast. What does that do to the 'day' and 'night' on the simulation?",
+    "Now, try changing the tilt of the axis. How does this affect which part of Earth gets more light?",
+    "Can you find a setting where the Northern Hemisphere is tilted towards the Sun and the Southern Hemisphere is tilted away? What season would it be in each hemisphere?"
+  ],
+  "summary": "We learned that Earth's rotation causes day and night, while its revolution around the Sun, combined with the tilt of its axis, creates the amazing cycle of seasons!"
+}

@@ -1,0 +1,50 @@
+{
+  "intro": "Welcome to our heat flow exploration! Get ready to discover how heat energy moves from place to place. Through these activities, you'll observe, predict, and apply your understanding of heat transfer in fun and interactive ways. Let's become heat detectives!",
+  "questions": [
+    {
+      "question": "Looking at the simulation, you can see hot and cold objects. Which of the following best describes what happens when they are placed next to each other?",
+      "type": "mcq",
+      "options": [
+        "A) Heat flows from the cold object to the hot object",
+        "B) Heat flows from the hot object to the cold object",
+        "C) No heat flows between the objects",
+        "D) Heat flows in both directions equally"
+      ],
+      "correct_index": 1,
+      "hint": "Watch the animated arrows in the simulation - which direction do they point?",
+      "explanation": "Heat energy always flows from hotter objects to colder objects, just like water flows downhill. The simulation shows arrows pointing from the red (hot) circle to the blue (cold) circle, demonstrating this fundamental principle."
+    },
+    {
+      "question": "In the simulation, you can adjust the temperature difference between the hot and cold objects. What will happen to the heat flow when you increase this difference to maximum?",
+      "type": "mcq",
+      "options": [
+        "A) The arrows will become smaller and move slower",
+        "B) The arrows will become larger and move faster",
+        "C) The arrows will stop moving completely",
+        "D) The arrows will reverse direction"
+      ],
+      "correct_index": 1,
+      "hint": "Try adjusting the temperature slider and observe how the animated arrows change in size and speed",
+      "explanation": "When the temperature difference is larger, heat flows more quickly. In the simulation, this is shown by larger, faster-moving arrows. The greater the temperature difference, the stronger the 'push' for heat to flow from hot to cold."
+    },
+    {
+      "question": "In real life, where would you observe heat flowing from a hot object to a cold object?",
+      "type": "mcq",
+      "options": [
+        "A) Touching an ice cube with your warm hand",
+        "B) Sitting in a cold room wearing warm clothes",
+        "C) Drinking cold water on a hot day",
+        "D) All of the above"
+      ],
+      "correct_index": 3,
+      "hint": "Think about everyday situations where you feel something getting warmer or colder",
+      "explanation": "Heat flow happens in all these situations! When you touch ice, heat flows from your hand to the ice. In a cold room, your body heat flows to the air. Drinking cold water, heat flows from your body to the water. Heat transfer is happening all around us!"
+    }
+  ],
+  "followups": [
+    "Try setting both temperature sliders to maximum. What do you notice about the heat flow between them?",
+    "Can you find a combination of temperatures that creates the most dramatic difference in arrow size and speed?",
+    "Challenge: Before changing any settings, predict what will happen to the heat flow when you make one object much hotter than the other"
+  ],
+  "summary": "Great job exploring heat flow! Remember that heat energy always moves from hotter objects to colder objects, just like water flows downhill. The bigger the temperature difference, the faster the heat flows. This principle explains many everyday experiences, from why ice melts in your hand to how we stay warm in winter."
+}

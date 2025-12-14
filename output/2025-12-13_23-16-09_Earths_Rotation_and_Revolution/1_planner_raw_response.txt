@@ -1,0 +1,75 @@
+{
+  "learning_objectives": [
+    "Identify Earth's rotation as the cause of day and night.",
+    "Explain how Earth's revolution and axial tilt create seasons.",
+    "Differentiate between Earth's axis and its orbit visually."
+  ],
+  "key_concepts": [
+    "Rotation (Day and Night)",
+    "Revolution (Seasons)",
+    "Earth's Tilted Axis",
+    "Orbit"
+  ],
+  "visual_design": {
+    "main_display": "A central, glowing yellow Sun. An Earth model (blue/green sphere with distinct day/night sides) orbiting the Sun. A transparent elliptical orbit path. A dashed white line representing Earth's tilted axis, always pointing in the same direction in space. A light source emanating from the Sun illuminates half of the Earth, showing the day side (bright) and night side (dark).",
+    "color_scheme": ["#FFD700", "#4CAF50", "#2196F3", "#2C3E50", "#CCCCCC", "#FFFFFF", "#1A2C3A"],
+    "animation_style": "continuous and smooth for all movements (rotation, revolution, light changes). Stepped for axial tilt adjustments for clarity.",
+    "visual_metaphor": "Imagine a spinning top (Earth) walking in a circle around a bright lamp (Sun). The top's tilt (Earth's axis) determines which part gets more light as it walks around."
+  },
+  "variables_to_simulate": [
+    {
+      "name": "Rotation Speed",
+      "control_type": "slider",
+      "min": 0.1,
+      "max": 2.0,
+      "default": 1.0,
+      "unit": "x normal speed",
+      "visual_effect": "Changes the speed at which the Earth spins on its axis, making the day/night cycle faster or slower. Earth's surface texture visibly rotates."
+    },
+    {
+      "name": "Revolution Speed",
+      "control_type": "slider",
+      "min": 0.1,
+      "max": 2.0,
+      "default": 1.0,
+      "unit": "x normal speed",
+      "visual_effect": "Changes the speed at which the Earth moves along its orbital path around the Sun, making the season cycle faster or slower. The Earth moves visibly faster/slower along the orbit line."
+    },
+    {
+      "name": "Axial Tilt",
+      "control_type": "slider",
+      "min": 0,
+      "max": 30,
+      "default": 23.5,
+      "unit": "degrees",
+      "visual_effect": "Adjusts the angle of the dashed white axis line relative to the orbital plane. This causes different hemispheres to receive more direct sunlight during revolution, visibly changing the size and intensity of the lit area on each hemisphere as Earth revolves."
+    }
+  ],
+  "layout_structure": {
+    "sections": [
+      {"id": "header", "height": "60px", "content": "Title: Earth's Dance: Spin & Orbit"},
+      {"id": "visual-area", "height": "50vh", "content": "Main interactive visualization of Sun, Earth, orbit, axis, day/night. Centered and maximized within width."},
+      {"id": "controls", "height": "auto", "content": "Three sliders (Rotation Speed, Revolution Speed, Axial Tilt) stacked vertically with labels. Each slider touch target >= 48px with 8px vertical spacing."},
+      {"id": "info", "height": "auto", "content": "Dynamic text labels for 'Current Status: Day/Night' and 'Current Season: [Summer/Winter/Spring/Autumn]' based on simulation."}
+    ],
+    "spacing": "16px between sections"
+  },
+  "simulation_logic": [
+    "Step 1: Initialize scene with a central Sun, Earth (tilted 23.5 degrees) rotating at normal speed, and revolving at normal speed along its elliptical orbit.",
+    "Step 2: Visually represent day and night by illuminating one half of the Earth facing the Sun and shading the other.",
+    "Step 3: When 'Rotation Speed' slider is moved, update the CSS `animation-duration` of Earth's rotation to reflect the new speed. Visual feedback should be instantaneous (<100ms).",
+    "Step 4: When 'Revolution Speed' slider is moved, update the CSS `animation-duration` of Earth's orbital path. Visual feedback should be instantaneous (<100ms).",
+    "Step 5: When 'Axial Tilt' slider is moved, smoothly (over ~200ms) adjust the visual angle of the Earth's axis and recalculate how direct sunlight hits the hemispheres, affecting seasonal lighting during revolution.",
+    "Step 6: Continuously update the 'Current Status' (Day/Night for a reference point on Earth, e.g., 'India is Day') and 'Current Season' (e.g., 'Northern Hemisphere: Summer') text based on Earth's position in orbit and rotation state."
+  ],
+  "text_instructions": "Drag sliders to see how Earth's spin and tilt change day, night, and seasons!",
+  "misconceptions_to_address": [
+    "Confusing rotation (day/night) with revolution (seasons).",
+    "Believing seasons are caused by Earth's distance from the Sun.",
+    "Imagining the Earth's axis as a physical rod."
+  ],
+  "safety_constraints": [
+    "Age-appropriate content for CBSE Class 7 students.",
+    "No external links or resources within the simulation."
+  ]
+}

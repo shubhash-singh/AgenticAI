@@ -34,7 +34,7 @@ def build_all_chains():
 
     creation_llm = ChatGoogleGenerativeAI(
         model="gemini-2.5-flash",
-        temperature=0,
+        temperature=0.2,
         api_key=os.getenv("GOOGLE_API_KEY"),
     )
 

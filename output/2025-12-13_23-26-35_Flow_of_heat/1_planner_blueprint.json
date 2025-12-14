@@ -1,0 +1,10 @@
+{
+  "main_display": "Two adjacent circles (hot object in red, cold object in blue) with animated arrows showing heat flow direction. Arrows change size and speed based on temperature difference",
+  "color_scheme": [
+    "#FF4D4D",
+    "#4DA6FF",
+    "#FFD166"
+  ],
+  "animation_style": "smooth",
+  "visual_metaphor": "Water flowing from higher level to lower level - heat flows from higher temperature to lower temperature"
+}
