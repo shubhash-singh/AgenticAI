@@ -1,0 +1,78 @@
+{
+  "learning_objectives": [
+    "Students will be able to differentiate between opaque, transparent, and translucent objects based on their interaction with light.",
+    "Students will be able to explain the conditions and process of shadow formation.",
+    "Students will be able to predict how changing the position of a light source or an object affects the size and shape of a shadow."
+  ],
+  "key_concepts": [
+    "Opaque, Transparent, and Translucent Objects",
+    "Formation of Shadows",
+    "Light travels in straight lines"
+  ],
+  "visual_design": {
+    "main_display": "A side-view 2D scene with a circular light source on the left, a rectangular object in the middle, and a vertical rectangular 'screen' on the right. Light rays are depicted as straight lines originating from the source, passing or being blocked by the object, and hitting the screen.",
+    "color_scheme": ["#1A5D8A", "#FFC107", "#4CAF50", "#212121", "#E0E0E0"],
+    "animation_style": "smooth",
+    "visual_metaphor": "A torch shining on a toy, casting its shadow on a wall."
+  },
+  "variables_to_simulate": [
+    {
+      "name": "Object Type",
+      "control_type": "buttons",
+      "options": ["Opaque", "Translucent", "Transparent"],
+      "default": "Opaque",
+      "visual_effect": "Changes the appearance of the central rectangular object:\n- Opaque: Solid dark grey block (e.g., #212121).\n- Translucent: Semi-transparent grey block with blurred edges (e.g., rgba(33, 33, 33, 0.5)). Scattered, faint light rays pass through.\n- Transparent: Clear outline of the block (e.g., #E0E0E0 border). All light rays pass through unobstructed. \nAlso changes the shadow on the screen:\n- Opaque: Sharp, dark shadow.\n- Translucent: Fuzzy, lighter shadow.\n- Transparent: No shadow."
+    },
+    {
+      "name": "Object Position",
+      "control_type": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 50,
+      "unit": "%",
+      "visual_effect": "Horizontally moves the central object between the light source and the screen. Moving closer to the light source (left) makes the shadow on the screen larger. Moving further away (right) makes the shadow smaller. The shadow's position on the screen also shifts slightly."
+    },
+    {
+      "name": "Light Source Height",
+      "control_type": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 50,
+      "unit": "%",
+      "visual_effect": "Vertically moves the circular light source up and down. This changes the angle of the light rays, affecting the length and vertical position of the shadow on the screen. Higher source results in shorter, lower shadows; lower source results in longer, higher shadows."
+    }
+  ],
+  "layout_structure": {
+    "sections": [
+      {"id": "header", "height": "60px", "content": "Title: Light & Shadows Fun! | Short intro: See how shadows form."},
+      {"id": "visual-area", "height": "50vh", "content": "Main interactive simulation (light source, object, screen, rays, shadow)."},
+      {"id": "controls", "height": "auto", "content": "Three distinct control elements (buttons for Object Type, two sliders for positions) with labels. Each control touch target will be at least 48px."},
+      {"id": "info", "height": "auto", "content": "Dynamic text displaying current object type and observation (e.g., 'Current: Opaque. Shadow is dark and clear.')"}
+    ],
+    "spacing": "16px between sections"
+  },
+  "simulation_logic": [
+    "1. Initialize visual components: light source (yellow circle), object (default opaque grey rectangle), screen (light grey rectangle), and light rays (thin yellow lines) casting a default shadow.",
+    "2. When 'Object Type' button is tapped:",
+    "   a. Update the object's visual properties (color, transparency) and light ray interaction (blocked, scattered, passed).",
+    "   b. Instantly update the shadow's appearance (dark/fuzzy/none) on the screen.",
+    "3. When 'Object Position' slider is dragged:",
+    "   a. Move the object horizontally across the screen.",
+    "   b. Recalculate and redraw the light rays and shadow outline in real-time, animating the shadow's size and position smoothly over ~150ms.",
+    "4. When 'Light Source Height' slider is dragged:",
+    "   a. Move the light source vertically.",
+    "   b. Recalculate and redraw the light rays and shadow outline in real-time, animating the shadow's length and vertical position smoothly over ~150ms.",
+    "5. Update the 'info' section with a descriptive observation based on the current object type and shadow state."
+  ],
+  "text_instructions": "Drag sliders and tap buttons to explore light and shadows.",
+  "misconceptions_to_address": [
+    "Shadows are always black; they can vary in intensity/fuzziness.",
+    "Shadows are physical objects that light creates, rather than just an absence of light.",
+    "Confusing translucent objects with transparent ones regarding shadow formation."
+  ],
+  "safety_constraints": [
+    "All content is age-appropriate for CBSE Class 7 students.",
+    "No external links or resources are provided within the simulation.",
+    "The simulation does not involve any real light sources or physical hazards."
+  ]
+}

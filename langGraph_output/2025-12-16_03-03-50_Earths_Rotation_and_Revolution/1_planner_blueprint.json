@@ -1,0 +1,12 @@
+{
+  "main_display": "A central, static, bright yellow/orange Sun sphere. An orbiting blue/green Earth sphere will show a distinct illuminated (day) and shadowed (night) side. A dashed white line will represent Earth's tilted axis, visually passing through the North and South Poles. A faint elliptical grey line will depict the Earth's orbital path around the Sun. Dynamic text labels for 'Day'/'Night' and 'Season' (e.g., 'Summer N. Hemisphere') will appear adjacent to the Earth sphere.",
+  "color_scheme": [
+    "#FFD700",
+    "#4169E1",
+    "#3CB371",
+    "#2F4F4F",
+    "#FFFFFF"
+  ],
+  "animation_style": "smooth/continuous",
+  "visual_metaphor": "Imagine Earth as a spinning top (rotation) that's also walking in a big circle (revolution) around a bright lamp (Sun). The top's consistent lean (axial tilt) as it walks determines which side gets more light, just like seasons."
+}

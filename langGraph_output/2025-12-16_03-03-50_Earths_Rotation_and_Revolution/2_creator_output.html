@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earth's Movements - Interactive Simulation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f9f9f9;
+        }
+        #app { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 16px; 
+            background: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 16px; /* Spacing between major sections */
+        }
+        header {
+            padding: 0 0 16px 0; /* Add bottom padding */
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        h1 { font-size: 24px; margin-bottom: 4px; }
+        .subtitle { font-size: 14px; color: #666; padding: 0 8px; }
+        
+        #visual-area {
+            position: relative;
+            height: 50vh;
+            min-height: 300px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            flex-grow: 1; /* Allow visual area to expand */
+        }
+        
+        #controls {
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px; /* Spacing between controls */
+        }
+        
+        .control-group {
+            margin-bottom: 8px; /* Spacing between individual control groups */
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            font-weight: 500;
+            font-size: 16px; /* Ensure minimum font size */
+            touch-action: manipulation;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            min-height: 48px; /* Minimum touch target height */
+            cursor: grab;
+            -webkit-appearance: none; /* Override default appearance */
+            appearance: none;
+            background: #ddd;
+            border-radius: 5px;
+            outline: none;
+            transition: opacity .2s;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: grab;
+            box-shadow: 0px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: grab;
+            box-shadow: 0px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        #info {
+            padding: 16px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            font-size: 16px; /* Minimum font size */
+        }
+        #info h3 {
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            color: #2F4F4F;
+        }
+        #info p {
+            margin-bottom: 4px;
+        }
+        #info p:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* SVG specific styles */
+        #sun {
+            fill: url(#sunGradient);
+        }
+        #orbital-path {
+            stroke: #2F4F4F; /* Dark grey for path */
+        }
+        #earth-day-circle {
+            fill: #4169E1; /* Royal blue for day side */
+        }
+        #earth-night-path {
+            fill: #3CB371; /* Medium sea green for night side */
+            opacity: 0.8;
+            transform-origin: 0 0; /* Center of Earth for rotation */
+        }
+        #earth-axis-line {
+            stroke: #FFFFFF; /* White for axis */
+            stroke-dasharray: 3 2;
+            stroke-width: 1.5;
+            transform-origin: 0 0; /* Center of Earth for rotation */
+            transition: transform 0.1s ease-out; /* Smooth tilt change */
+        }
+        #north-pole-indicator, #south-pole-indicator {
+            fill: #FFFFFF; /* White for poles */
+            transform-origin: 0 0; /* Center of Earth for rotation */
+            transition: transform 0.1s ease-out; /* Smooth tilt change */
+        }
+        #earth-day-night-label, #earth-season-label {
+            font-size: 10px;
+            font-weight: bold;
+            fill: #2F4F4F;
+            text-shadow: 0px 0px 2px rgba(255,255,255,0.7);
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1 style='font-size:1.4em; text-align:center;'>Earth's Movements</h1>
+            <p style='font-size:0.8em; text-align:center; padding: 0 8px;'>Explore how Earth's spin and tilt create day, night, and seasons.</p>
+        </header>
+        
+        <div id="visual-area">
+            <svg viewBox="0 0 400 400" style="width: 90%; max-width: 400px; height: auto;">
+                <defs>
+                    <radialGradient id="sunGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                        <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#FFA500;stop-opacity:0.6" />
+                    </radialGradient>
+                </defs>
+            
+                <!-- Orbital path -->
+                <ellipse id="orbital-path" cx="200" cy="200" rx="150" ry="100" fill="none" stroke-width="1" />
+            
+                <!-- Sun -->
+                <circle cx="200" cy="200" r="40" fill="url(#sunGradient)" />
+                <circle cx="200" cy="200" r="20" fill="#FFD700" />
+            
+                <!-- Earth Group: will translate for revolution -->
+                <g id="earth-container" transform="translate(350, 200)">
+                    <circle r="15" id="earth-day-circle" />
+                    <!-- Night side path: A semi-circle. Rotate this to simulate day/night. -->
+                    <!-- Initial: Sun to left, so right half is night. This path is right half. -->
+                    <path id="earth-night-path" d="M 0,-15 A 15,15 0 0,1 0,15 L 0,-15 Z" />
+            
+                    <line id="earth-axis-line" x1="0" y1="-25" x2="0" y2="25" />
+                    <circle id="north-pole-indicator" r="2" />
+                    <circle id="south-pole-indicator" r="2" />
+            
+                    <text id="earth-day-night-label" x="20" y="-10" text-anchor="start">Day</text>
+                    <text id="earth-season-label" x="20" y="5" text-anchor="start">Spring</text>
+                </g>
+            </svg>
+        </div>
+        
+        <div id="controls">
+            <div class='control-group'>
+                <label for='rotation-speed' class='control-label'>
+                    <span>Rotation Speed:</span>
+                    <span id='rotation-value'>50%</span>
+                </label>
+                <input type='range' id='rotation-speed' min='0' max='100' value='50'>
+            </div>
+            
+            <div class='control-group'>
+                <label for='axial-tilt' class='control-label'>
+                    <span>Axial Tilt Angle (degrees):</span>
+                    <span id='tilt-value'>23.5°</span>
+                </label>
+                <input type='range' id='axial-tilt' min='0' max='30' value='23.5' step='0.1'>
+            </div>
+            
+            <div class='control-group'>
+                <label for='revolution-speed' class='control-label'>
+                    <span>Revolution Speed:</span>
+                    <span id='revolution-value'>50%</span>
+                </label>
+                <input type='range' id='revolution-speed' min='0' max='100' value='50'>
+            </div>
+        </div>
+        
+        <div id="info">
+            <h3>Current Observations</h3>
+            <p><strong>Day/Night Status:</strong> <span id="day-night-status">Day</span></p>
+            <p><strong>Season (N. Hemisphere):</strong> <span id="season-status">Spring</span></p>
+        </div>
+    </div>
+    
+    <script>
+        // Global variables for animation
+        let animationFrameId = null;
+        let lastTimestamp = 0;
+        let rotationAngle = 0; // Earth's internal rotation (0-360)
+        let orbitalAngle = 0;  // Earth's revolution around Sun (0-360)
+        
+        // Constants for SVG dimensions and positions
+        const ORBIT_RADIUS_X = 150; 
+        const ORBIT_RADIUS_Y = 100; 
+        const SUN_CENTER_X = 200;
+        const SUN_CENTER_Y = 200;
+        const EARTH_RADIUS = 15;
+        const AXIS_INDICATOR_LENGTH = 25; // Half length of axis line for visual effect
+
+        // Get DOM elements
+        const rotationSpeedSlider = document.getElementById('rotation-speed');
+        const axialTiltSlider = document.getElementById('axial-tilt');
+        const revolutionSpeedSlider = document.getElementById('revolution-speed');
+
+        const rotationValueSpan = document.getElementById('rotation-value');
+        const tiltValueSpan = document.getElementById('tilt-value');
+        const revolutionValueSpan = document.getElementById('revolution-value');
+
+        const dayNightStatus = document.getElementById('day-night-status');
+        const seasonStatus = document.getElementById('season-status');
+
+        const earthContainer = document.getElementById('earth-container');
+        const earthNightPath = document.getElementById('earth-night-path');
+        const earthAxisLine = document.getElementById('earth-axis-line');
+        const northPoleIndicator = document.getElementById('north-pole-indicator');
+        const southPoleIndicator = document.getElementById('south-pole-indicator');
+        const earthDayNightLabel = document.getElementById('earth-day-night-label');
+        const earthSeasonLabel = document.getElementById('earth-season-label');
+
+        // Initial setup
+        function initializeSimulation() {
+            rotationSpeedSlider.value = 50;
+            axialTiltSlider.value = 23.5;
+            revolutionSpeedSlider.value = 50;
+            updateSliderDisplays();
+            updateAxialTiltVisuals(); // Apply initial tilt
+            // Set initial orbital and rotation angles to match "Spring" and "Day" for N. Hemisphere
+            orbitalAngle = 0; // Earth starts at the right of the Sun, designated as Spring Equinox
+            rotationAngle = 90; // A point on the 'front' of Earth, facing the viewer, starts in day.
+            updateEarthVisuals(0); // Set initial positions/rotations without movement
+            updateInfoStatus(); // Set initial info status
+            startSimulation();
+        }
+
+        function updateSliderDisplays() {
+            rotationValueSpan.textContent = rotationSpeedSlider.value + '%';
+            tiltValueSpan.textContent = axialTiltSlider.value + '°';
+            revolutionValueSpan.textContent = revolutionSpeedSlider.value + '%';
+        }
+
+        function updateAxialTiltVisuals() {
+            const tilt = parseFloat(axialTiltSlider.value); // angle in degrees
+            const tiltRad = -tilt * Math.PI / 180; // Convert to radians, negative for CCW rotation as per visual setup
+            
+            // Axis line transform (fixed direction in 2D space)
+            const transformRotate = `rotate(${-tilt})`;
+            earthAxisLine.setAttribute('transform', transformRotate);
+            
+            // Calculate pole positions based on the rotated axis endpoints
+            // The axis line endpoints (0, -AXIS_INDICATOR_LENGTH) and (0, AXIS_INDICATOR_LENGTH)
+            // are rotated by `tiltRad` around Earth's center (0,0).
+            const poleX_N = -AXIS_INDICATOR_LENGTH * Math.sin(tiltRad);
+            const poleY_N = -AXIS_INDICATOR_LENGTH * Math.cos(tiltRad);
+            const poleX_S = AXIS_INDICATOR_LENGTH * Math.sin(tiltRad);
+            const poleY_S = AXIS_INDICATOR_LENGTH * Math.cos(tiltRad);
+
+            northPoleIndicator.setAttribute('transform', `translate(${poleX_N}, ${poleY_N})`);
+            southPoleIndicator.setAttribute('transform', `translate(${poleX_S}, ${poleY_S})`);
+        }
+
+        function updateEarthVisuals(deltaTime) {
+            const rotSpeed = parseFloat(rotationSpeedSlider.value) / 100; // 0 to 1
+            const revSpeed = parseFloat(revolutionSpeedSlider.value) / 100; // 0 to 1
+
+            // 1. Earth's Rotation (Day/Night cycle)
+            rotationAngle = (rotationAngle + (rotSpeed * deltaTime * 100 * 0.05)) % 360; // Adjust speed multiplier for visual effect
+            earthNightPath.setAttribute('transform', `rotate(${rotationAngle})`);
+
+            // Update local day/night label based on rotation (simplified for a fixed point on Earth)
+            earthDayNightLabel.textContent = (rotationAngle > 90 && rotationAngle < 270) ? 'Day' : 'Night';
+
+            // 2. Earth's Revolution (Seasons)
+            orbitalAngle = (orbitalAngle + (revSpeed * deltaTime * 100 * 0.01)) % 360; // Adjust speed multiplier for visual effect
+            const earthX = SUN_CENTER_X + ORBIT_RADIUS_X * Math.cos(orbitalAngle * Math.PI / 180);
+            const earthY = SUN_CENTER_Y + ORBIT_RADIUS_Y * Math.sin(orbitalAngle * Math.PI / 180);
+            earthContainer.setAttribute('transform', `translate(${earthX}, ${earthY})`);
+
+            // Position labels relative to Earth's center (but slightly offset)
+            // Labels are children of earth-container, so their x/y are relative to Earth's (0,0)
+            earthDayNightLabel.setAttribute('x', EARTH_RADIUS + 5);
+            earthDayNightLabel.setAttribute('y', -EARTH_RADIUS / 2);
+            earthSeasonLabel.setAttribute('x', EARTH_RADIUS + 5);
+            earthSeasonLabel.setAttribute('y', EARTH_RADIUS / 2 + 5);
+
+            // Update global status in info section
+            updateInfoStatus();
+        }
+
+        function updateInfoStatus() {
+            // Simplified Day/Night for info section (based on Earth's local rotation)
+            dayNightStatus.textContent = (rotationAngle > 90 && rotationAngle < 270) ? 'Day' : 'Night';
+
+            // Season determination based on orbital position and axial tilt
+            let season = "No Seasons";
+            const tilt = parseFloat(axialTiltSlider.value);
+
+            if (tilt < 1) { // If tilt is negligible (<1 degree), no distinct seasons
+                season = "Equinox (No distinct seasons due to 0° tilt)";
+            } else {
+                // Map orbitalAngle to seasons for N. Hemisphere
+                // 0 degrees (Earth right of Sun) is designated as Spring Equinox
+                if (orbitalAngle >= 0 && orbitalAngle < 90) { 
+                    season = "Spring";
+                } else if (orbitalAngle >= 90 && orbitalAngle < 180) {
+                    season = "Summer N. Hemisphere"; // N. Hemisphere tilted towards Sun
+                } else if (orbitalAngle >= 180 && orbitalAngle < 270) {
+                    season = "Autumn";
+                } else { // orbitalAngle >= 270 && orbitalAngle < 360
+                    season = "Winter N. Hemisphere"; // N. Hemisphere tilted away from Sun
+                }
+            }
+            seasonStatus.textContent = season;
+            // Shorten label for visual display on SVG (remove ' N. Hemisphere' and explanation for 0° tilt)
+            earthSeasonLabel.textContent = season.replace(' N. Hemisphere', '').replace(' (No distinct seasons due to 0° tilt)', '');
+        }
+
+        function animate(timestamp) {
+            try {
+                if (!lastTimestamp) lastTimestamp = timestamp;
+                const deltaTime = (timestamp - lastTimestamp) / 1000; // convert to seconds
+                lastTimestamp = timestamp;
+
+                updateEarthVisuals(deltaTime);
+                animationFrameId = requestAnimationFrame(animate);
+            } catch (error) {
+                console.error("Animation error:", error);
+                stopSimulation(); // Stop on error
+            }
+        }
+
+        function startSimulation() {
+            if (!animationFrameId) {
+                lastTimestamp = 0; // Reset timestamp on start
+                animationFrameId = requestAnimationFrame(animate);
+            }
+        }
+
+        function stopSimulation() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+        }
+
+        // Event Listeners
+        rotationSpeedSlider.addEventListener('input', () => {
+            updateSliderDisplays();
+            // Rotation is updated continuously in animate loop
+        });
+        axialTiltSlider.addEventListener('input', () => {
+            updateSliderDisplays();
+            updateAxialTiltVisuals(); // Instant visual feedback
+            updateInfoStatus(); // Season display depends on tilt
+        });
+        revolutionSpeedSlider.addEventListener('input', () => {
+            updateSliderDisplays();
+            // Revolution is updated continuously in animate loop
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initializeSimulation);
+    </script>
+</body>
+</html>

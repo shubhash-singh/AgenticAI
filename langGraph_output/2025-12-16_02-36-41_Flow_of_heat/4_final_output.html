@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flow of Heat - Interactive Simulation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f9f9f9;
+        }
+        #app {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 16px;
+            background: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            padding: 16px 0;
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        h1 { font-size: 24px; margin-bottom: 8px; color: #333333; }
+        .subtitle { font-size: 14px; color: #666; }
+
+        #visual-area {
+            position: relative;
+            height: 50vh;
+            min-height: 300px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin: 16px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            flex-grow: 1;
+        }
+
+        #controls {
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+
+        .control-group {
+            margin: 16px 0;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 16px;
+            color: #333333;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 44px; /* Ensure touch target */
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #ddd;
+            border-radius: 5px;
+            outline: none;
+            transition: background 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #1E90FF;
+            cursor: grab;
+            border: 2px solid white;
+            box-shadow: 0 0 2px rgba(0,0,0,0.3);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #1E90FF;
+            cursor: grab;
+            border: 2px solid white;
+            box-shadow: 0 0 2px rgba(0,0,0,0.3);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 8px; /* Spacing between buttons */
+            margin-top: 16px;
+        }
+
+        button {
+            flex: 1;
+            min-height: 48px;
+            padding: 12px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.1s ease;
+            touch-action: manipulation; /* Improve mobile responsiveness */
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button#reset-button {
+            background: #f44336;
+        }
+
+        #info {
+            padding: 16px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            margin: 16px 0;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            color: #333333;
+        }
+
+        /* SVG Specific Styles */
+        .object-rect {
+            fill: #ADD8E6; /* Default light blue, will transition */
+            stroke: #333;
+            stroke-width: 2;
+            transition: fill 0.5s ease; /* Smooth color transition */
+        }
+
+        .internal-particle {
+            fill: #FFD700; /* Yellow for internal particles */
+            opacity: 0.8;
+            transform-origin: center center;
+            animation: pulse var(--particle-animation-duration, 2s) infinite ease-in-out;
+            animation-play-state: paused; /* Paused by default */
+            transition: fill 0.5s ease; /* Smooth color transition for particles */
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 0.6; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.8); opacity: 0.6; }
+        }
+
+        .heat-particle-flow {
+            fill: #FFD700;
+            r: 5px; /* Radius */
+            opacity: 0;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+            animation-duration: var(--flow-animation-duration, 2s);
+            animation-name: none; /* Initially no animation */
+        }
+
+        @keyframes flow-left-to-right {
+            0% { transform: translateX(-100px); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateX(100px); opacity: 0; }
+        }
+
+        @keyframes flow-right-to-left {
+            0% { transform: translateX(100px); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateX(-100px); opacity: 0; }
+        }
+
+        .flow-arrow {
+            fill: #666; /* Gray arrows */
+            opacity: 0; /* Hidden by default */
+            transition: opacity 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Flow of Heat Simulation</h1>
+            <p class="subtitle">Observe heat moving from hot to cold objects!</p>
+        </header>
+
+        <div id="visual-area">
+            <svg viewBox="0 0 400 300" style="width: 90%; max-width: 500px; height: auto;">
+                <!-- Object A -->
+                <rect id="object-a" class="object-rect" x="50" y="100" width="100" height="100" rx="10"></rect>
+                <text id="temp-a-display" x="100" y="80" text-anchor="middle" font-size="20" fill="#333">80°C</text>
+                <g id="particles-a"></g> <!-- Internal particles for A -->
+
+                <!-- Object B -->
+                <rect id="object-b" class="object-rect" x="250" y="100" width="100" height="100" rx="10"></rect>
+                <text id="temp-b-display" x="300" y="80" text-anchor="middle" font-size="20" fill="#333">20°C</text>
+                <g id="particles-b"></g> <!-- Internal particles for B -->
+
+                <!-- Flow arrows (Adjusted points for better centering within the gap) -->
+                <polygon id="arrow-ab" class="flow-arrow" points="170,145 190,130 190,140 230,140 230,160 190,160 190,170" transform="translate(-10 0)"></polygon>
+                <polygon id="arrow-ba" class="flow-arrow" points="230,155 210,170 210,160 170,160 170,140 210,140 210,130" transform="translate(10 0)"></polygon>
+
+                <!-- Flowing particles container (particles will be positioned relative to cx/cy 180, 150) -->
+                <g id="flowing-particles-container">
+                    <!-- These will be generated by JS -->
+                </g>
+            </svg>
+        </div>
+
+        <div id="controls">
+            <div class="control-group">
+                <label for="temp-a-slider" class="control-label">
+                    <span>Object A Initial Temperature:</span>
+                    <span id="temp-a-value">80°C</span>
+                </label>
+                <input type="range" id="temp-a-slider" min="0" max="100" value="80">
+            </div>
+
+            <div class="control-group">
+                <label for="temp-b-slider" class="control-label">
+                    <span>Object B Initial Temperature:</span>
+                    <span id="temp-b-value">20°C</span>
+                </label>
+                <input type="range" id="temp-b-slider" min="0" max="100" value="20">
+            </div>
+
+            <div class="control-group">
+                <label for="flow-speed-slider" class="control-label">
+                    <span>Flow Speed:</span>
+                    <span id="flow-speed-value">5x</span>
+                </label>
+                <input type="range" id="flow-speed-slider" min="1" max="10" value="5">
+            </div>
+
+            <div class="button-group">
+                <button id="start-pause-button">Start</button>
+                <button id="reset-button" style="display: none;">Reset</button>
+            </div>
+        </div>
+
+        <div id="info">
+            <span id="status-text">Set temperatures and click Start to observe heat transfer!</span>
+            <br>
+            <span id="average-temp-display">Average Temperature: --°C</span>
+        </div>
+    </div>
+
+    <script>
+        // --- Constants & DOM Element References ---
+        const COLOR_COLD = '#1E90FF'; // Blue
+        const COLOR_HOT = '#FF4500';  // Red
+        const COLOR_PARTICLE_FLOW = '#FFD700'; // Yellow
+        const COLOR_TEXT = '#333333';
+
+        const TEMP_MIN = 0;
+        const TEMP_MAX = 100;
+        const EQUILIBRIUM_THRESHOLD = 0.5; // °C
+
+        // Sliders
+        const tempASlider = document.getElementById('temp-a-slider');
+        const tempBSlider = document.getElementById('temp-b-slider');
+        const flowSpeedSlider = document.getElementById('flow-speed-slider');
+
+        // Slider value displays
+        const tempAValue = document.getElementById('temp-a-value');
+        const tempBValue = document.getElementById('temp-b-value');
+        const flowSpeedValue = document.getElementById('flow-speed-value');
+
+        // Buttons
+        const startPauseButton = document.getElementById('start-pause-button');
+        const resetButton = document.getElementById('reset-button');
+
+        // Info displays
+        const statusText = document.getElementById('status-text');
+        const averageTempDisplay = document.getElementById('average-temp-display');
+
+        // SVG Elements
+        const objectA_rect = document.getElementById('object-a');
+        const objectB_rect = document.getElementById('object-b');
+        const tempA_display = document.getElementById('temp-a-display');
+        const tempB_display = document.getElementById('temp-b-display');
+        const particlesA_group = document.getElementById('particles-a');
+        const particlesB_group = document.getElementById('particles-b');
+        const arrowAB = document.getElementById('arrow-ab');
+        const arrowBA = document.getElementById('arrow-ba');
+        const flowingParticlesContainer = document.getElementById('flowing-particles-container');
+
+        // --- State Variables ---
+        let objA_temp;
+        let objB_temp;
+        let initial_objA_temp;
+        let initial_objB_temp;
+        let flow_speed_multiplier;
+        let is_flowing = false;
+        let animation_frame_id = null;
+        let last_timestamp = null;
+
+        // --- Helper Functions ---
+
+        function hexToRgb(hex) {
+            const r = parseInt(hex.substring(1, 3), 16);
+            const g = parseInt(hex.substring(3, 5), 16);
+            const b = parseInt(hex.substring(5, 7), 16);
+            return [r, g, b];
+        }
+
+        function rgbToHex(r, g, b) {
+            return '#' + [r, g, b].map(x => {
+                const hex = Math.max(0, Math.min(255, Math.round(x))).toString(16); // Clamp values and round
+                return hex.length === 1 ? '0' + hex : hex;
+            }).join('');
+        }
+
+        // Interpolates between two hex colors by a factor (0 to 1)
+        function lerpColor(color1, color2, factor) {
+            const rgb1 = hexToRgb(color1);
+            const rgb2 = hexToRgb(color2);
+            const r = rgb1[0] + factor * (rgb2[0] - rgb1[0]);
+            const g = rgb1[1] + factor * (rgb2[1] - rgb1[1]);
+            const b = rgb1[2] + factor * (rgb2[2] - rgb1[2]);
+            return rgbToHex(r, g, b);
+        }
+
+        // Get color based on temperature (0°C = cold blue, 100°C = hot red)
+        function getTempColor(temp) {
+            const factor = (temp - TEMP_MIN) / (TEMP_MAX - TEMP_MIN);
+            return lerpColor(COLOR_COLD, COLOR_HOT, factor);
+        }
+
+        // Generate internal particles for an object
+        function generateInternalParticles(groupElement, objectX, objectY, objectWidth, objectHeight, numParticles = 10) {
+            groupElement.innerHTML = ''; // Clear previous particles
+            for (let i = 0; i < numParticles; i++) {
+                const cx = objectX + objectWidth / 2 + (Math.random() - 0.5) * (objectWidth - 30); // Leave some margin
+                const cy = objectY + objectHeight / 2 + (Math.random() - 0.5) * (objectHeight - 30);
+                const r = 3 + Math.random() * 2; // Particle radius
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', cx);
+                circle.setAttribute('cy', cy);
+                circle.setAttribute('r', r);
+                circle.classList.add('internal-particle');
+                groupElement.appendChild(circle);
+            }
+        }
+
+        // Update object's visual (color, internal particles)
+        function updateObjectVisuals(objectId, temp) {
+            const objectRect = (objectId === 'a') ? objectA_rect : objectB_rect;
+            const tempDisplay = (objectId === 'a') ? tempA_display : tempB_display;
+            const particlesGroup = (objectId === 'a') ? particlesA_group : particlesB_group;
+
+            objectRect.style.fill = getTempColor(temp);
+            tempDisplay.textContent = `${Math.round(temp)}°C`;
+
+            // Update internal particle animation speed/state based on temperature
+            // Faster for higher temp, min 0.5s, max 5s
+            const animationDuration = (101 - temp) * 0.04 + 0.5; 
+            particlesGroup.style.setProperty('--particle-animation-duration', `${animationDuration}s`);
+            // Only animate if temperature is above a certain threshold, otherwise pause
+            particlesGroup.style.animationPlayState = (temp > TEMP_MIN + 5) ? 'running' : 'paused';
+
+            // Update individual particle colors (to match object color)
+            Array.from(particlesGroup.children).forEach(particle => {
+                particle.style.fill = getTempColor(temp);
+            });
+        }
+
+        // Generate flowing particles (initially hidden)
+        function generateFlowingParticles(numParticles = 5) {
+            flowingParticlesContainer.innerHTML = '';
+            const startX = 200; // Center between objects
+            const startY = 150;
+            const particleRadius = 4;
+
+            for (let i = 0; i < numParticles; i++) {
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', startX);
+                circle.setAttribute('cy', startY + (i % 2 === 0 ? 5 : -5)); // Stagger Y position slightly
+                circle.setAttribute('r', particleRadius);
+                circle.classList.add('heat-particle-flow');
+                // Stagger animation delays for continuous look
+                circle.style.animationDelay = `${i * 0.5}s`;
+                flowingParticlesContainer.appendChild(circle);
+            }
+        }
+
+        // Update flowing particles animation and arrows
+        function updateFlowAnimation(tempDiff) {
+            const flowingParticles = flowingParticlesContainer.children;
+            const flowDuration = (11 - flow_speed_multiplier) * 0.2; // Faster animation for higher speed, min 0.2s, max 2s
+
+            Array.from(flowingParticles).forEach(particle => {
+                particle.style.setProperty('--flow-animation-duration', `${flowDuration}s`);
+                particle.style.opacity = 1; // Make visible
+                particle.style.animationPlayState = 'running'; // Ensure running
+            });
+
+            if (tempDiff > EQUILIBRIUM_THRESHOLD) { // A is hotter, flow A -> B
+                arrowAB.style.opacity = 1;
+                arrowBA.style.opacity = 0;
+                Array.from(flowingParticles).forEach(particle => {
+                    particle.style.animationName = 'flow-left-to-right';
+                });
+                statusText.textContent = `Heat flowing from Object A to Object B.`;
+            } else if (tempDiff < -EQUILIBRIUM_THRESHOLD) { // B is hotter, flow B -> A
+                arrowAB.style.opacity = 0;
+                arrowBA.style.opacity = 1;
+                Array.from(flowingParticles).forEach(particle => {
+                    particle.style.animationName = 'flow-right-to-left';
+                });
+                statusText.textContent = `Heat flowing from Object B to Object A.`;
+            } else { // Equilibrium
+                stopFlowParticles();
+                arrowAB.style.opacity = 0;
+                arrowBA.style.opacity = 0;
+                statusText.textContent = 'Thermal Equilibrium Reached!';
+            }
+        }
+
+        function stopFlowParticles() {
+            Array.from(flowingParticlesContainer.children).forEach(particle => {
+                particle.style.animationName = 'none'; // Stop animation
+                particle.style.opacity = 0; // Hide particles
+                particle.style.animationPlayState = 'paused';
+            });
+        }
+
+        // Update general info displays
+        function updateInfoDisplay() {
+            const averageTemp = (objA_temp + objB_temp) / 2;
+            averageTempDisplay.textContent = `Average Temperature: ${Math.round(averageTemp)}°C`;
+        }
+
+        // Enable/Disable sliders
+        function toggleSliderEnabled(enabled) {
+            tempASlider.disabled = !enabled;
+            tempBSlider.disabled = !enabled;
+            flowSpeedSlider.disabled = !enabled;
+        }
+
+        // --- Simulation Logic ---
+
+        function simulateHeatFlow(timestamp) {
+            try {
+                if (!last_timestamp) {
+                    last_timestamp = timestamp;
+                    animation_frame_id = requestAnimationFrame(simulateHeatFlow);
+                    return;
+                }
+
+                const delta_time = (timestamp - last_timestamp) / 1000; // Time in seconds
+                last_timestamp = timestamp;
+
+                if (!is_flowing) {
+                    // If for some reason is_flowing becomes false inside the loop, stop it.
+                    cancelAnimationFrame(animation_frame_id);
+                    animation_frame_id = null;
+                    return;
+                }
+
+                const temp_diff = objA_temp - objB_temp;
+
+                if (Math.abs(temp_diff) <= EQUILIBRIUM_THRESHOLD) {
+                    objA_temp = objB_temp = (objA_temp + objB_temp) / 2; // Snap to average
+                    is_flowing = false;
+                    cancelAnimationFrame(animation_frame_id);
+                    animation_frame_id = null;
+                    
+                    updateObjectVisuals('a', objA_temp);
+                    updateObjectVisuals('b', objB_temp);
+                    updateInfoDisplay();
+                    updateFlowAnimation(0); // Signal equilibrium to hide arrows and particles
+
+                    startPauseButton.style.display = 'none';
+                    resetButton.style.display = 'block';
+                    resetButton.textContent = 'Reset';
+                    toggleSliderEnabled(true); // Sliders should be enabled for new initial temps
+                    return;
+                }
+
+                // Adjust transfer rate based on flow speed multiplier
+                // A simple linear transfer model: larger difference, faster transfer
+                // The constant 0.05 is an arbitrary tuning factor for visual speed
+                const transfer_rate_factor = flow_speed_multiplier * 0.05;
+                const heat_transfer = temp_diff * transfer_rate_factor * delta_time;
+
+                objA_temp -= heat_transfer;
+                objB_temp += heat_transfer;
+
+                // Clamp temperatures to min/max
+                objA_temp = Math.max(TEMP_MIN, Math.min(TEMP_MAX, objA_temp));
+                objB_temp = Math.max(TEMP_MIN, Math.min(TEMP_MAX, objB_temp));
+
+                updateObjectVisuals('a', objA_temp);
+                updateObjectVisuals('b', objB_temp);
+                updateFlowAnimation(temp_diff);
+                updateInfoDisplay();
+
+                animation_frame_id = requestAnimationFrame(simulateHeatFlow);
+            } catch (error) {
+                console.error("Error in simulateHeatFlow:", error);
+                cancelAnimationFrame(animation_frame_id);
+                animation_frame_id = null;
+                is_flowing = false;
+                statusText.textContent = "An error occurred. Please reset.";
+            }
+        }
+
+        // --- Event Handlers ---
+
+        function onSliderChange(event) {
+            const slider = event.target;
+            if (slider.id === 'temp-a-slider') {
+                initial_objA_temp = objA_temp = parseFloat(slider.value);
+                tempAValue.textContent = `${Math.round(objA_temp)}°C`;
+                updateObjectVisuals('a', objA_temp);
+            } else if (slider.id === 'temp-b-slider') {
+                initial_objB_temp = objB_temp = parseFloat(slider.value);
+                tempBValue.textContent = `${Math.round(objB_temp)}°C`;
+                updateObjectVisuals('b', objB_temp);
+            } else if (slider.id === 'flow-speed-slider') {
+                flow_speed_multiplier = parseFloat(slider.value);
+                flowSpeedValue.textContent = `${flow_speed_multiplier}x`;
+                // If flow is active, update animation speed immediately
+                if (is_flowing) {
+                    updateFlowAnimation(objA_temp - objB_temp);
+                }
+            }
+
+            // If not flowing, update status based on current initial temperatures
+            if (!is_flowing && animation_frame_id === null) {
+                if (Math.abs(objA_temp - objB_temp) <= EQUILIBRIUM_THRESHOLD) {
+                     statusText.textContent = 'Objects are at the same initial temperature. Thermal Equilibrium.';
+                } else {
+                     statusText.textContent = 'Set temperatures and click Start to observe heat transfer!';
+                }
+            }
+            updateInfoDisplay();
+        }
+
+        function onStartPauseClick() {
+            if (!is_flowing) { // Start or Resume
+                if (Math.abs(objA_temp - objB_temp) <= EQUILIBRIUM_THRESHOLD) {
+                    statusText.textContent = 'Objects are already at thermal equilibrium.';
+                    startPauseButton.textContent = 'Start'; // No flow initiated, stay 'Start'
+                    updateInfoDisplay();
+                    return;
+                }
+
+                is_flowing = true;
+                startPauseButton.textContent = 'Pause';
+                toggleSliderEnabled(false);
+                last_timestamp = null; // Reset timestamp for smooth start
+                animation_frame_id = requestAnimationFrame(simulateHeatFlow);
+            } else { // Pause
+                is_flowing = false;
+                startPauseButton.textContent = 'Resume';
+                cancelAnimationFrame(animation_frame_id);
+                animation_frame_id = null;
+                statusText.textContent = 'Flow paused.';
+                toggleSliderEnabled(true); // Sliders can be adjusted when paused
+                stopFlowParticles();
+                arrowAB.style.opacity = 0;
+                arrowBA.style.opacity = 0;
+            }
+        }
+
+        function onResetClick() {
+            try {
+                cancelAnimationFrame(animation_frame_id);
+                animation_frame_id = null;
+                is_flowing = false;
+
+                // Reset object temperatures to initial slider values
+                objA_temp = initial_objA_temp = parseFloat(tempASlider.value);
+                objB_temp = initial_objB_temp = parseFloat(tempBSlider.value);
+                flow_speed_multiplier = parseFloat(flowSpeedSlider.value);
+
+                updateObjectVisuals('a', objA_temp);
+                updateObjectVisuals('b', objB_temp);
+                
+                // Reset slider displays to match
+                tempAValue.textContent = `${Math.round(objA_temp)}°C`;
+                tempBValue.textContent = `${Math.round(objB_temp)}°C`;
+                flowSpeedValue.textContent = `${flow_speed_multiplier}x`;
+
+                updateInfoDisplay();
+                
+                stopFlowParticles();
+                arrowAB.style.opacity = 0;
+                arrowBA.style.opacity = 0;
+
+                startPauseButton.style.display = 'block';
+                startPauseButton.textContent = 'Start';
+                resetButton.style.display = 'none';
+
+                toggleSliderEnabled(true);
+                statusText.textContent = 'Set temperatures and click Start to observe heat transfer!';
+            } catch (error) {
+                console.error("Error during reset:", error);
+            }
+        }
+
+        // --- Initialization ---
+        function init() {
+            // Generate initial internal particles
+            generateInternalParticles(particlesA_group, 50, 100, 100, 100);
+            generateInternalParticles(particlesB_group, 250, 100, 100, 100);
+            generateFlowingParticles();
+
+            // Set initial values from sliders by triggering change handler
+            onSliderChange({ target: tempASlider });
+            onSliderChange({ target: tempBSlider });
+            onSliderChange({ target: flowSpeedSlider });
+
+            // Ensure all visuals are updated to initial state
+            updateObjectVisuals('a', objA_temp);
+            updateObjectVisuals('b', objB_temp);
+            updateInfoDisplay();
+            stopFlowParticles(); // Ensure no flow particles are visible initially
+            arrowAB.style.opacity = 0;
+            arrowBA.style.opacity = 0;
+
+            // Attach event listeners
+            tempASlider.addEventListener('input', onSliderChange);
+            tempBSlider.addEventListener('input', onSliderChange);
+            flowSpeedSlider.addEventListener('input', onSliderChange);
+            startPauseButton.addEventListener('click', onStartPauseClick);
+            resetButton.addEventListener('click', onResetClick);
+        }
+
+        // Run initialization when DOM is ready
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

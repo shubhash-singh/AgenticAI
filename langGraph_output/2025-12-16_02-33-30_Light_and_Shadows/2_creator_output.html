@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Light & Shadows Fun! - Interactive Simulation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f9f9f9;
+        }
+        #app { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 16px; 
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        header {
+            padding: 16px 0;
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 16px;
+        }
+        h1 { font-size: 24px; margin-bottom: 8px; color: #1A5D8A; }
+        .subtitle { font-size: 14px; color: #666; }
+        
+        #visual-area {
+            position: relative;
+            height: 50vh;
+            min-height: 300px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin: 16px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            border: 1px solid #ddd;
+        }
+        
+        #simulationSVG {
+            width: 90%;
+            height: 90%;
+            max-width: 500px;
+            max-height: 500px;
+            transition: all 0.15s ease-out; /* Smooth transitions for elements */
+        }
+
+        #lightSource, #objectRect, #shadowPoly, #lightRaysGroup line {
+            transition: all 0.15s ease-out;
+        }
+
+        #controls {
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            margin: 16px 0;
+            border: 1px solid #eee;
+        }
+        
+        .control-group {
+            margin-bottom: 16px;
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 16px;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 44px;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #e0e0e0;
+            outline: none;
+            border-radius: 5px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #1A5D8A;
+            cursor: grab;
+            border: 2px solid #fff;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #1A5D8A;
+            cursor: grab;
+            border: 2px solid #fff;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .button-group button {
+            flex: 1 1 auto;
+            min-width: 120px;
+            min-height: 48px;
+            padding: 12px 16px;
+            font-size: 16px;
+            background: #E0E0E0;
+            color: #333;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        
+        .button-group button.active {
+            background: #4CAF50;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .button-group button:hover:not(.active) {
+            background: #ccc;
+        }
+        
+        .button-group button:active {
+            transform: scale(0.98);
+        }
+        
+        #info {
+            padding: 16px;
+            background: #e3f2fd; /* Light blue */
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #bbdefb;
+            font-size: 16px;
+        }
+
+        .info-text {
+            font-size: 16px;
+            color: #1A5D8A;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Light & Shadows Fun!</h1>
+            <p class="subtitle">See how shadows form as light interacts with objects.</p>
+            <p class="subtitle" style="margin-top: 8px;">Drag sliders and tap buttons to explore light and shadows.</p>
+        </header>
+        
+        <div id="visual-area">
+            <svg id="simulationSVG" viewBox="0 0 1000 500">
+                <defs>
+                    <filter id="blurFilter">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
+                    </filter>
+                </defs>
+                <!-- Screen -->
+                <rect id="screenRect" x="800" y="0" width="20" height="500" fill="#E0E0E0" opacity="0.8" />
+                
+                <!-- Shadow (will be updated by JS) -->
+                <polygon id="shadowPoly" points="" fill="#212121" opacity="1" />
+
+                <!-- Light Rays Group -->
+                <g id="lightRaysGroup" stroke="#FFC107" stroke-width="2">
+                    <line id="ray1" x1="100" y1="250" x2="1000" y2="150" opacity="1" />
+                    <line id="ray2" x1="100" y1="250" x2="1000" y2="200" opacity="1" />
+                    <line id="ray3" x1="100" y1="250" x2="1000" y2="250" opacity="1" />
+                    <line id="ray4" x1="100" y1="250" x2="1000" y2="300" opacity="1" />
+                    <line id="ray5" x1="100" y1="250" x2="1000" y2="350" opacity="1" />
+                </g>
+
+                <!-- Object (default opaque) -->
+                <rect id="objectRect" x="400" y="200" width="60" height="100" fill="#212121" />
+
+                <!-- Light Source -->
+                <circle id="lightSource" cx="100" cy="250" r="30" fill="#FFC107" />
+            </svg>
+        </div>
+        
+        <div id="controls">
+            <div class="control-group">
+                <div class="control-label">Object Type</div>
+                <div class="button-group">
+                    <button id="opaqueBtn" data-type="Opaque">Opaque</button>
+                    <button id="translucentBtn" data-type="Translucent">Translucent</button>
+                    <button id="transparentBtn" data-type="Transparent">Transparent</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">Object Position <span id="objectPosValue">50%</span></div>
+                <input type="range" id="objectPositionSlider" min="0" max="100" value="50">
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">Light Source Height <span id="lightHeightValue">50%</span></div>
+                <input type="range" id="lightSourceHeightSlider" min="0" max="100" value="50">
+            </div>
+        </div>
+        
+        <div id="info">
+            <p class="info-text" id="infoText">Welcome! Use the controls to start exploring light and shadows.</p>
+        </div>
+    </div>
+    
+    <script>
+        // DOM Elements
+        const lightSourceEl = document.getElementById('lightSource');
+        const objectRectEl = document.getElementById('objectRect');
+        const shadowPolyEl = document.getElementById('shadowPoly');
+        const lightRaysGroup = document.getElementById('lightRaysGroup');
+        const infoTextEl = document.getElementById('infoText');
+
+        const objectTypeButtons = document.querySelectorAll('.button-group button');
+        const objectPositionSlider = document.getElementById('objectPositionSlider');
+        const lightSourceHeightSlider = document.getElementById('lightSourceHeightSlider');
+        const objectPosValueSpan = document.getElementById('objectPosValue');
+        const lightHeightValueSpan = document.getElementById('lightHeightValue');
+
+        // Simulation State Variables
+        let currentObjectType = "Opaque";
+        let currentObjectPositionPercent = 50;
+        let currentLightSourceHeightPercent = 50;
+
+        // Fixed SVG coordinates for calculation
+        const SVG_WIDTH = 1000;
+        const SVG_HEIGHT = 500;
+        const LIGHT_SOURCE_X_FIXED = 100; // Center X of light source
+        const LIGHT_SOURCE_RADIUS = 30;
+        const OBJECT_WIDTH = 60;
+        const OBJECT_HEIGHT = 100;
+        const OBJECT_Y_FIXED = (SVG_HEIGHT - OBJECT_HEIGHT) / 2; // Vertically centered
+        const OBJECT_X_MIN = 200; // Leftmost position for object
+        const OBJECT_X_MAX = 600; // Rightmost position for object
+        const SCREEN_X_FIXED = 800; // Left edge of the screen
+        const SCREEN_WIDTH = 20;
+
+        // Helper to update ray visibility and opacity based on object type and position
+        function updateRays(lightX, lightY, objX, objY, objH, type) {
+            const rayElements = lightRaysGroup.querySelectorAll('line');
+            // Define points on the object's left edge for rays to "interact" with or pass by
+            // These are relative Y positions from the object's top edge (objY)
+            const rayTargetsRelativeY = [
+                -40, // Clearly above object
+                10,  // Slightly inside top of object
+                objH / 2, // Middle of object
+                objH - 10, // Slightly inside bottom of object
+                objH + 40  // Clearly below object
+            ];
+
+            rayElements.forEach((ray, index) => {
+                const targetY = objY + rayTargetsRelativeY[index];
+                
+                // Calculate slope for the ray originating from light source to this target Y at objectX
+                const m = (targetY - lightY) / (objX - lightX);
+                
+                // Calculate end point (x2, y2) if ray travels unobstructed to the right edge of SVG
+                const x2_unobstructed = SVG_WIDTH;
+                const y2_unobstructed = lightY + m * (SVG_WIDTH - lightX);
+
+                ray.setAttribute('x1', lightX);
+                ray.setAttribute('y1', lightY);
+                ray.setAttribute('x2', x2_unobstructed);
+                ray.setAttribute('y2', y2_unobstructed);
+                ray.style.stroke = '#FFC107';
+                ray.style.strokeWidth = '2';
+
+                // Check if the ray's vertical path intersects with the object's vertical span at the object's X position
+                // Simplification: checking if targetY is within object's vertical bounds
+                const isRayIntersectingObject = (targetY >= objY && targetY <= objY + objH);
+
+                switch (type) {
+                    case "Opaque":
+                        if (isRayIntersectingObject) {
+                            ray.style.opacity = '0'; // Blocked, so invisible
+                        } else {
+                            ray.style.opacity = '1'; // Passes around
+                        }
+                        break;
+                    case "Translucent":
+                        if (isRayIntersectingObject) {
+                            ray.style.opacity = '0.3'; // Faintly passes through
+                        } else {
+                            ray.style.opacity = '1'; // Passes around
+                        }
+                        break;
+                    case "Transparent":
+                        ray.style.opacity = '1'; // All pass unobstructed
+                        break;
+                }
+            });
+        }
+
+        // Updates the info text based on current state
+        function updateInfoText() {
+            let description = '';
+            switch (currentObjectType) {
+                case "Opaque":
+                    description = "The object is Opaque. It blocks all light, creating a sharp, dark shadow.";
+                    break;
+                case "Translucent":
+                    description = "The object is Translucent. Some light passes through, forming a fuzzy, lighter shadow.";
+                    break;
+                case "Transparent":
+                    description = "The object is Transparent. All light passes through unobstructed, so no shadow is formed.";
+                    break;
+            }
+            infoTextEl.textContent = `Current: ${currentObjectType}. ${description}`;
+        }
+
+        // Main simulation update function
+        let animationFrameId = null;
+        function updateSimulation() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            animationFrameId = requestAnimationFrame(() => {
+                try {
+                    // 1. Calculate positions based on current slider values
+                    const lightSourceY = (LIGHT_SOURCE_Y_MIN + (LIGHT_SOURCE_Y_MAX - LIGHT_SOURCE_Y_MIN) * currentLightSourceHeightPercent / 100); // maps 0-100% to 100-400
+                    const objectX = (OBJECT_X_MIN + (OBJECT_X_MAX - OBJECT_X_MIN) * currentObjectPositionPercent / 100); // maps 0-100% to 200-600
+                    const objectY = OBJECT_Y_FIXED; // Fixed vertical center
+                    const lightX = LIGHT_SOURCE_X_FIXED; // Fixed horizontal light source position
+                    const screenX = SCREEN_X_FIXED; // Fixed screen X position
+
+                    // Update light source position
+                    lightSourceEl.setAttribute('cy', lightSourceY);
+
+                    // Update object position
+                    objectRectEl.setAttribute('x', objectX);
+
+                    // 2. Calculate shadow points
+                    let shadowPoints = "";
+                    let shadowFill = 'none';
+                    let shadowOpacity = '0';
+                    let shadowFilter = 'none';
+
+                    if (currentObjectType !== "Transparent") {
+                        // Top-most ray for shadow (from light source center through object's top-left corner)
+                        const m_top = (objectY - lightSourceY) / (objectX - lightX);
+                        const shadowY_top = lightSourceY + m_top * (screenX - lightX);
+
+                        // Bottom-most ray for shadow (from light source center through object's bottom-left corner)
+                        const m_bottom = (objectY + OBJECT_HEIGHT - lightSourceY) / (objectX - lightX);
+                        const shadowY_bottom = lightSourceY + m_bottom * (screenX - lightX);
+
+                        // Define the shadow polygon on the screen
+                        shadowPoints = `${screenX},${shadowY_top} ${screenX + SCREEN_WIDTH},${shadowY_top} ${screenX + SCREEN_WIDTH},${shadowY_bottom} ${screenX},${shadowY_bottom}`;
+                        shadowFill = '#212121'; // Shadow color
+
+                        if (currentObjectType === "Opaque") {
+                            shadowOpacity = '1';
+                            shadowFilter = 'none';
+                        } else if (currentObjectType === "Translucent") {
+                            shadowOpacity = '0.4'; // Lighter shadow
+                            shadowFilter = 'url(#blurFilter)'; // Fuzzy shadow
+                        }
+                    }
+
+                    shadowPolyEl.setAttribute('points', shadowPoints);
+                    shadowPolyEl.setAttribute('fill', shadowFill);
+                    shadowPolyEl.setAttribute('opacity', shadowOpacity);
+                    shadowPolyEl.style.filter = shadowFilter;
+
+                    // Update object's visual properties
+                    switch (currentObjectType) {
+                        case "Opaque":
+                            objectRectEl.setAttribute('fill', '#212121');
+                            objectRectEl.setAttribute('opacity', '1');
+                            objectRectEl.setAttribute('stroke', 'none');
+                            break;
+                        case "Translucent":
+                            objectRectEl.setAttribute('fill', 'rgba(33, 33, 33, 0.5)'); // Semi-transparent grey
+                            objectRectEl.setAttribute('opacity', '1');
+                            objectRectEl.setAttribute('stroke', 'none');
+                            break;
+                        case "Transparent":
+                            objectRectEl.setAttribute('fill', 'none');
+                            objectRectEl.setAttribute('opacity', '1');
+                            objectRectEl.setAttribute('stroke', '#E0E0E0'); // Clear outline
+                            objectRectEl.setAttribute('stroke-width', '2');
+                            break;
+                    }
+
+                    // Update light rays interaction
+                    updateRays(lightX, lightSourceY, objectX, objectY, OBJECT_HEIGHT, currentObjectType);
+
+                    // Update info text
+                    updateInfoText();
+
+                } catch (error) {
+                    console.error("Error updating simulation:", error);
+                }
+                animationFrameId = null;
+            });
+        }
+
+        // Initialize default light source height range (for 0-100% slider mapping)
+        const LIGHT_SOURCE_Y_MIN = 100; // SVG Y coordinate
+        const LIGHT_SOURCE_Y_MAX = 400; // SVG Y coordinate
+
+        // Event Listeners
+
+        // Object Type Buttons
+        objectTypeButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                currentObjectType = e.target.dataset.type;
+                objectTypeButtons.forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                updateSimulation();
+            });
+        });
+
+        // Object Position Slider
+        objectPositionSlider.addEventListener('input', (e) => {
+            currentObjectPositionPercent = parseInt(e.target.value);
+            objectPosValueSpan.textContent = `${currentObjectPositionPercent}%`;
+            updateSimulation();
+        });
+
+        // Light Source Height Slider
+        lightSourceHeightSlider.addEventListener('input', (e) => {
+            currentLightSourceHeightPercent = parseInt(e.target.value);
+            lightHeightValueSpan.textContent = `${currentLightSourceHeightPercent}%`;
+            updateSimulation();
+        });
+
+        // Initial setup
+        function initializeSimulation() {
+            // Set initial button active state
+            document.getElementById('opaqueBtn').classList.add('active');
+            // Set slider values and display
+            objectPositionSlider.value = currentObjectPositionPercent;
+            objectPosValueSpan.textContent = `${currentObjectPositionPercent}%`;
+            lightSourceHeightSlider.value = currentLightSourceHeightPercent;
+            lightHeightValueSpan.textContent = `${currentLightSourceHeightPercent}%`;
+            // Perform initial simulation update
+            updateSimulation();
+        }
+
+        initializeSimulation();
+
+    </script>
+</body>
+</html>

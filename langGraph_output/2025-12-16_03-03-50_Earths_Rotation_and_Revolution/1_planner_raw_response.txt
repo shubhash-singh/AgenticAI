@@ -1,0 +1,77 @@
+```json
+{
+  "learning_objectives": [
+    "Differentiate between Earth's rotation and revolution and their respective timeframes.",
+    "Explain how Earth's rotation on its axis causes the cycle of day and night.",
+    "Describe how Earth's revolution around the Sun, combined with its axial tilt, creates the changing seasons throughout the year."
+  ],
+  "key_concepts": [
+    "Earth's Rotation",
+    "Earth's Revolution",
+    "Axial Tilt",
+    "Day and Night Cycle",
+    "Seasons"
+  ],
+  "visual_design": {
+    "main_display": "A central, static, bright yellow/orange Sun sphere. An orbiting blue/green Earth sphere will show a distinct illuminated (day) and shadowed (night) side. A dashed white line will represent Earth's tilted axis, visually passing through the North and South Poles. A faint elliptical grey line will depict the Earth's orbital path around the Sun. Dynamic text labels for 'Day'/'Night' and 'Season' (e.g., 'Summer N. Hemisphere') will appear adjacent to the Earth sphere.",
+    "color_scheme": ["#FFD700", "#4169E1", "#3CB371", "#2F4F4F", "#FFFFFF"],
+    "animation_style": "smooth/continuous",
+    "visual_metaphor": "Imagine Earth as a spinning top (rotation) that's also walking in a big circle (revolution) around a bright lamp (Sun). The top's consistent lean (axial tilt) as it walks determines which side gets more light, just like seasons."
+  },
+  "variables_to_simulate": [
+    {
+      "name": "Rotation Speed",
+      "control_type": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 50,
+      "unit": "%",
+      "visual_effect": "Controls the speed at which the Earth sphere spins on its axis. 0% represents no rotation, 100% represents very fast rotation. This directly impacts the observed speed of the day/night cycle on Earth."
+    },
+    {
+      "name": "Axial Tilt Angle",
+      "control_type": "slider",
+      "min": 0,
+      "max": 30,
+      "default": 23.5,
+      "unit": "degrees",
+      "visual_effect": "Changes the visible tilt angle of Earth's axis. 0 degrees shows an upright axis, 23.5 degrees is the realistic tilt, and 30 degrees exaggerates the tilt for clearer observation of its effects on seasons."
+    },
+    {
+      "name": "Revolution Speed",
+      "control_type": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 50,
+      "unit": "%",
+      "visual_effect": "Controls the speed at which the Earth sphere moves along its elliptical orbit around the Sun. 0% halts revolution, 100% accelerates it. This impacts how quickly the simulation transitions between different seasons."
+    }
+  ],
+  "layout_structure": {
+    "sections": [
+      {"id": "header", "height": "60px", "content": "<h1 style='font-size:1.4em; text-align:center;'>Earth's Movements</h1><p style='font-size:0.8em; text-align:center; padding: 0 8px;'>Explore how Earth's spin and tilt create day, night, and seasons.</p>"},
+      {"id": "visual-area", "height": "50vh", "content": "<div style='position:relative; width:100%; height:100%; display:flex; justify-content:center; align-items:center;'></div>"},
+      {"id": "controls", "height": "auto", "content": "<div style='display:flex; flex-direction:column; gap:12px; padding:16px;'><label for='rotation-speed' style='font-weight:bold; touch-action:manipulation;'>Rotation Speed:</label><input type='range' id='rotation-speed' min='0' max='100' value='50' style='width: 100%; height:48px; cursor:pointer; touch-action:manipulation;'><label for='axial-tilt' style='font-weight:bold; touch-action:manipulation;'>Axial Tilt Angle (degrees):</label><input type='range' id='axial-tilt' min='0' max='30' value='23.5' step='0.1' style='width: 100%; height:48px; cursor:pointer; touch-action:manipulation;'><label for='revolution-speed' style='font-weight:bold; touch-action:manipulation;'>Revolution Speed:</label><input type='range' id='revolution-speed' min='0' max='100' value='50' style='width: 100%; height:48px; cursor:pointer; touch-action:manipulation;'></div>"},
+      {"id": "info", "height": "auto", "content": "<div style='padding:16px; background-color:#e0e0e0; border-top:1px solid #ccc;'><h3 style='font-size:1.1em;'>Current Observations</h3><p><strong>Day/Night Status:</strong> <span id='day-night-status'>Day</span></p><p><strong>Season (N. Hemisphere):</strong> <span id='season-status'>Spring</span></p></div>"}
+    ],
+    "spacing": "16px between sections"
+  },
+  "simulation_logic": [
+    "1. Initialize: Render the Sun centrally. Place the Earth at its starting orbital position with a default 23.5-degree axial tilt. Set both Rotation Speed and Revolution Speed to 50%. Display initial 'Day' and 'Spring' for the Northern Hemisphere.",
+    "2. Rotation Loop: Continuously rotate the Earth sphere on its axis (360 degrees) at a speed determined by 'Rotation Speed'. Update the illuminated and shadowed regions on Earth to visibly simulate the day and night cycle. Update the 'day-night-status' text as appropriate.",
+    "3. Revolution Loop: Continuously move the Earth sphere along its elliptical orbit around the Sun at a speed determined by 'Revolution Speed'.",
+    "4. Axial Tilt Update: When the 'Axial Tilt Angle' slider is adjusted, smoothly animate the visual tilt of the Earth's axis (over ~100ms). The tilt must remain constant in direction relative to space as Earth revolves. This change dynamically affects which hemisphere receives more direct sunlight.",
+    "5. Season Determination: Based on the Earth's current position in its orbit and the 'Axial Tilt Angle', dynamically update the 'season-status' text. For example, when the Northern Hemisphere is tilted towards the Sun, display 'Summer N. Hemisphere'.",
+    "6. Interactive Feedback: All slider adjustments must result in immediate visual feedback (<100ms) on the corresponding movement (Earth's spin rate, orbital speed, or axis angle) and status updates."
+  ],
+  "text_instructions": "Explore how Earth's spin and tilt create day, night, and seasons!",
+  "misconceptions_to_address": [
+    "Confusing Earth's rotation (day/night) with its revolution (seasons).",
+    "Believing seasons are primarily caused by Earth's varying distance from the Sun."
+  ],
+  "safety_constraints": [
+    "Content is age-appropriate and simplified for CBSE Class 7 students.",
+    "No external links, advertisements, or third-party content within the simulation interface."
+  ]
+}
+```

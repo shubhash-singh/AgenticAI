@@ -1,0 +1,79 @@
+```json
+{
+  "learning_objectives": [
+    "Students will be able to identify hot and cold objects based on their temperature.",
+    "Students will understand that heat energy always flows from a hotter object to a colder object.",
+    "Students will recognize that heat flow continues until thermal equilibrium is reached between objects."
+  ],
+  "key_concepts": [
+    "Flow of Heat",
+    "Temperature",
+    "Hot and Cold Objects",
+    "Thermal Equilibrium"
+  ],
+  "visual_design": {
+    "main_display": "Two rectangular objects (Object A and Object B) placed side-by-side. Inside each object, small, energetic 'heat particles' (dots/circles) are visible. Arrows indicate the direction of heat flow between the objects. Object colors dynamically change based on temperature.",
+    "color_scheme": ["#FF4500", "#FFD700", "#ADD8E6", "#1E90FF", "#333333", "#F5F5F5"],
+    "animation_style": "smooth and continuous particle movement and color transitions",
+    "visual_metaphor": "Heat as energetic particles that move from areas of higher concentration/activity (hot) to areas of lower concentration/activity (cold), like water flowing downhill."
+  },
+  "variables_to_simulate": [
+    {
+      "name": "Object A Initial Temperature",
+      "control_type": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 80,
+      "unit": "°C",
+      "visual_effect": "Changes color of Object A from blue (0°C) to red (100°C), and alters the speed/density of 'heat particles' inside Object A (slower/sparse at low temp, faster/dense at high temp)."
+    },
+    {
+      "name": "Object B Initial Temperature",
+      "control_type": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 20,
+      "unit": "°C",
+      "visual_effect": "Changes color of Object B from blue (0°C) to red (100°C), and alters the speed/density of 'heat particles' inside Object B (slower/sparse at low temp, faster/dense at high temp)."
+    },
+    {
+      "name": "Flow Speed",
+      "control_type": "slider",
+      "min": 1,
+      "max": 10,
+      "default": 5,
+      "unit": "x (multiplier)",
+      "visual_effect": "Controls the animation speed of 'heat particles' flowing between Object A and Object B, and the rate at which their internal temperatures equalize."
+    }
+  ],
+  "layout_structure": {
+    "sections": [
+      {"id": "header", "height": "60px", "content": "<h1>Flow of Heat Simulation</h1><p>Observe heat moving!</p>"},
+      {"id": "visual-area", "height": "50vh", "content": "Interactive visualization: Objects A & B with internal particles and connecting flow arrows. Current temperatures displayed above each object."},
+      {"id": "controls", "height": "auto", "content": "Sliders for 'Object A Initial Temperature', 'Object B Initial Temperature', 'Flow Speed'. A 'Start/Pause' toggle button and a 'Reset' button (touch targets ≥ 48px, 8px spacing)."},
+      {"id": "info", "height": "auto", "content": "Current status: 'Heat flowing from A to B' or 'Thermal Equilibrium Reached'. Display of current average temperature of both objects."}
+    ],
+    "spacing": "16px between sections"
+  },
+  "simulation_logic": [
+    "Step 1: Initialize Object A and B visuals (color, particle activity) based on default 'Initial Temperature' slider values. No heat flow initially.",
+    "Step 2: When 'Object A Initial Temperature' or 'Object B Initial Temperature' sliders are moved, immediately update the respective object's color and internal particle animation. Update displayed initial temperatures.",
+    "Step 3: 'Start/Pause' Toggle Button: When 'Start' is pressed, initiate heat flow. If Object A's temperature > Object B's temperature, heat particles flow from A to B. If B > A, particles flow from B to A. If equal, no flow (display 'Thermal Equilibrium').",
+    "Step 4: Animate 'heat particles' flowing between objects (e.g., small orange dots moving along a path). The speed of these particles and the rate of temperature equalization are controlled by the 'Flow Speed' slider.",
+    "Step 5: Continuously update the internal temperatures of Object A (decreasing if hotter, increasing if colder) and Object B (vice-versa) at a rate proportional to the temperature difference and 'Flow Speed'. Update displayed current temperatures above objects.",
+    "Step 6: Objects' colors and internal particle activity dynamically adjust based on their *current* temperature during the flow.",
+    "Step 7: When the temperatures of Object A and Object B become approximately equal (e.g., within 0.5°C), the particle flow animation stops, and the status text updates to 'Thermal Equilibrium Reached'. The 'Start/Pause' button automatically changes to 'Reset'.",
+    "Step 8: 'Reset' Button: Resets both objects to their initial slider-set temperatures, stops any ongoing flow, and re-enables the 'Start' button."
+  ],
+  "text_instructions": "Set temperatures, start flow to observe heat transfer and equilibrium.",
+  "misconceptions_to_address": [
+    "Cold is a substance that flows from a cold object to a hot object.",
+    "Heat and temperature are the same thing.",
+    "Heat only flows when objects are in direct contact."
+  ],
+  "safety_constraints": [
+    "Age-appropriate content for CBSE Class 7 students.",
+    "No external links or resources are presented within the simulation itself."
+  ]
+}
+```

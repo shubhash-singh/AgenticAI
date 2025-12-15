@@ -1,0 +1,13 @@
+{
+  "main_display": "Two rectangular objects (Object A and Object B) placed side-by-side. Inside each object, small, energetic 'heat particles' (dots/circles) are visible. Arrows indicate the direction of heat flow between the objects. Object colors dynamically change based on temperature.",
+  "color_scheme": [
+    "#FF4500",
+    "#FFD700",
+    "#ADD8E6",
+    "#1E90FF",
+    "#333333",
+    "#F5F5F5"
+  ],
+  "animation_style": "smooth and continuous particle movement and color transitions",
+  "visual_metaphor": "Heat as energetic particles that move from areas of higher concentration/activity (hot) to areas of lower concentration/activity (cold), like water flowing downhill."
+}

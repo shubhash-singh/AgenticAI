@@ -1,0 +1,12 @@
+{
+  "main_display": "A side-view 2D scene with a circular light source on the left, a rectangular object in the middle, and a vertical rectangular 'screen' on the right. Light rays are depicted as straight lines originating from the source, passing or being blocked by the object, and hitting the screen.",
+  "color_scheme": [
+    "#1A5D8A",
+    "#FFC107",
+    "#4CAF50",
+    "#212121",
+    "#E0E0E0"
+  ],
+  "animation_style": "smooth",
+  "visual_metaphor": "A torch shining on a toy, casting its shadow on a wall."
+}
