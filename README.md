@@ -1,5 +1,6 @@
 # CBSE Simulation Generator
 
+An AI-powered educational simulation generator that creates interactive, mobile-first HTML simulations for CBSE Class 7 science concepts using multi-agent LLM orchestration.
 
 ## 🎯 Overview
 
