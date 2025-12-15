@@ -1,0 +1,81 @@
+```json
+{
+  "learning_objectives": [
+    "Students will be able to explain that heat always flows from a hotter object to a colder object.",
+    "Students will be able to identify that temperature difference is the driving force for heat flow.",
+    "Students will observe how objects reach thermal equilibrium through heat transfer."
+  ],
+  "key_concepts": [
+    "Flow of heat (hot to cold)",
+    "Temperature",
+    "Thermal equilibrium"
+  ],
+  "visual_design": {
+    "main_display": "Two rectangular blocks (Object A and Object B) placed side-by-side, connected by a narrow pipe. Object A is initially colored according to its temperature (red for hot), and Object B is colored according to its temperature (blue for cold). Small, glowing particles or wavy lines animate through the connecting pipe from the hotter block to the colder block. Temperature values are displayed numerically on each block. As heat flows, the colors of the blocks gradually change towards a common green/neutral color, and the numeric temperatures update.",
+    "color_scheme": ["#FF6B6B", "#4ECDC4", "#FFD166", "#EAEAEA", "#555555"],
+    "animation_style": "smooth, continuous particle flow with speed proportional to temperature difference and transfer rate.",
+    "visual_metaphor": "Heat is like water flowing downhill from a higher level (hotter) to a lower level (colder) until the levels equalize."
+  },
+  "variables_to_simulate": [
+    {
+      "name": "Object_A_Initial_Temperature",
+      "control_type": "slider",
+      "min": 50,
+      "max": 100,
+      "default": 80,
+      "unit": "°C",
+      "visual_effect": "Changes the initial color of Object A (from orange to bright red) and its displayed temperature. Affects the initial direction and rate of heat flow upon starting."
+    },
+    {
+      "name": "Object_B_Initial_Temperature",
+      "control_type": "slider",
+      "min": 0,
+      "max": 50,
+      "default": 20,
+      "unit": "°C",
+      "visual_effect": "Changes the initial color of Object B (from dark blue to light blue/green) and its displayed temperature. Affects the initial direction and rate of heat flow upon starting."
+    },
+    {
+      "name": "Heat_Transfer_Rate",
+      "control_type": "slider",
+      "min": 1,
+      "max": 10,
+      "default": 5,
+      "unit": "(speed)",
+      "visual_effect": "Adjusts the visual speed of heat particles flowing through the connecting pipe and the rate at which block temperatures change. (Higher value = faster flow/change)"
+    }
+  ],
+  "layout_structure": {
+    "sections": [
+      {"id": "header", "height": "60px", "content": "Title: Flow of Heat"},
+      {"id": "visual-area", "height": "50vh", "content": "Main visualization: Two blocks, connecting pipe, animated heat flow, temperature labels."},
+      {"id": "controls", "height": "auto", "content": "Sliders for Object A Temp, Object B Temp, Heat Transfer Rate; Start/Reset button."},
+      {"id": "info", "height": "auto", "content": "Current temperatures of Object A and Object B, dynamically updated."}
+    ],
+    "spacing": "16px between sections"
+  },
+  "simulation_logic": [
+    "Step 1: Initialize Object A (red, e.g., 80°C) and Object B (blue, e.g., 20°C) based on slider defaults. No heat flow.",
+    "Step 2: When 'Object_A_Initial_Temperature' or 'Object_B_Initial_Temperature' sliders are moved, update respective block colors and temperature labels instantly.",
+    "Step 3: When 'Heat_Transfer_Rate' slider is moved, adjust internal simulation speed multiplier instantly.",
+    "Step 4: When 'Start Flow' button is pressed:",
+    "   - Determine hotter and colder object based on current temperatures.",
+    "   - Animate small, glowing particles/waves flowing from the hotter block to the colder block through the pipe.",
+    "   - The speed of particle flow and temperature change rate are proportional to the current temperature difference AND 'Heat_Transfer_Rate' variable.",
+    "   - Gradually change the color of the hotter block towards cooler hues and the colder block towards warmer hues.",
+    "   - Update displayed temperatures of both blocks in real-time.",
+    "   - Flow continues and slows down as the temperature difference decreases, stopping when both blocks reach the same temperature (thermal equilibrium).",
+    "   - Button label changes to 'Stop Flow'.",
+    "Step 5: When 'Stop Flow' button is pressed, pause the animation and temperature updates. Button label changes to 'Resume Flow'.",
+    "Step 6: When 'Reset' button is pressed (or implicitly via 'Stop Flow' then 'Reset' if separate):",
+    "   - Revert blocks to their initial temperatures and colors as set by the sliders.",
+    "   - Clear any flowing particles/waves.",
+    "   - Button label reverts to 'Start Flow'."
+  ],
+  "text_instructions": "Set temperatures, adjust flow speed, then watch heat flow from hot to cold!",
+  "misconceptions_to_address": [
+    "Heat is the same as temperature.",
+    "Heat flows from colder objects to hotter objects."
+  ]
+}
+```

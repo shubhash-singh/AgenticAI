@@ -1,0 +1,12 @@
+{
+  "main_display": "Two rectangular blocks (Object A and Object B) placed side-by-side, connected by a narrow pipe. Object A is initially colored according to its temperature (red for hot), and Object B is colored according to its temperature (blue for cold). Small, glowing particles or wavy lines animate through the connecting pipe from the hotter block to the colder block. Temperature values are displayed numerically on each block. As heat flows, the colors of the blocks gradually change towards a common green/neutral color, and the numeric temperatures update.",
+  "color_scheme": [
+    "#FF6B6B",
+    "#4ECDC4",
+    "#FFD166",
+    "#EAEAEA",
+    "#555555"
+  ],
+  "animation_style": "smooth, continuous particle flow with speed proportional to temperature difference and transfer rate.",
+  "visual_metaphor": "Heat is like water flowing downhill from a higher level (hotter) to a lower level (colder) until the levels equalize."
+}

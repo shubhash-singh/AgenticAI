@@ -1,0 +1,97 @@
+```json
+{
+  "learning_objectives": [
+    "Students will be able to identify the direction of heat flow between objects at different temperatures.",
+    "Students will understand that heat flows from a hotter object to a colder object.",
+    "Students will recognize that heat flow continues until thermal equilibrium is reached."
+  ],
+  "key_concepts": [
+    "Flow of heat",
+    "Hot and cold objects (temperature difference)",
+    "Thermal equilibrium"
+  ],
+  "visual_design": {
+    "main_display": "Two identical rectangular 'containers' (Object A and Object B) side-by-side, visually connected by a transparent 'tube'. Each container's fill color represents its temperature (gradient from deep blue for cold to bright red for hot). Small, glowing 'heat particles' (orange dots) will animate movement between containers during heat flow. A directional arrow will appear during flow.",
+    "color_scheme": ["#FF0000", "#FF6F00", "#FFFF00", "#00FFFF", "#0000FF", "#E0E0E0"],
+    "animation_style": "smooth, continuous particle flow and color gradient transition",
+    "visual_metaphor": "Water flowing between two connected tanks at different levels, where 'water level' represents 'heat energy concentration'."
+  },
+  "variables_to_simulate": [
+    {
+      "name": "Object A Initial Temperature",
+      "control_type": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 70,
+      "unit": "arbitrary units",
+      "visual_effect": "Changes Object A's initial fill color (deep blue @0 to bright red @100). Updates Object A's displayed temperature value."
+    },
+    {
+      "name": "Object B Initial Temperature",
+      "control_type": "slider",
+      "min": 0,
+      "max": 100,
+      "default": 30,
+      "unit": "arbitrary units",
+      "visual_effect": "Changes Object B's initial fill color (deep blue @0 to bright red @100). Updates Object B's displayed temperature value."
+    },
+    {
+      "name": "Start Heat Flow",
+      "control_type": "button",
+      "min": null,
+      "max": null,
+      "default": null,
+      "unit": null,
+      "visual_effect": "Initiates animation of heat particle flow, directional arrow, and smooth color changes of both objects until equilibrium. Displays 'Thermal Equilibrium Reached!' text."
+    }
+  ],
+  "layout_structure": {
+    "sections": [
+      {
+        "id": "header",
+        "height": "60px",
+        "content": "<h1>Flow of Heat Simulation</h1>"
+      },
+      {
+        "id": "visual-area",
+        "height": "50vh",
+        "content": "Interactive display with Object A, Object B, connection, flowing particles, directional arrow, and temperature labels."
+      },
+      {
+        "id": "controls",
+        "height": "auto",
+        "content": "Sliders for Object A and B temperatures, and 'Start Heat Flow' button. Each touch target >= 48px, 8px spacing."
+      },
+      {
+        "id": "info",
+        "height": "auto",
+        "content": "Current temperature readings for Object A and B, status messages like 'Thermal Equilibrium Reached!'"
+      }
+    ],
+    "spacing": "16px between sections"
+  },
+  "simulation_logic": [
+    "Step 1: Initialize Object A and B with default temperatures (colors). Display numerical temperatures.",
+    "Step 2: When 'Object A Initial Temperature' slider moves, instantly update Object A's fill color and displayed numerical temperature (response < 100ms).",
+    "Step 3: When 'Object B Initial Temperature' slider moves, instantly update Object B's fill color and displayed numerical temperature (response < 100ms).",
+    "Step 4: When 'Start Heat Flow' button is pressed:",
+    "   a. Determine the hotter and colder object.",
+    "   b. Animate a directional arrow from the hotter to the colder object.",
+    "   c. Animate small 'heat particles' (orange dots) moving from the hotter object to the colder object through the connecting tube.",
+    "   d. Continuously and smoothly transition the fill colors of both objects towards a common equilibrium color.",
+    "   e. Continuously update numerical temperature values of both objects as they approach equilibrium.",
+    "   f. The animation stops, and flow ceases when both objects reach the same temperature (thermal equilibrium).",
+    "   g. Display 'Thermal Equilibrium Reached!' in the info section."
+  ],
+  "text_instructions": "Set temperatures for two objects, then watch heat flow!",
+  "misconceptions_to_address": [
+    "Heat flows from colder to hotter objects.",
+    "Heat and temperature are the same thing.",
+    "Heat stops flowing immediately after objects touch."
+  ],
+  "safety_constraints": [
+    "Content is age-appropriate for CBSE Class 7 students.",
+    "No external links or distracting elements during the core simulation."
+  ]
+}
+```

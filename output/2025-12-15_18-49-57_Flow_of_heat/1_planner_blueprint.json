@@ -1,0 +1,13 @@
+{
+  "main_display": "Two identical rectangular 'containers' (Object A and Object B) side-by-side, visually connected by a transparent 'tube'. Each container's fill color represents its temperature (gradient from deep blue for cold to bright red for hot). Small, glowing 'heat particles' (orange dots) will animate movement between containers during heat flow. A directional arrow will appear during flow.",
+  "color_scheme": [
+    "#FF0000",
+    "#FF6F00",
+    "#FFFF00",
+    "#00FFFF",
+    "#0000FF",
+    "#E0E0E0"
+  ],
+  "animation_style": "smooth, continuous particle flow and color gradient transition",
+  "visual_metaphor": "Water flowing between two connected tanks at different levels, where 'water level' represents 'heat energy concentration'."
+}

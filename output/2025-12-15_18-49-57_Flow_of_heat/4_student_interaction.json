@@ -1,0 +1,50 @@
+{
+  "intro": "Welcome to our heat exploration! Observe how heat moves between the two objects. Try adjusting the temperatures to see what happens.",
+  "questions": [
+    {
+      "question": "When Object A is hot (red) and Object B is cold (blue), what do you observe about the movement of heat particles?",
+      "type": "mcq",
+      "options": [
+        "A) Heat particles move from Object B to Object A.",
+        "B) Heat particles move from Object A to Object B.",
+        "C) No heat particles move.",
+        "D) Heat particles move equally in both directions."
+      ],
+      "correct_index": 1,
+      "hint": "Pay close attention to the color of the objects and the direction the orange particles are flowing.",
+      "explanation": "Heat always flows from a hotter object to a colder object. In the simulation, the hotter object (Object A, red) transfers heat energy to the colder object (Object B, blue)."
+    },
+    {
+      "question": "What happens to the rate of heat flow if you make Object A much hotter and Object B much colder?",
+      "type": "mcq",
+      "options": [
+        "A) The heat flow slows down.",
+        "B) The heat flow stops completely.",
+        "C) The heat flow speeds up significantly.",
+        "D) The direction of heat flow reverses."
+      ],
+      "correct_index": 2,
+      "hint": "Try setting the temperature sliders to their extreme values and observe the animation.",
+      "explanation": "The greater the difference in temperature between two objects, the faster heat will flow between them. Making one object very hot and the other very cold creates a larger temperature difference, leading to a faster heat transfer."
+    },
+    {
+      "question": "Which real-life situation best demonstrates the flow of heat from a hotter object to a colder object?",
+      "type": "mcq",
+      "options": [
+        "A) An ice pack cooling your forehead.",
+        "B) Sunlight warming your skin.",
+        "C) A hot air balloon rising.",
+        "D) A refrigerator keeping food cold."
+      ],
+      "correct_index": 0,
+      "hint": "Think about which object is hotter and which is colder in each scenario.",
+      "explanation": "When you put an ice pack on your forehead, the hotter object (your forehead) transfers heat energy to the colder object (the ice pack). Options B and C involve radiation and convection respectively, and while they involve heat transfer, option A is the most direct example of heat flowing from a warmer to a cooler object in the context of the simulation's primary principle."
+    }
+  ],
+  "followups": [
+    "Try setting both objects to the same temperature. What do you notice now?",
+    "Can you make the heat flow stop completely by adjusting the temperatures?",
+    "Challenge: Can you make the heat flow in the opposite direction of what you saw in the first question?"
+  ],
+  "summary": "We learned that heat always moves from hotter to colder objects. The bigger the temperature difference, the faster the heat flows. This fundamental principle helps us understand many everyday phenomena!"
+}

@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flow of Heat - Interactive Simulation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f9f9f9;
+        }
+        #app {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 16px;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+        }
+        header {
+            padding: 16px 0;
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        h1 { font-size: 24px; margin-bottom: 8px; color: #2c3e50; }
+        .subtitle { font-size: 14px; color: #7f8c8d; }
+        
+        #visual-area {
+            position: relative;
+            height: 50vh;
+            min-height: 300px; /* Minimum height for visual clarity */
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin: 16px 0;
+            display: flex; /* Use flexbox for centering */
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+        }
+        
+        #controls {
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            margin: 16px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .control-group {
+            margin-bottom: 16px;
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            color: #34495e;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 44px; /* Ensure touch target */
+            -webkit-appearance: none;
+            background: #ecf0f1;
+            border-radius: 5px;
+            outline: none;
+            transition: opacity .2s;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            border: 2px solid #fff;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            border: 2px solid #fff;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+
+        button {
+            width: 100%;
+            min-height: 48px; /* Ensure touch target */
+            padding: 12px;
+            font-size: 17px;
+            background: #28a745; /* Green for start */
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.3s ease, transform 0.2s ease;
+            font-weight: 600;
+        }
+        
+        button:hover:not(:disabled) {
+            background: #218838;
+        }
+
+        button:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        #info {
+            padding: 16px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            margin: 16px 0;
+            font-size: 16px;
+            color: #2196f3;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            font-weight: 500;
+        }
+
+        .status-message {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #d32f2f; /* Red for status message */
+        }
+
+        /* SVG specific styles */
+        #simulation_svg {
+            width: 90%; /* Responsive width */
+            max-width: 400px;
+            height: auto;
+            display: block; /* Remove extra space below SVG */
+        }
+
+        .object-container {
+            transition: fill 0.5s ease-out; /* Smooth color transition for objects */
+            stroke: #333;
+            stroke-width: 2;
+        }
+
+        .object-label, .temperature-label {
+            fill: #333;
+        }
+        .temperature-label {
+            font-weight: bold;
+        }
+        
+        #flow_arrow {
+            transition: opacity 0.3s ease;
+            stroke: #ff9800; /* Orange arrow */
+            stroke-width: 4;
+            fill: none;
+            marker-end: url(#arrowhead); /* Add arrowhead */
+            opacity: 0; /* Hidden by default */
+        }
+
+        .heat-particle {
+            fill: #ff6f00; /* Orange glowing particles */
+            stroke: #fff;
+            stroke-width: 0.5;
+            transition: opacity 0.3s ease;
+            opacity: 0; /* Hidden by default */
+        }
+
+        /* Responsive adjustments for smaller screens, though max-width handles most */
+        @media (max-width: 400px) {
+            h1 { font-size: 20px; }
+            .subtitle { font-size: 12px; }
+            #app { padding: 8px; }
+            #visual-area { min-height: 250px; }
+            .control-label { font-size: 14px; }
+            button { font-size: 15px; padding: 10px; }
+            #info { font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Flow of Heat Simulation</h1>
+            <p class="subtitle">Set temperatures for two objects, then watch heat flow!</p>
+        </header>
+        
+        <div id="visual-area">
+            <svg id="simulation_svg" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#ff9800" />
+                    </marker>
+                </defs>
+
+                <!-- Object A -->
+                <rect id="objectA_rect" class="object-container" x="50" y="50" width="100" height="100" fill="#FF0000" rx="10" ry="10" />
+                <text x="100" y="40" text-anchor="middle" font-size="16" class="object-label">Object A</text>
+                <text id="tempA_display_svg" x="100" y="120" text-anchor="middle" font-size="20" class="temperature-label">70</text>
+
+                <!-- Connection Tube -->
+                <rect id="connection_rect" x="150" y="70" width="100" height="60" fill="rgba(0,0,0,0.1)" rx="5" ry="5" stroke="#ccc" stroke-width="1" />
+                
+                <!-- Object B -->
+                <rect id="objectB_rect" class="object-container" x="250" y="50" width="100" height="100" fill="#0000FF" rx="10" ry="10" />
+                <text x="300" y="40" text-anchor="middle" font-size="16" class="object-label">Object B</text>
+                <text id="tempB_display_svg" x="300" y="120" text-anchor="middle" font-size="20" class="temperature-label">30</text>
+                
+                <!-- Directional Arrow -->
+                <path id="flow_arrow" d="M160 100 L240 100" visibility="hidden"/> 
+                <!-- Heat Particles Container -->
+                <g id="heat_particles_container" transform="translate(150, 100)">
+                    <!-- Particles will be dynamically generated or moved here -->
+                </g>
+            </svg>
+        </div>
+        
+        <div id="controls">
+            <div class="control-group">
+                <label for="sliderA" class="control-label">
+                    Object A Initial Temperature:
+                    <span id="valueA_display">70 arbitrary units</span>
+                </label>
+                <input type="range" id="sliderA" min="0" max="100" value="70">
+            </div>
+
+            <div class="control-group">
+                <label for="sliderB" class="control-label">
+                    Object B Initial Temperature:
+                    <span id="valueB_display">30 arbitrary units</span>
+                </label>
+                <input type="range" id="sliderB" min="0" max="100" value="30">
+            </div>
+
+            <button id="start_flow_button">Start Heat Flow</button>
+        </div>
+        
+        <div id="info">
+            <p>Current Temperature A: <span id="info_tempA">70</span> arbitrary units</p>
+            <p>Current Temperature B: <span id="info_tempB">30</span> arbitrary units</p>
+            <div id="status_message" class="status-message" style="display: none;"></div>
+        </div>
+    </div>
+    
+    <script>
+        const sliderA = document.getElementById('sliderA');
+        const sliderB = document.getElementById('sliderB');
+        const valueA_display = document.getElementById('valueA_display');
+        const valueB_display = document.getElementById('valueB_display');
+        const startFlowButton = document.getElementById('start_flow_button');
+
+        const objectA_rect = document.getElementById('objectA_rect');
+        const objectB_rect = document.getElementById('objectB_rect');
+        const tempA_display_svg = document.getElementById('tempA_display_svg');
+        const tempB_display_svg = document.getElementById('tempB_display_svg');
+        const flowArrow = document.getElementById('flow_arrow');
+        const heatParticlesContainer = document.getElementById('heat_particles_container');
+
+        const info_tempA = document.getElementById('info_tempA');
+        const info_tempB = document.getElementById('info_tempB');
+        const statusMessage = document.getElementById('status_message');
+
+        const TEMP_MIN = 0;
+        const TEMP_MAX = 100;
+        const HEAT_TRANSFER_FACTOR = 0.05; // How fast temperatures equalize per animation frame
+        const EQUILIBRIUM_THRESHOLD = 0.1; // When temps are considered equal
+
+        let currentTempA = parseInt(sliderA.value);
+        let currentTempB = parseInt(sliderB.value);
+        let animationFrameId = null;
+        let isFlowing = false;
+
+        // Color gradient from deep blue (0) to bright red (100) using HSL for smoother transitions
+        function getColorForTemperature(temp) {
+            const hue = 240 - (temp / TEMP_MAX) * 240; // 240 (blue) -> 0 (red)
+            // Adjust saturation/lightness to make colors more vibrant and distinguishable
+            const saturation = 100; // Full saturation
+            const lightness = 35 + (temp / TEMP_MAX) * 30; // 35% to 65% lightness for visibility
+            return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+        }
+
+        // Initialize display and colors
+        function initializeSimulation() {
+            currentTempA = parseInt(sliderA.value);
+            currentTempB = parseInt(sliderB.value);
+            updateObjectVisuals(objectA_rect, tempA_display_svg, currentTempA, valueA_display, info_tempA);
+            updateObjectVisuals(objectB_rect, tempB_display_svg, currentTempB, valueB_display, info_tempB);
+            statusMessage.style.display = 'none';
+            statusMessage.textContent = '';
+            flowArrow.style.opacity = '0'; // Use opacity for smooth hide/show
+            flowArrow.setAttribute('visibility', 'hidden');
+            clearHeatParticles();
+            enableControls();
+        }
+
+        function updateObjectVisuals(rectElement, svgTextElement, temp, sliderValueDisplay, infoTextElement) {
+            const color = getColorForTemperature(temp);
+            rectElement.setAttribute('fill', color);
+            svgTextElement.textContent = Math.round(temp);
+            sliderValueDisplay.textContent = `${Math.round(temp)} arbitrary units`;
+            infoTextElement.textContent = Math.round(temp);
+        }
+
+        function clearHeatParticles() {
+            while (heatParticlesContainer.firstChild) {
+                heatParticlesContainer.removeChild(heatParticlesContainer.firstChild);
+            }
+            particles = []; // Clear array reference
+        }
+
+        // Particle generation and movement
+        const PARTICLE_COUNT = 15;
+        const PARTICLE_SIZE = 4;
+        const PARTICLE_SPEED = 2; // Pixels per frame
+        const PARTICLE_TRAVEL_DISTANCE = 100; // SVG units, width of connection rect
+        const TUBE_HEIGHT = 60; // Height of the connection tube
+
+        let particles = [];
+        function createHeatParticles() {
+            clearHeatParticles();
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                const particle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                particle.setAttribute('r', PARTICLE_SIZE);
+                particle.setAttribute('fill', '#ff6f00'); // Orange
+                particle.setAttribute('stroke', '#fff');
+                particle.setAttribute('stroke-width', '0.5');
+                particle.setAttribute('class', 'heat-particle');
+                
+                // Position particles initially randomly within the tube area, relative to heatParticlesContainer's transform (150, 100)
+                particle.dataset.currentX = Math.random() * PARTICLE_TRAVEL_DISTANCE;
+                particle.dataset.currentY = (Math.random() - 0.5) * (TUBE_HEIGHT - PARTICLE_SIZE * 2); // Random Y within tube height
+                particle.dataset.speed = PARTICLE_SPEED * (0.8 + Math.random() * 0.4); // Randomize speed slightly
+                particle.style.transform = `translate(${particle.dataset.currentX}px, ${particle.dataset.currentY}px)`;
+                heatParticlesContainer.appendChild(particle);
+                particles.push(particle);
+            }
+        }
+
+        function animateParticles(fromLeft) {
+            particles.forEach(particle => {
+                let currentX = parseFloat(particle.dataset.currentX);
+                let currentY = parseFloat(particle.dataset.currentY);
+                
+                if (fromLeft) {
+                    currentX += parseFloat(particle.dataset.speed);
+                    if (currentX > PARTICLE_TRAVEL_DISTANCE) {
+                        currentX = 0; // Loop back to start of tube
+                        currentY = (Math.random() - 0.5) * (TUBE_HEIGHT - PARTICLE_SIZE * 2); // Reset Y for new loop
+                    }
+                } else { // Right to Left
+                    currentX -= parseFloat(particle.dataset.speed);
+                    if (currentX < 0) {
+                        currentX = PARTICLE_TRAVEL_DISTANCE; // Loop back to end of tube
+                        currentY = (Math.random() - 0.5) * (TUBE_HEIGHT - PARTICLE_SIZE * 2); // Reset Y for new loop
+                    }
+                }
+                particle.dataset.currentX = currentX; // Update currentX for next frame
+                particle.dataset.currentY = currentY; // Update currentY for next frame
+                particle.style.transform = `translate(${currentX}px, ${currentY}px)`;
+                particle.style.opacity = '1';
+            });
+        }
+
+        function hideParticles() {
+            particles.forEach(particle => {
+                particle.style.opacity = '0';
+                // Optionally reset positions or let them fade out
+            });
+        }
+
+        function disableControls() {
+            sliderA.disabled = true;
+            sliderB.disabled = true;
+            startFlowButton.disabled = true;
+        }
+
+        function enableControls() {
+            sliderA.disabled = false;
+            sliderB.disabled = false;
+            startFlowButton.disabled = false;
+        }
+
+        let initialTempA, initialTempB; // Store initial temps for consistent particle direction
+
+        // Animation loop for heat flow
+        function heatFlowAnimation() {
+            if (!isFlowing) {
+                cancelAnimationFrame(animationFrameId);
+                return;
+            }
+
+            const equilibriumTemp = (initialTempA + initialTempB) / 2; // Equilibrium is based on initial average
+            let tempDifference = Math.abs(currentTempA - currentTempB);
+
+            if (tempDifference < EQUILIBRIUM_THRESHOLD) {
+                // Reached equilibrium
+                currentTempA = equilibriumTemp;
+                currentTempB = equilibriumTemp;
+                updateObjectVisuals(objectA_rect, tempA_display_svg, currentTempA, valueA_display, info_tempA);
+                updateObjectVisuals(objectB_rect, tempB_display_svg, currentTempB, valueB_display, info_tempB);
+                statusMessage.textContent = 'Thermal Equilibrium Reached!';
+                statusMessage.style.display = 'block';
+                flowArrow.style.opacity = '0';
+                flowArrow.setAttribute('visibility', 'hidden');
+                hideParticles();
+                isFlowing = false;
+                cancelAnimationFrame(animationFrameId);
+                enableControls();
+                return;
+            }
+
+            let deltaA = (equilibriumTemp - currentTempA) * HEAT_TRANSFER_FACTOR;
+            let deltaB = (equilibriumTemp - currentTempB) * HEAT_TRANSFER_FACTOR; // Should be same magnitude as deltaA if objects are identical
+
+            currentTempA += deltaA;
+            currentTempB += deltaB;
+
+            // Ensure temps don't overshoot or go beyond min/max
+            currentTempA = Math.max(TEMP_MIN, Math.min(TEMP_MAX, currentTempA));
+            currentTempB = Math.max(TEMP_MIN, Math.min(TEMP_MAX, currentTempB));
+
+            updateObjectVisuals(objectA_rect, tempA_display_svg, currentTempA, valueA_display, info_tempA);
+            updateObjectVisuals(objectB_rect, tempB_display_svg, currentTempB, valueB_display, info_tempB);
+
+            // Determine flow direction for particles and arrow based on initial temps
+            const fromLeft = initialTempA > initialTempB;
+            
+            // Update arrow direction
+            if (fromLeft) {
+                flowArrow.setAttribute('d', 'M160 100 L240 100'); // Left to Right
+                flowArrow.setAttribute('marker-end', 'url(#arrowhead)');
+            } else {
+                flowArrow.setAttribute('d', 'M240 100 L160 100'); // Right to Left
+                flowArrow.setAttribute('marker-end', 'url(#arrowhead)');
+            }
+            flowArrow.setAttribute('visibility', 'visible');
+            flowArrow.style.opacity = '1';
+
+            animateParticles(fromLeft);
+
+            animationFrameId = requestAnimationFrame(heatFlowAnimation);
+        }
+
+        // Event Listeners
+        sliderA.addEventListener('input', (e) => {
+            currentTempA = parseInt(e.target.value);
+            updateObjectVisuals(objectA_rect, tempA_display_svg, currentTempA, valueA_display, info_tempA);
+            statusMessage.style.display = 'none'; // Clear status if temps change before flow
+            if (isFlowing) { // If flow is active, stop it to allow new configuration
+                isFlowing = false;
+                cancelAnimationFrame(animationFrameId);
+                hideParticles();
+                flowArrow.style.opacity = '0';
+                flowArrow.setAttribute('visibility', 'hidden');
+                enableControls();
+            }
+        });
+
+        sliderB.addEventListener('input', (e) => {
+            currentTempB = parseInt(e.target.value);
+            updateObjectVisuals(objectB_rect, tempB_display_svg, currentTempB, valueB_display, info_tempB);
+            statusMessage.style.display = 'none'; // Clear status if temps change before flow
+            if (isFlowing) { // If flow is active, stop it to allow new configuration
+                isFlowing = false;
+                cancelAnimationFrame(animationFrameId);
+                hideParticles();
+                flowArrow.style.opacity = '0';
+                flowArrow.setAttribute('visibility', 'hidden');
+                enableControls();
+            }
+        });
+
+        startFlowButton.addEventListener('click', () => {
+            if (isFlowing) return; // Prevent multiple clicks during flow
+
+            initialTempA = parseInt(sliderA.value); // Capture initial temperatures for direction logic
+            initialTempB = parseInt(sliderB.value);
+
+            // If equilibrium already reached, reset to new slider values for a fresh run
+            if (Math.abs(currentTempA - currentTempB) < EQUILIBRIUM_THRESHOLD) {
+                 // This ensures the current temp is reset to the slider value if it was already at equilibrium 
+                currentTempA = initialTempA; 
+                currentTempB = initialTempB;
+                updateObjectVisuals(objectA_rect, tempA_display_svg, currentTempA, valueA_display, info_tempA);
+                updateObjectVisuals(objectB_rect, tempB_display_svg, currentTempB, valueB_display, info_tempB);
+            }
+
+            if (initialTempA === initialTempB) {
+                statusMessage.textContent = 'Objects are already at the same temperature. No heat flow.';
+                statusMessage.style.display = 'block';
+                return;
+            }
+
+            disableControls();
+            isFlowing = true;
+            statusMessage.style.display = 'none';
+            createHeatParticles(); // Create particles before starting animation
+            animationFrameId = requestAnimationFrame(heatFlowAnimation);
+        });
+
+        // Initial setup
+        initializeSimulation();
+    </script>
+</body>
+</html>
