@@ -26,19 +26,21 @@ def make_chain(prompt_template: str, llm_instance):
 def build_chains():
     """Build the three agent chains"""
     
-    # LLM instances
+    # Planner LLM instances
     planner_llm = ChatGoogleGenerativeAI(
         model="gemini-2.5-flash",
         temperature=0.3,
         api_key=os.getenv("GOOGLE_API_KEY")
     )
-
+    
+	# Creator LLM instance
     creator_llm = ChatGoogleGenerativeAI(
         model="gemini-2.5-flash",
         temperature=0,
         api_key=os.getenv("GOOGLE_API_KEY"),
     )
 
+	# Reviewer LLM instance
     reviewer_llm = ChatGoogleGenerativeAI(
         model="gemini-2.5-flash-lite",
         temperature=0.1,

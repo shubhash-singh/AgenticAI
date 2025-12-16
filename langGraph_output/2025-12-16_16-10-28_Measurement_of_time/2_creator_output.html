@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time & Pendulums - Interactive Simulation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            background: #f9f9f9;
+        }
+        #app {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 16px;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        header {
+            padding: 16px 0;
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        h1 { font-size: 24px; margin-bottom: 8px; color: #333333; }
+        .subtitle { font-size: 14px; color: #666; }
+
+        #visual-area {
+            position: relative;
+            height: 50vh;
+            min-height: 300px;
+            background: #F8F8F8;
+            border-radius: 8px;
+            margin: 16px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+        }
+
+        #controls {
+            padding: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            margin: 16px 0;
+            border: 1px solid #e0e0e0;
+        }
+
+        .control-group {
+            margin: 16px 0;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 44px;
+            cursor: pointer;
+            -webkit-appearance: none;
+            background: #ddd;
+            border-radius: 5px;
+            outline: none;
+            transition: background 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #3498DB;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #3498DB;
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            min-height: 48px;
+            padding: 12px;
+            font-size: 16px;
+            background: #2ECC71; /* Green for Start */
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 8px 0;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        #info {
+            padding: 16px;
+            background: #e3f2fd; /* Light blue */
+            border-radius: 8px;
+            margin: 16px 0;
+            border: 1px solid #c1e4fa;
+        }
+
+        #info h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #333333;
+        }
+        #info p {
+            font-size: 16px;
+            margin-bottom: 4px;
+            color: #333333;
+        }
+        #pendulumBob {
+            fill: #3498DB; /* Blue bob */
+            transition: fill 0.1s ease-in-out; /* For the tick feedback */
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Time & Pendulums</h1>
+            <p class="subtitle">Explore how pendulums measure time!</p>
+        </header>
+
+        <div id="visual-area">
+            <svg id="pendulum-svg" viewBox="0 0 400 400" style="width: 90%; max-width: 400px; height: auto;">
+                <!-- Pivot Point -->
+                <circle id="pendulumPivot" cx="200" cy="50" r="5" fill="#333333"></circle>
+                <!-- Pendulum String -->
+                <line id="pendulumString" x1="200" y1="50" x2="200" y2="175" stroke="#333333" stroke-width="2"></line>
+                <!-- Pendulum Bob -->
+                <circle id="pendulumBob" cx="200" cy="175" r="15"></circle>
+            </svg>
+        </div>
+
+        <div id="controls">
+            <div class="control-group">
+                <label for="lengthSlider" class="control-label">
+                    Pendulum Length: <span id="lengthValue">5.0 arbitrary units</span>
+                </label>
+                <input type="range" id="lengthSlider" min="1" max="10" value="5" step="0.1">
+            </div>
+            <div class="control-group">
+                <label for="oscCountSlider" class="control-label">
+                    Oscillations to Observe: <span id="oscCountValue">20 oscillations</span>
+                </label>
+                <input type="range" id="oscCountSlider" min="5" max="50" value="20" step="1">
+            </div>
+            <button id="startResetButton">Start</button>
+        </div>
+
+        <div id="info">
+            <h3>Results:</h3>
+            <p>Total Time: <span id="totalTime">0.0</span> seconds</p>
+            <p>Completed Oscillations: <span id="completedOscillations">0</span></p>
+            <p>Time Period (T): <span id="timePeriod">N/A</span></p>
+            <p>Projected Time Period: <span id="projectedTimePeriod">N/A</span></p>
+            <p style="font-size: 14px; margin-top: 10px; color: #666;">Adjust pendulum length and oscillations. Press 'Start' to measure time period!</p>
+        </div>
+    </div>
+
+    <script>
+        // Constants & DOM Elements
+        const visualArea = document.getElementById('visual-area');
+
+        const lengthSlider = document.getElementById('lengthSlider');
+        const lengthValueDisplay = document.getElementById('lengthValue');
+        const oscCountSlider = document.getElementById('oscCountSlider');
+        const oscCountValueDisplay = document.getElementById('oscCountValue');
+        const startResetButton = document.getElementById('startResetButton');
+
+        const totalTimeDisplay = document.getElementById('totalTime');
+        const completedOscillationsDisplay = document.getElementById('completedOscillations');
+        const timePeriodDisplay = document.getElementById('timePeriod');
+        const projectedTimePeriodDisplay = document.getElementById('projectedTimePeriod');
+
+        // SVG Elements
+        const pendulumString = document.getElementById('pendulumString');
+        const pendulumBob = document.getElementById('pendulumBob');
+
+        // Simulation state variables
+        let currentPendulumLengthRaw = parseFloat(lengthSlider.value); // Raw value from slider (1-10)
+        let currentPendulumLengthPx = currentPendulumLengthRaw * 25; // Mapped to pixels for SVG (25px-250px)
+        let targetOscillations = parseInt(oscCountSlider.value);
+        let simulationRunning = false;
+        let animationFrameId = null;
+
+        let animationStartTime = 0; // Timestamp when 'Start' was pressed
+        let totalElapsedTime = 0; // Cumulative time in seconds
+        let completedOscillations = 0;
+
+        let theoreticalPendulumPeriod = 0; // T = 2π√(L/g_eff)
+        // Arbitrary value chosen such that L=125px (raw 5) gives T=2s (for observation convenience)
+        const G_EFFECTIVE = 125 * Math.PI * Math.PI / (2 * 2); // 2 = 2PI * sqrt(125/G_EFF) -> G_EFF = 125 * PI^2
+        const MAX_ANGLE = Math.PI / 6; // 30 degrees amplitude, represents a 'small angle swing'
+
+        // Functions
+        function calculateTheoreticalPeriod(lengthPx) {
+            // T = 2π * sqrt(L_px / g_eff)
+            if (lengthPx <= 0) return 0; // Prevent division by zero or negative sqrt
+            return 2 * Math.PI * Math.sqrt(lengthPx / G_EFFECTIVE);
+        }
+
+        function updatePendulumVisual(lengthPx, angle) {
+            // Update SVG string and bob position based on length and angle
+            // SVG pivot is at (200, 50) in a 400x400 viewBox
+            const pivotX = 200;
+            const pivotY = 50;
+
+            const bobX = pivotX + lengthPx * Math.sin(angle);
+            const bobY = pivotY + lengthPx * Math.cos(angle);
+
+            pendulumString.setAttribute('x1', pivotX);
+            pendulumString.setAttribute('y1', pivotY);
+            pendulumString.setAttribute('x2', bobX);
+            pendulumString.setAttribute('y2', bobY);
+
+            pendulumBob.setAttribute('cx', bobX);
+            pendulumBob.setAttribute('cy', bobY);
+        }
+
+        function animatePendulum(timestamp) {
+            try {
+                if (!animationStartTime) {
+                    animationStartTime = timestamp;
+                }
+
+                totalElapsedTime = (timestamp - animationStartTime) / 1000; // in seconds
+
+                const t = totalElapsedTime;
+                const T = theoreticalPendulumPeriod; // Use the current theoretical period for animation speed
+
+                if (T <= 0 || isNaN(T)) { // Safety check for invalid period
+                    stopSimulation(false);
+                    return;
+                }
+
+                // Angle calculation based on time and period
+                // Pendulum starts from right extreme (MAX_ANGLE) using Math.cos
+                const angle = MAX_ANGLE * Math.cos((2 * Math.PI * t) / T);
+                updatePendulumVisual(currentPendulumLengthPx, angle);
+
+                // Oscillation counting: A full oscillation is when (t / T) increments by 1.
+                const newCompletedOscillations = Math.floor(t / T);
+                if (newCompletedOscillations > completedOscillations && completedOscillations < targetOscillations) {
+                    completedOscillations = newCompletedOscillations;
+                    completedOscillationsDisplay.textContent = completedOscillations;
+
+                    // Subtle tick feedback (bob color change)
+                    pendulumBob.style.fill = '#E74C3C'; // temporary highlight (red)
+                    setTimeout(() => {
+                        if (simulationRunning) { // Only revert if simulation is still active
+                            pendulumBob.style.fill = '#3498DB'; // revert to blue
+                        }
+                    }, 100); // Flash for 100ms
+                }
+
+                // Update real-time total time
+                totalTimeDisplay.textContent = totalElapsedTime.toFixed(1);
+
+                if (completedOscillations < targetOscillations) {
+                    animationFrameId = requestAnimationFrame(animatePendulum);
+                } else {
+                    stopSimulation(true); // Simulation finished naturally
+                }
+            } catch (error) {
+                console.error("Animation error:", error);
+                stopSimulation(false); // Stop simulation on error
+            }
+        }
+
+        function startSimulation() {
+            simulationRunning = true;
+            startResetButton.textContent = 'Reset';
+            startResetButton.style.backgroundColor = '#E74C3C'; // Red
+            lengthSlider.disabled = true;
+            oscCountSlider.disabled = true;
+
+            // Reset values for a new run
+            animationStartTime = 0;
+            totalElapsedTime = 0;
+            completedOscillations = 0;
+            totalTimeDisplay.textContent = '0.0';
+            completedOscillationsDisplay.textContent = '0';
+            timePeriodDisplay.textContent = 'N/A';
+            projectedTimePeriodDisplay.textContent = 'N/A'; // Hide projected during run
+
+            // Start animation
+            animationFrameId = requestAnimationFrame(animatePendulum);
+        }
+
+        function stopSimulation(finishedNaturally = false) {
+            simulationRunning = false;
+            startResetButton.textContent = 'Start';
+            startResetButton.style.backgroundColor = '#2ECC71'; // Green
+            lengthSlider.disabled = false;
+            oscCountSlider.disabled = false;
+
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+
+            if (finishedNaturally && completedOscillations > 0) {
+                // Calculate and display final results
+                const finalTimePeriod = totalElapsedTime / completedOscillations;
+                timePeriodDisplay.textContent = finalTimePeriod.toFixed(1) + ' seconds/oscillation';
+            } else {
+                // Reset everything if stopped manually or finished with 0 oscillations
+                totalElapsedTime = 0;
+                completedOscillations = 0;
+                totalTimeDisplay.textContent = '0.0';
+                completedOscillationsDisplay.textContent = '0';
+                timePeriodDisplay.textContent = 'N/A';
+            }
+            // Always re-display projected after stopping
+            updateProjectedTimePeriod();
+            // Ensure bob color is reset if simulation stopped during highlight
+            pendulumBob.style.fill = '#3498DB';
+        }
+
+        function updateProjectedTimePeriod() {
+            if (!simulationRunning) {
+                theoreticalPendulumPeriod = calculateTheoreticalPeriod(currentPendulumLengthPx);
+                projectedTimePeriodDisplay.textContent = theoreticalPendulumPeriod.toFixed(2) + ' seconds';
+            }
+        }
+
+        // Event Listeners
+        lengthSlider.addEventListener('input', (e) => {
+            currentPendulumLengthRaw = parseFloat(e.target.value);
+            currentPendulumLengthPx = currentPendulumLengthRaw * 25; // Map to pixels
+            lengthValueDisplay.textContent = currentPendulumLengthRaw.toFixed(1) + ' arbitrary units';
+            updatePendulumVisual(currentPendulumLengthPx, MAX_ANGLE); // Update visual to max angle for consistency
+            updateProjectedTimePeriod();
+        });
+
+        oscCountSlider.addEventListener('input', (e) => {
+            targetOscillations = parseInt(e.target.value);
+            oscCountValueDisplay.textContent = targetOscillations + ' oscillations';
+        });
+
+        startResetButton.addEventListener('click', () => {
+            if (simulationRunning) {
+                stopSimulation(false); // Manually reset
+            } else {
+                startSimulation();
+            }
+        });
+
+        // Initial Setup
+        function initializeSimulation() {
+            lengthValueDisplay.textContent = currentPendulumLengthRaw.toFixed(1) + ' arbitrary units';
+            oscCountValueDisplay.textContent = targetOscillations + ' oscillations';
+
+            // Set initial pendulum state (at one extreme for visual clarity, ready to swing)
+            updatePendulumVisual(currentPendulumLengthPx, MAX_ANGLE); 
+            updateProjectedTimePeriod();
+        }
+
+        initializeSimulation();
+    </script>
+</body>
+</html>

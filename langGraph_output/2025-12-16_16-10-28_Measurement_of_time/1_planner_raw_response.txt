@@ -1,0 +1,102 @@
+{
+  "learning_objectives": [
+    "Students will be able to identify a simple pendulum and its components.",
+    "Students will be able to explain how a simple pendulum's regular motion can be used to measure time.",
+    "Students will be able to calculate the time period of a pendulum given total time and number of oscillations.",
+    "Students will be able to recognize standard units of time (seconds, minutes, hours)."
+  ],
+  "key_concepts": [
+    "Simple Pendulum",
+    "Time Period (T)",
+    "Oscillation",
+    "Units of Time"
+  ],
+  "visual_design": {
+    "main_display": "A simplified 2D animation of a simple pendulum, featuring a fixed pivot point (small circle), a string (thin line) hanging from it, and a bob (solid circle) at the end. The bob swings in a smooth, arc-like motion. An invisible timer overlay counts time.",
+    "color_scheme": ["#3498DB", "#2ECC71", "#E74C3C", "#F8F8F8", "#333333"],
+    "animation_style": "smooth, continuous arc motion for the pendulum. A subtle highlight (e.g., a momentary change in bob color or a small 'tick' animation) indicates the completion of one full oscillation.",
+    "visual_metaphor": "A child on a swing set. The time it takes to go back and forth once is like one 'tick' of our pendulum clock."
+  },
+  "variables_to_simulate": [
+    {
+      "name": "Pendulum Length",
+      "control_type": "slider",
+      "min": 1,
+      "max": 10,
+      "default": 5,
+      "unit": "arbitrary units",
+      "visual_effect": "Changes the visual length of the pendulum string, from short (fast swing) to long (slow swing). The bob's position adjusts vertically. The arc of the swing dynamically resizes with length."
+    },
+    {
+      "name": "Oscillations to Observe",
+      "control_type": "slider",
+      "min": 5,
+      "max": 50,
+      "default": 20,
+      "unit": "oscillations",
+      "visual_effect": "A numerical counter in the info section updates immediately. During simulation, a small, subtle visual indicator (e.g., a progress bar or a count display) increments near the pendulum as each oscillation is completed."
+    },
+    {
+      "name": "Start / Reset",
+      "control_type": "button",
+      "visual_effect": "When 'Start' (green button) is pressed, the pendulum begins to swing, an internal timer starts, and the button changes to 'Reset' (red button). When the target number of oscillations is met, or 'Reset' is pressed, the pendulum stops, timer resets, and calculated results are displayed. The button reverts to 'Start'."
+    }
+  ],
+  "layout_structure": {
+    "sections": [
+      {
+        "id": "header",
+        "height": "60px",
+        "content": "<h1>Time & Pendulums</h1><p>Explore how pendulums measure time!</p>"
+      },
+      {
+        "id": "visual-area",
+        "height": "50vh",
+        "content": "Interactive Pendulum Animation (Fixed pivot point at top center, string and bob below it, swinging)"
+      },
+      {
+        "id": "controls",
+        "height": "auto",
+        "content": "<ul><li>Slider: Pendulum Length</li><li>Slider: Oscillations to Observe</li><li>Button: Start / Reset</li></ul>"
+      },
+      {
+        "id": "info",
+        "height": "auto",
+        "content": "<h3>Results:</h3><p>Total Time: [XX.X] seconds</p><p>Completed Oscillations: [YY]</p><p>Time Period (T): [ZZ.Z] seconds/oscillation</p>"
+      }
+    ],
+    "spacing": "16px between sections"
+  },
+  "simulation_logic": [
+    "Step 1: Initialize pendulum at rest (hanging vertically), timer at 0, oscillation count at 0. Display default slider values and 'Start' button.",
+    "Step 2: When 'Pendulum Length' slider moves, visually update the pendulum string length. Internally, recalculate the theoretical time period (T) based on the new length (T ∝ √L) and update a 'Projected Time Period' in info if not running.",
+    "Step 3: When 'Oscillations to Observe' slider moves, update the target number 'N' in the info section.",
+    "Step 4: When 'Start' button is pressed:",
+    "   - Disable 'Pendulum Length' and 'Oscillations to Observe' sliders.",
+    "   - Change button text to 'Reset' and color to red.",
+    "   - Begin pendulum animation from one extreme, starting an internal high-resolution timer.",
+    "   - For each full oscillation completed (e.g., left extreme → right extreme → left extreme):",
+    "     - Increment 'Completed Oscillations' counter visually.",
+    "     - Provide a subtle visual 'tick' feedback on the pendulum bob.",
+    "   - When 'Completed Oscillations' reaches 'N':",
+    "     - Stop pendulum animation and internal timer.",
+    "     - Calculate 'Total Time Taken' from timer.",
+    "     - Calculate 'Time Period (T)' = 'Total Time Taken' / 'N'.",
+    "     - Display 'Total Time Taken', 'Completed Oscillations', and 'Time Period (T)' in the info section.",
+    "     - Enable sliders, change button back to 'Start' (green).",
+    "Step 5: When 'Reset' button is pressed (during a running simulation):",
+    "   - Stop pendulum animation and internal timer immediately.",
+    "   - Clear all displayed results. Reset timer to 0, oscillation count to 0.",
+    "   - Enable sliders, change button back to 'Start' (green)."
+  ],
+  "text_instructions": "Adjust pendulum length and oscillations. Press 'Start' to measure time period!",
+  "misconceptions_to_address": [
+    "Confusing total time with time period (e.g., 20s for 10 oscillations means 20s is the time period).",
+    "Incorrectly counting one full oscillation (e.g., only one swing to one side).",
+    "Believing that time period changes significantly with the amplitude (small angle swings)."
+  ],
+  "safety_constraints": [
+    "Content is age-appropriate for CBSE Class 7 students.",
+    "No external links or resources are presented within the simulation itself."
+  ]
+}

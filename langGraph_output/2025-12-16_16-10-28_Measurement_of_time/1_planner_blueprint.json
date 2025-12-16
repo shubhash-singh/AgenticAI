@@ -1,0 +1,12 @@
+{
+  "main_display": "A simplified 2D animation of a simple pendulum, featuring a fixed pivot point (small circle), a string (thin line) hanging from it, and a bob (solid circle) at the end. The bob swings in a smooth, arc-like motion. An invisible timer overlay counts time.",
+  "color_scheme": [
+    "#3498DB",
+    "#2ECC71",
+    "#E74C3C",
+    "#F8F8F8",
+    "#333333"
+  ],
+  "animation_style": "smooth, continuous arc motion for the pendulum. A subtle highlight (e.g., a momentary change in bob color or a small 'tick' animation) indicates the completion of one full oscillation.",
+  "visual_metaphor": "A child on a swing set. The time it takes to go back and forth once is like one 'tick' of our pendulum clock."
+}
